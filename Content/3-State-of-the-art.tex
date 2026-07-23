@@ -4,6 +4,7 @@
 %% ==============================
 
 Ziel dieses Kapitels ist es, den aktuellen Forschungsstand zu dezentralen DLT-basierten Architekturen für Gesundheitsdatenmanagement darzustellen. Der Fokus liegt auf blockchainbasierten sowie hashgraphbasierten Ansätzen und deren Einsatz im Gesundheitswesen. Dazu werden bestehende Ansätze aus der Literatur analysiert und bezüglich ihrer Anforderungen, Architekturbausteinen, Herausforderungen und Vergleichskriterien eingeordnet. Außerdem wird auch die Literatur zu konkreten technischen Frameworks der Distributed-Ledger-Technologien untersucht.
+Das Kapitel gliedert sich wie folgt: Abschnitt~\ref{sec:literaturrecherche} beschreibt die Methodik der durchgeführten systematischen Literaturrecherche, einschließlich Suchstring und Auswahlprozess. Abschnitt~\ref{sec:uebersicht_literatur} stellt die identifizierte Literatur inhaltlich vor, gegliedert in konkrete DLT-Architekturen im Gesundheitswesen sowie vergleichende und methodische Arbeiten. Abschnitt~\ref{sec:literatur_architekturvergleich} ordnet die beschriebenen Architekturen taxonomisch ein, und Abschnitt~\ref{sec:literatur_schlussfolgerungen} leitet daraus die Forschungslücke sowie die Vergleichskriterien der eigentlichen Arbeit ab.
 
 \section{Literaturrecherche}
 \label{sec:literaturrecherche}
@@ -54,8 +55,10 @@ AND NOT ("supply chain" OR cryptocurrency OR bitcoin OR finance OR insurance OR 
 
 \subsection{Auswahl der relevanten Literatur}
 \label{sec:auswahl_literatur}
-Durch die Suche in den wissenschaftlichen Datenbanken mithilfe der abgeleiteten Suchstring wurden bei IEEE 276 Treffer, bei Scopus 747 Treffer und bei PubMed 63 Treffer gefunden. Nach dem Entfernen der Duplikaten sind es 814 Papers übrig geblieben. Diese werden anschließend anhand des Titels auf 105 Kandidaten für Core-Papers reduziert. Danach wurden die Abstracts gelesen und nur noch 43 Papers zur vollständigen Lese ausgewählt. Nach der vollständigen Lese wurden 14 Core-Papers ausgewählt.
+Durch die Suche in den wissenschaftlichen Datenbanken mithilfe der abgeleiteten Suchstring wurden bei IEEE 276 Treffer, bei Scopus 747 Treffer und bei PubMed 63 Treffer gefunden. Nach dem Entfernen der Duplikaten sind es 814 Papers übrig geblieben. Diese werden anschließend anhand des Titels auf 105 Kandidaten für relevante Paper reduziert. Danach wurden die Abstracts gelesen und nur noch 43 Papers zum Lesen des Volltextes ausgewählt. Nach dem Lesen des Volltextes wurden 14 relevante Paper ausgewählt.
 Zusätzlich wurde auch die Literatur gefunden, die die technische Basis für Hashgraph-Technologie darstellt und Hashgraph mit Blockchain vergleicht. Diese Papers wurden außerhalb des Gesundheitskontextes untersucht, da da eine wissenschaftliche Lücke besteht.
+
+\textit{Da die im Abschnitt~\ref{sec:suchstring} definierte Suchstring auf den Gesundheitskontext beschränkt war, wurde zusätzlich gezielt außerhalb dieses Suchstrings nach Literatur recherchiert, die hashgraphbasierte SSI/DID-Mechanismen unabhängig vom Gesundheitswesen untersucht. Der Grund dafür war die im Abschnitt~\ref{sec:literatur_schlussfolgerungen} begründete Beobachtung, dass die gesundheitsspezifische Literatur keine Architektur mit einem hashgraphbasierten Ledger und einem SSI/DID-Identitätsmodell kombiniert; die zusätzliche Recherche prüft, ob eine solche Kombination zumindest außerhalb des Gesundheitskontexts existiert.}
 
 \section{Übersicht der relevanten Literatur}
 \label{sec:uebersicht_literatur}
@@ -136,52 +139,57 @@ Außerhalb des Gesundheitskontexts gibt es erste Arbeiten, die Hashgraph-basiert
 
 Satybaldy et al. stellen die erste systematische Benchmark-Studie ledgerbasierter DID-Methoden vor und vergleichen \texttt{did:ethr} (Ethereum), \texttt{did:xrpl} (XRP Ledger) und \texttt{did:hedera} (Hedera) unter einer einheitlichen Installation anhand von Latenz, Transaktionskosten und On-Chain-Metadaten-Exposition \cite{satybaldy2026}. Die Autoren zeigen, dass keine Plattform alle drei Dimensionen gleichzeitig optimiert, bestätigen jedoch, dass Hedera die geringste On-Chain-Latenz bei geringster Metadaten-Exposition sowie die reifste Integration in bestehende SSI-Werkzeugketten hat, z.B. durch AnonCreds-Unterstützung über Aries-basierte Frameworks und eine vollständige Anbindung an den Universal Resolver \cite{satybaldy2026}. Für die eigentliche Arbeit ist die Studie besonders relevant, weil sie mit \texttt{did:hedera} exakt die DID-Methode evaluiert, auf der der umgesetzte Prototyp aufbaut, und eine methodische Vorlage für den Entwurf der Bewertungsdimensionen Performanz und Sicherheit auf Ebene einzelner DID-Lebenszyklusoperationen liefert. Da diese Arbeit weder den Gesundheitskontext noch die Architekturebene adressiert, wird sie als ergänzende Literatur eingeordnet.
 
-Cádiz et al. demonstrieren die Anwendbarkeit Hashgraph-basierter Konsensverfahren für dezentrales Identitätsmanagement im Kontext spezieller Transportnetze (VANETs) \cite{cadiz2025}. Die Autoren verwenden mit Teegraph einen Hashgraph-basierten Konsensalgorithmus, der Trusted Execution Environments (TEEs) mit einem DAG-basierten Gossip-Protokoll kombiniert, und verankern W3C-konforme DIDs und VCs auf einem permissioned Teegraph-Ledger, um Fahrzeugauthentifizierung ohne wiederholte Anfragen an eine zentrale Trusted Authority zu ermöglichen \cite{cadiz2025}. Konzeptionell entspricht dies dem Schema, eine zentrale Vertrauensinstanz durch DLT-verankerte, dezentral verifizierbare Identitätsnachweise zu ersetzen. Die Arbeit belegt damit, dass die Kombination aus Hashgraph-Konsens und SSI-Prinzipien außerhalb des Gesundheitswesens tragfähig ist, bleibt jedoch auf einen Forschungsprototyp in einer anderen Anwendungsbereich beschränkt und wird daher ebenfalls als ergänzende Literatur klassifiziert.
+Cádiz et al. demonstrieren die Anwendbarkeit hashgraphbasierter Konsensverfahren für dezentrales Identitätsmanagement im Kontext spezieller Transportnetze (VANETs) \cite{cadiz2025}. Die Autoren verwenden mit Teegraph einen hashgraphbasierten Konsensalgorithmus, der u.a. ein DAG-basiertes Gossip-Protokoll verwendet, und verankern W3C-konforme DIDs und VCs auf einem permissioned Teegraph-Ledger, um Fahrzeugauthentifizierung ohne wiederholte Anfragen an eine zentrale Trusted Authority zu ermöglichen \cite{cadiz2025}. Konzeptionell entspricht dies dem Schema, eine zentrale Vertrauensinstanz durch DLT-verankerte, dezentral verifizierbare Identitätsnachweise zu ersetzen. Die Arbeit belegt damit, dass die Kombination aus Hashgraph-Konsens und SSI-Prinzipien außerhalb des Gesundheitswesens tragfähig ist, bleibt jedoch auf einen Forschungsprototyp in einer anderen Anwendungsbereich beschränkt und wird daher ebenfalls als ergänzende Literatur klassifiziert.
 
-\section{Taxonomische Einordnung der Core-Papers}
+\section{Taxonomische Einordnung der relevanten Paper}
 \label{sec:literatur_architekturvergleich}
 
-Um die im Abschnitt~\ref{sec:literatur_architectures} beschriebenen  Architekturen systematisch zu vergleichen, werden die grundlegenden  Architekturentscheidungen jeder Arbeit in einer Taxonomie  (Tabelle~\ref{tab:taxonomie_core}) eingeordnet. Die Einordnung erfolgt  entlang von fünf Kategorien. Die DLT-Art bezeichnet die  zugrunde liegende Technologiefamilie des Ledgers (Blockchain, Hashgraph oder Corda). Die Ledger-Ausrichtung beschreibt, worauf der Ledger konzeptionell ausgerichtet ist: identity-native bedeutet, dass der Ledger ausschließlich für Identitätsobjekte wie DIDs, Schemata und Credential Definitions konzipiert ist (wie bei Hyperledger Indy); generisch bezeichnet einen universellen Ledger ohne eingebautes Identitätsmodell; hybrid steht für die nachträgliche Integration von SSI-Mechanismen in einen generischen Ledger. Die Kategorie Framework benennt die konkret eingesetzte Plattform, die Konsens-Familie ordnet den verwendeten Konsensmechanismus einer übergeordneten Familie zu, und die Zusatzspalten DIDComm und ZKP kennzeichnen ergänzende Kommunikations- bzw. Kryptografiebausteine. Das Identitäts- und Zugriffsmodell sowie das On-/Off-Chain-Speichermodell der einzelnen Arbeiten wurden bereits in den Beschreibungen in Abschnitt~\ref{sec:literatur_architectures} dargestellt und fließen in die Schlussfolgerungen in Abschnitt~\ref{sec:literatur_schlussfolgerungen} ein.
+Um die im Abschnitt~\ref{sec:literatur_architectures} beschriebenen  Architekturen systematisch zu vergleichen, werden die grundlegenden  Architekturentscheidungen jeder Arbeit in einer Taxonomie  (Tabelle~\ref{tab:taxonomie_core}) eingeordnet. Die Einordnung erfolgt  entlang von vier Kategorien. Die DLT-Art bezeichnet die  zugrunde liegende Technologiefamilie des Ledgers (Blockchain, Hashgraph oder Corda). Die Ledger-Ausrichtung beschreibt, worauf der Ledger konzeptionell ausgerichtet ist: identity-native bedeutet, dass der Ledger ausschließlich für Identitätsobjekte wie DIDs, Schemata und Credential Definitions konzipiert ist (wie bei Hyperledger Indy); generisch bezeichnet einen universellen Ledger ohne eingebautes Identitätsmodell; hybrid steht für die nachträgliche Integration von SSI-Mechanismen in einen generischen Ledger. Die Kategorie Framework benennt die konkret eingesetzte Plattform, die Konsens-Familie ordnet den verwendeten Konsensmechanismus einer übergeordneten Familie zu, und die Zusatzspalten DIDComm und ZKP kennzeichnen ergänzende Kommunikations- bzw. Kryptografiebausteine. Das Identitäts- und Zugriffsmodell sowie das On-/Off-Chain-Speichermodell der einzelnen Arbeiten wurden bereits in den Beschreibungen in Abschnitt~\ref{sec:literatur_architectures} dargestellt und fließen in die Schlussfolgerungen in Abschnitt~\ref{sec:literatur_schlussfolgerungen} ein.
 Die Dimensionen und Ausprägungen der nachfolgenden Taxonomie wurden gemäß dem von Nickerson et al. \cite{nickerson2013} Taxonomie-Entwicklungsverfahren iterativ aus den in Abschnitt~\ref{sec:literatur_architectures} vorgestellten Architekturarbeiten abgeleitet, analog zum Vorgehen von Erler et al. \cite{erler2024}. Dabei wurde das Prinzip ihrer Klassifizierung übernommen: wo Publikationen einzelne Architekturaspekte nicht eindeutig beschreiben, erfolgt die Zuordnung allgemeiner oder wird ausgelassen, um annahmebasierte Klassifikationen zu vermeiden \cite{erler2024}. 
 
+Um die im Abschnitt~\ref{sec:literatur_architectures} beschriebenen Architekturen systematisch zu vergleichen, werden die grundlegenden Architekturentscheidungen jeder Arbeit in einer Taxonomie (Tabelle~\ref{tab:taxonomie_core}) eingeordnet. Die Einordnung erfolgt entlang von vier Kategorien, die sich unterschiedlichen Abstraktionsebenen zuordnen lassen. Minango et al. \cite{minango2025} nehmen für Corda bewusst keine präzise technische Klassifikation vor, grenzen es jedoch ausdrücklich von traditionellen Blockchains ab; entsprechend dem Prinzip, annahmebasierte Zuordnungen zu vermeiden, wird die Arbeit der Ausprägung „Sonstige“ zugeordnet. Diese Kategorie verdichtet die konkreten Frameworks zu Technologiefamilien und dient damit primär der Sichtbarmachung der Technologieverteilung über den Literaturkorpus hinweg; für die plattformspezifische Einordnung bleibt die Kategorie Framework maßgeblich. Diese benennt die konkret eingesetzte Plattform, während die Konsens-Familie den verwendeten Konsensmechanismus einer übergeordneten Familie zuordnet. Das Identitätsmodell folgt der Unterscheidungvon Erler et al. \cite{erler2024} zwischen dezentralen Modellen - Self-Sovereign Identity (SSI), bei der die Registrierung ohne Rückgriff auf eine bestehende Identität erfolgt, und Decentralized Trusted Identity (DTI), bei der die dezentrale Identität an eine bestehende Drittidentität gebunden wird - und schlüssel- bzw. zertifikatsbasierten Modellen, bei denen Identitäten von einer Betreiberinstanz ausgestellt und verwaltet werden. Das Zugriffsmodell sowie das On-/Off-Chain-Speichermodell der einzelnen Arbeiten wurden bereits in den Beschreibungen in Abschnitt~\ref{sec:literatur_architectures} dargestellt und fließen in die Schlussfolgerungen in Abschnitt~\ref{sec:literatur_schlussfolgerungen} ein.
 
-\begin{landscape}
-\begin{table}
+Die Dimensionen und Ausprägungen der Taxonomie wurden gemäß dem Taxonomie-Entwicklungsverfahren von Nickerson et al. \cite{nickerson2013} iterativ aus den in Abschnitt~\ref{sec:literatur_architectures} vorgestellten Architekturarbeiten abgeleitet, analog zum Vorgehen von Erler et al. \cite{erler2024}. Dabei wurde das Prinzip ihrer Klassifizierung übernommen: wo Publikationen einzelne Architekturaspekte nicht eindeutig beschreiben, erfolgt die Zuordnung allgemeiner oder wird ausgelassen, um annahmebasierte Klassifikationen zu vermeiden \cite{erler2024}.
+
+
+\begin{table}[htbp]
 \centering
 \scriptsize
 \renewcommand{\arraystretch}{1.35}
-\setlength{\tabcolsep}{3.5pt}
+\setlength{\tabcolsep}{2.5pt}
 \caption{Taxonomie der Core-Papers: architektonische Einordnung}
 \label{tab:taxonomie_core}
-\begin{tabular}{p{2.6cm} ccc ccc cccccccc ccccccc cc}
+\begin{tabular}{p{3.4cm} ccc cccccccc ccccccc cccc}
 \toprule
-& \multicolumn{3}{c}{\textbf{DLT-Art}} & \multicolumn{3}{c}{\textbf{Ledger-Ausrichtung}} & \multicolumn{8}{c}{\textbf{Framework}} & \multicolumn{7}{c}{\textbf{Konsens-Familie}} & \multicolumn{2}{c}{\textbf{Zusatz}} \\
-\cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-15} \cmidrule(lr){16-22} \cmidrule(lr){23-24}
+& \multicolumn{3}{c}{\textbf{DLT-Art}} & \multicolumn{8}{c}{\textbf{Framework}} & \multicolumn{7}{c}{\textbf{Konsens-Familie}} & \multicolumn{4}{c}{\textbf{Identitätsmodell}} \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-12} \cmidrule(lr){13-19} \cmidrule(lr){20-23}
 \textbf{Paper} &
-\rotatebox{90}{Blockchain} & \rotatebox{90}{Hashgraph} & \rotatebox{90}{Corda} &
-\rotatebox{90}{Identity-native} & \rotatebox{90}{Hybrid} & \rotatebox{90}{Generisch} &
+\rotatebox{90}{Blockchain} & \rotatebox{90}{Hashgraph} & \rotatebox{90}{Sonstige} &
 \rotatebox{90}{Hyperledger Indy/Aries} & \rotatebox{90}{Hyperledger Fabric} & \rotatebox{90}{Hyperledger Besu} & \rotatebox{90}{Ethereum (privat)} & \rotatebox{90}{Hedera} & \rotatebox{90}{R3 Corda} & \rotatebox{90}{EBSI} & \rotatebox{90}{n.\,a.} &
 \rotatebox{90}{BFT (Voting)} & \rotatebox{90}{aBFT (Gossip)} & \rotatebox{90}{Leader-b. (Raft)} & \rotatebox{90}{Proof of Authority} & \rotatebox{90}{Proof of Stake} & \rotatebox{90}{Notary-basiert} & \rotatebox{90}{n.\,a.} &
-\rotatebox{90}{DIDComm} & \rotatebox{90}{ZKP} \\
+\rotatebox{90}{Dezentral: SSI} & \rotatebox{90}{Dezentral: DTI} & \rotatebox{90}{Schlüssel-/zertifikatsb.} & \rotatebox{90}{n.\,a.} \\
 \midrule
-Erler et al. \cite{erler2023} & \checkmark & & & \checkmark & & & \checkmark & & & & & & & & \checkmark & & & & & & & \checkmark & \\
-Manoj et al. \cite{manoj2022} & \checkmark & & & \checkmark & & & \checkmark & & & & & & & & \checkmark & & & & & & & \checkmark & \\
-Torongo, Toorani \cite{torongo2023} & \checkmark & & & \checkmark & & & \checkmark & & & & & & & & \checkmark & & & & & & & \checkmark & \\
-Bittins et al. \cite{bittins2021} & \checkmark & & & & \checkmark & & & \checkmark & & & & & \checkmark & & & & & & & & \checkmark & & \\
-Chainarong et al. \cite{chainarong2025} & \checkmark & & & & \checkmark & & & \checkmark & & & & & & & & & & & & & \checkmark & & \checkmark \\
-Verma et al. \cite{verma2024} & & \checkmark & & & & \checkmark & & & & & \checkmark & & & & & \checkmark & & & & & & & \\
-Tawfik et al. \cite{tawfik2025} & \checkmark & & & & & \checkmark & & \checkmark & & & & & & & \checkmark & & & & & & & & \\
-Joshi, Mahajan \cite{joshimahajan2025} & \checkmark & & & & & \checkmark & & \checkmark & & & & & & & & & \checkmark & & & & & & \\
-Giao et al. \cite{giao2026} & \checkmark & & & & & \checkmark & & & & \checkmark & & & & & & & & \checkmark & & & & & \\
-Gupta, Verma \cite{guptaverma2026} & \checkmark & & & & & \checkmark & & \checkmark & & & & & & & & & & & & & \checkmark & & \checkmark \\
-Farin et al. \cite{farin2025} & \checkmark & & & & & \checkmark & & & \checkmark & & & & & & & & & \checkmark & & & & & \checkmark \\
-Mamoru et al. \cite{mamoru2026} & \checkmark & & & & & \checkmark & & \checkmark & & & & & & & & & & & & & \checkmark & & \\
-Amanat et al. \cite{amanat2022} & \checkmark & & & & & \checkmark & & & & & & & & \checkmark & & & & & \checkmark & & & & \\
-Minango et al. \cite{minango2025} & & & \checkmark & & & \checkmark & & & & & & \checkmark & & & & & & & & \checkmark & & & \\
+Erler et al. \cite{erler2023} & \checkmark &  &  & \checkmark &  &  &  &  &  &  &  & \checkmark &  &  &  &  &  &  & \checkmark &  &  &  \\
+Manoj et al. \cite{manoj2022} & \checkmark &  &  & \checkmark &  &  &  &  &  &  &  & \checkmark &  &  &  &  &  &  & \checkmark &  &  &  \\
+Torongo, Toorani \cite{torongo2023} & \checkmark &  &  & \checkmark &  &  &  &  &  &  &  & \checkmark &  &  &  &  &  &  & \checkmark &  &  &  \\
+Chainarong et al. \cite{chainarong2025} & \checkmark &  &  &  & \checkmark &  &  &  &  &  &  &  &  &  &  &  &  & \checkmark & \checkmark &  &  &  \\
+\midrule
+Bittins et al. \cite{bittins2021} & \checkmark &  &  &  & \checkmark &  &  &  &  & \checkmark &  &  &  &  &  &  &  & \checkmark &  & \checkmark &  &  \\
+\midrule
+Tawfik et al. \cite{tawfik2025} & \checkmark &  &  &  & \checkmark &  &  &  &  &  &  & \checkmark &  &  &  &  &  &  &  &  & \checkmark &  \\
+Joshi, Mahajan \cite{joshimahajan2025} & \checkmark &  &  &  & \checkmark &  &  &  &  &  &  &  &  & \checkmark &  &  &  &  &  &  & \checkmark &  \\
+Mamoru et al. \cite{mamoru2026} & \checkmark &  &  &  & \checkmark &  &  &  &  &  &  &  &  &  &  &  &  & \checkmark &  &  & \checkmark &  \\
+Farin et al. \cite{farin2025} & \checkmark &  &  &  &  & \checkmark &  &  &  &  &  &  &  &  & \checkmark &  &  &  &  &  & \checkmark &  \\
+\midrule
+Giao et al. \cite{giao2026} & \checkmark &  &  &  &  &  & \checkmark &  &  &  &  &  &  &  & \checkmark &  &  &  &  &  &  & \checkmark \\
+Gupta, Verma \cite{guptaverma2026} & \checkmark &  &  &  & \checkmark &  &  &  &  &  &  &  &  &  &  &  &  & \checkmark &  &  &  & \checkmark \\
+Amanat et al. \cite{amanat2022} & \checkmark &  &  &  &  &  &  &  &  &  & \checkmark &  &  &  &  & \checkmark &  &  &  &  &  & \checkmark \\
+\midrule
+Verma et al. \cite{verma2024} &  & \checkmark &  &  &  &  &  & \checkmark &  &  &  &  & \checkmark &  &  &  &  &  &  &  &  & \checkmark \\
+Minango et al. \cite{minango2025} &  &  & \checkmark &  &  &  &  &  & \checkmark &  &  &  &  &  &  &  & \checkmark &  &  &  & \checkmark &  \\
 \bottomrule
 \end{tabular}
 \end{table}
-\end{landscape}
 
 
 Die Taxonomie zeigt eine klare Gliederung: Drei Arbeiten verwenden einen identity-nativen Ledger auf Basis von Hyperledger Indy mit Aries-Agentenschicht, zwei weitere integrieren SSI-Mechanismen nachträglich in generische Fabric-basierte Ledger (hybride Ausrichtung), sieben Arbeiten setzen auf generische blockchainbasierte Ledger ohne SSI/DID-Modell, und nur zwei Arbeiten \cite{verma2024, minango2025} weichen mit Hashgraph bzw. Corda von der blockchainbasierten Technologiefamilie ab.
@@ -195,7 +203,8 @@ Aus der Taxonomie im Abschnitt~\ref{sec:literatur_architekturvergleich} können 
 Die Tabelle~\ref{tab:taxonomie_core} zeigt eine klare Konzentration der Literatur auf blockchainbasierte Ledger-Technologien, insbesondere aus dem Hyperledger-Ökosystem: Zwölf der vierzehn untersuchten Arbeiten basieren auf einer Blockchain, davon neun auf Hyperledger Indy oder Fabric. Nur zwei Arbeiten weichen von diesem Muster ab: Verma et al. \cite{verma2024} mit einem hashgraphbasierten und Minango et al. \cite{minango2025} mit einem Corda-basierten Ansatz. Alternative DLT-Familien sind daher im Gesundheitskontext eindeutig nicht ausreichend präsentiert, obwohl ihnen in der technologieübergreifenden Vergleichsliteratur (Abschnitt~\ref{sec:literatur_vergleichsmethodik}) günstige Durchsatz-, Latenz- und Fairness-Eigenschaften zugeschrieben werden.
 
 \paragraph{Schlussfolgerung 2: Getrennte Entwicklungslinien von SSI und Hashgraph.}
-Die Spalten Ledger-Ausrichtung und DIDComm der Tabelle~\ref{tab:taxonomie_core} machen zwei bisher unverbundene Entwicklungslinien sichtbar. Alle Arbeiten mit identity-nativer oder hybrider Ledger-Ausrichtung (Erler et al. \cite{erler2023}, Manoj et al. \cite{manoj2022}, Torongo und Toorani \cite{torongo2023}, Bittins et al. \cite{bittins2021} sowie Chainarong et al. \cite{chainarong2025}) basieren auf blockchainbasierten Ledgern, hauptsächlich Hyperledger Indy. Umgekehrt wird in einziger hashgraphbasierte Architektur von Verma et al. \cite{verma2024} auf ein SSI/DID-Identitätsmodell verzichtet und verwendet stattdessen einen ticketbasierten Zugriffsmechanismus. Eine Architektur, die SSI/DID-Mechanismen mit einem hashgraphbasierten Ledger kombiniert, existiert in der betrachteten Literatur nicht, ebenso wenig ein direkter, kriteriengeleiteter Vergleich beider Ledger-Technologien unter einer identischen Anwendungsarchitektur.
+Die Spalten DLT-Art und Identitätsmodell der Tabelle~\ref{tab:taxonomie_core} machen zwei bisher unverbundene Entwicklungslinien sichtbar. Alle Arbeiten mit einem dezentralen Identitätsmodell - sowohl die SSI-basierten Ansätze von Erler et al. \cite{erler2023}, Manoj et al. \cite{manoj2022}, Torongo und Toorani \cite{torongo2023} sowie Chainarong et al. \cite{chainarong2025} als auch der DTI-basierte Ansatz von Bittins et al. \cite{bittins2021} - basieren auf blockchainbasierten Ledgern. Umgekehrt verzichtet die einzige hashgraphbasierte Architektur von Verma et al. \cite{verma2024} vollständig auf ein dezentrales Identitätsmodell und verwendet stattdessen einen ticketbasierten Zugriffsmechanismus. Eine Architektur, die ein dezentrales Identitätsmodell mit einem hashgraphbasierten Ledger kombiniert, existiert in der betrachteten Literatur nicht.
+
 
 \paragraph{Schlussfolgerung 3: Divergenz der Evaluationsmethodik.} 
 Während die Architekturentscheidungen der betrachteten Arbeiten in der Taxonomie (Tabelle~\ref{tab:taxonomie_core}) klar klassifizierbar sind, unterscheidet sich ihre Evaluationsmethodik erheblich: Sie reicht von rein qualitativen Anforderungsanalysen \cite{erler2023, bittins2021} über Latenz- und Durchsatzmessungen einzelner Workflows \cite{manoj2022, torongo2023, chainarong2025} bis hin zu systematischen Benchmarks mit dedizierten Werkzeugen und Angriffssimulationen \cite{tawfik2025, joshimahajan2025}. Ein einheitlicher Evaluationsstandard fehlt. Diese Schlussfolgerung deckt sich mit der Kritik der methodischen Literatur, dass insbesondere Skalierbarkeitseigenschaften der vorgeschlagenen Systeme häufig überhaupt nicht oder inkonsistent evaluiert werden (siehe Abschnitt~\ref{sec:literatur_vergleichsmethodik}).
