@@ -9,39 +9,14 @@ Das Kapitel gliedert sich wie folgt: Abschnitt~\ref{sec:literaturrecherche} besc
 \section{Literaturrecherche}
 \label{sec:literaturrecherche}
 Um dieses Ziel zu erreichen, wurde eine strukturierte Literaturrecherche durchgeführt. Zuerst wurden die Schlüsselwörter (Keywords) gesucht und in einen logischen Zusammenhang gebracht; daraus wurde eine Wortliste aus Synonymen, Oberbegriffen, Unterbegriffen und verwandten Begriffen zusammengestellt, um ein möglichst großes Spektrum abzudecken. Danach wurde durch AND- und OR-Verknüpfungen aus mehreren Gruppen von Schlüsselwörtern eine Suchstring (Search string) gebaut. Mithilfe der erfundenen Suchstring wurden die wissenschaftlichen Datenbanken Scopus, IEEE und PubMed durchgesucht. Des weiteren wurden die Ergebnisse der Suche analysiert und aussortiert, bis eine Liste der relevanten Literatur fertiggestellt war.
-„Blockchain-based" wurde statt „blockchain" verwendet, um irrelevante Papers zu vermeiden. Eine Übersicht der Keywords befindet sich in der Tabelle ~\ref{tab:keywords}.
-
-
-\begin{table}[h]
-\centering
-\caption{Schlüsselwortgruppen für die Suchstring}
-\label{tab:keywords}
-\begin{tabular}{
-  >{\centering\arraybackslash}p{2.8cm}
-  >{\centering\arraybackslash}p{2.8cm}
-  >{\centering\arraybackslash}p{2.5cm}
-  >{\centering\arraybackslash}p{2.5cm}
-  >{\centering\arraybackslash}p{2.5cm}
-}
-\toprule
-\textbf{Healthcare context} & \textbf{DLTs} & \textbf{Architecture} & \textbf{Evaluation criteria} & \textbf{Exclusion criteria} \\
-\midrule
-EHR & DLT & architecture & performance & supply chain \\\\
-electronic health record & distributed ledger & data management & scalability & cryptocurrency \\\\
-medical data & blockchain-based & data sharing & security & bitcoin \\\\
-patient records & hashgraph & framework & throughput & finance \\\\
- & & & fault tolerance & insurance \\\\
- & & & latency & IoT \\\\
- & & & evaluation & \\
-\bottomrule
-\end{tabular}
-\end{table}
+„Blockchain-based" wurde statt „blockchain" verwendet, um irrelevante Papers zu vermeiden. Die verwendeten Schlüsselwörter gliedern sich in fünf Gruppen: Für den Gesundheitskontext wurden die Begriffe EHR, electronic health record, medical data und patient records verwendet; für die zugrunde liegende DLT die Begriffe DLT, distributed ledger, blockchain-based und hashgraph; für die Architekturebene die Begriffe architecture, data management, data sharing und framework; als Evaluationskriterien performance, scalability, security, throughput, fault tolerance, latency und evaluation; und als Ausschlusskriterien supply chain, cryptocurrency, bitcoin, finance, insurance und IoT.
 
 Für die Suche in den wissenschaftlichen Datenbanken wird eine Suchstring verwendet, die aus mehreren Blöcken besteht. Die Schlüsselwörter innerhalb der Blöcken werden durch OR verbunden und die Blöcken werden durch AND verknüpft. Zusätzlich wurden mittels NOT-Verknüpfung für diese Arbeit nicht relevante Bereiche wie Supply-Chain-Management, Kryptowährungen, Finanzwesen, Versicherungen und IoT-Anwendungen ausgeschlossen. Als Suchfeld wurde TITLE-ABS-KEY (bzw. die entsprechende Filter-Option der jeweiligen Datenbank) ausgewählt, da die relevanten Begriffe zu den Artikeln entweder im Titel, dem Abstract oder den Schlüsselwörter zu finden sein sollten.
 
 \begingroup
 \shorthandoff{"}
 \begin{quote}
+\raggedright
 \ttfamily
 ("electronic health record" OR EHR OR "medical data" OR "patient records")
 AND ("distributed ledger" OR DLT OR "blockchain-based" OR hashgraph) 
@@ -51,10 +26,22 @@ AND NOT ("supply chain" OR cryptocurrency OR bitcoin OR finance OR insurance OR 
 \end{quote}
 \endgroup
 
-\subsection{Auswahl der relevanten Literatur}
-\label{sec:auswahl_literatur}
 Durch die Suche in den wissenschaftlichen Datenbanken mithilfe der abgeleiteten Suchstring wurden bei IEEE 276 Treffer, bei Scopus 747 Treffer und bei PubMed 63 Treffer gefunden. Nach dem Entfernen der Duplikaten sind es 814 Papers übrig geblieben. Diese werden anschließend anhand des Titels auf 105 Kandidaten für relevante Paper reduziert. Danach wurden die Abstracts gelesen und nur noch 43 Papers zum Lesen des Volltextes ausgewählt. Nach dem Lesen des Volltextes wurden 14 relevante Paper ausgewählt.
-Da der oben definierte Suchstring auf den Gesundheitskontext beschränkt war, wurde zusätzlich gezielt außerhalb dieses Suchstrings nach Literatur recherchiert, die hashgraphbasierte SSI/DID-Mechanismen unabhängig vom Gesundheitswesen untersucht. Der Grund dafür war die im Abschnitt~\ref{sec:literatur_schlussfolgerungen} begründete Beobachtung, dass die gesundheitsspezifische Literatur keine Architektur mit einem hashgraphbasierten Ledger und einem SSI/DID-Identitätsmodell kombiniert; die zusätzliche Recherche prüft, ob eine solche Kombination zumindest außerhalb des Gesundheitskontexts existiert.
+
+Da der oben definierte Suchstring auf den Gesundheitskontext beschränkt war, wurde zusätzlich gezielt außerhalb dieses Suchstrings nach Literatur recherchiert, die hashgraphbasierte SSI/DID-Mechanismen unabhängig vom Gesundheitswesen untersucht. Der Grund dafür war die im Abschnitt~\ref{sec:literatur_schlussfolgerungen} begründete Beobachtung, dass die gesundheitsspezifische Literatur keine Architektur mit einem hashgraphbasierten Ledger und einem SSI/DID-Identitätsmodell kombiniert; die zusätzliche Recherche prüft, ob eine solche Kombination zumindest außerhalb des Gesundheitskontexts existiert. Für die ergänzende Recherche wurde nach demselben Prinzip eine zweite Suchstring gebildet, die die SSI/DID-Terminologie mit hashgraphspezifischen Begriffen kombiniert. Als Suchfeld diente wie zuvor TITLE-ABS-KEY.
+
+\begingroup
+\shorthandoff{"}
+\begin{quote}
+\raggedright
+\ttfamily
+("self-sovereign identity" OR SSI OR "identity management" OR "decentralized identifier" OR DID OR "verifiable credential")
+AND (hashgraph OR hedera OR HCS)
+\end{quote}
+\endgroup
+
+Die Suche ergab bei IEEE 103, bei Scopus 12 und bei der PubMed 38 Treffer. Nach dem Entfernen der Duplikate verblieben 145 Papers, von denen anhand des Titels 11 Kandidaten für relevante Literatur ausgewählt wurden. Nach dem Lesen der Abstracts und Volltexte wurden schließlich zwei Arbeiten als relevant eingestuft, die in Abschnitt~\ref{sec:literatur_vergleichsmethodik} als ergänzende Literatur beschrieben werden: Satybaldy et al. \cite{satybaldy2026} sowie Cádiz et al. \cite{cadiz2025}.
+
 
 \section{Übersicht der relevanten Literatur}
 \label{sec:uebersicht_literatur}
