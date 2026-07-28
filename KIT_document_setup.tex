@@ -57,6 +57,20 @@
 % for more sophisticated algorithm listings
 \usepackage{listings}
 
+\RedeclareSectionCommand[
+  runin=false,
+  beforeskip=3.25ex plus 1ex minus .2ex,
+  afterskip=1ex plus .2ex,
+  font=\normalfont\bfseries
+]{paragraph}
+
+\RedeclareSectionCommand[
+  runin=false,
+  beforeskip=2.5ex plus 1ex minus .2ex,
+  afterskip=0.75ex plus .2ex,
+  font=\normalfont\bfseries
+]{subparagraph}
+
 \lstset{
 language=C++,
 basicstyle=\small\ttfamily,

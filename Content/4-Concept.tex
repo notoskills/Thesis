@@ -9,7 +9,7 @@
 Der Ausgangspunkt der Konzipierung ist die in Kapitel~\ref{cha:grundlagen} vorgestellte Referenzarchitektur für dezentrales Gesundheitsdatenmanagement nach Erler et al.~\cite{erler2023}. Ziel dieses Abschnitts besteht nicht darin, die Gesamtarchitektur erneut zu beschreiben, sondern eine gezielte Analyse der Architekturschicht, die im Rahmen dieser Arbeit ersetzt wird: der Ledger-Schicht. Dazu wird zuerst die Schichtenstruktur der Referenzarchitektur zusammengefasst, anschließend werden die Funktionen der Ledger-Schicht systematisch identifiziert und den zugrunde liegenden Mechanismen von Hyperledger Indy zugeordnet. Abschließend wird der Umfang des geplanten Austauschs bestimmt. 
 Zur späteren Analyse wird zwischen den Funktionen unterschieden, die die Referenzarchitektur der Ledger-Schicht zuweist~\cite{erler2023}, und den Indy-spezifischen Mechanismen, mit denen diese Funktionen implementiert werden; letztere werden auf der Grundlage von Torongo und Toorani~\cite{torongo2023} beschrieben, da Erler et al. die interne Ledger-Komponenten nicht im Detail berücksichtigen.
 
-Die Referenzarchitektur kann anhand der Taxonomie von Erler et al. (2024) genau charakterisiert werden, in der die Autorinnen und Autoren ihren eigenen Entwurf einordnen \cite{erler2024}. Die Gesundheitsdaten bleiben off-chain und dezentral in den internen Systemen der datenhaltenden medizinischen Einrichtungen; als Ledger dient eine public permissioned Blockchain \cite{erler2023}. Das Identitätsmanagement folgt dem SSI-Paradigma mit nutzerzentrierter Komponente, da das Credential Wallet lokal durch ein Passwort abgesichert wird. Die Zugriffskontrolle liegt vollständig beim Patienten und wird über eine feingranulare DAC-Logik umgesetzt; die Zugriffsgewährung erfolgt über Tokenization in Kombination mit digitalen Signaturen innerhalb der DIDComm-Kommunikation \cite{erler2024}. Diese Einordnung benennt Eigenschaften, die eine HCS-basierte Alternative der Ledger-Schicht erhalten muss: Der Ledger funktioniert in der Referenzarchitektur ausschließlich als Vertrauensanker und Identitätsverzeichnis, nicht als Speicherort für Gesundheitsdaten.
+Die Referenzarchitektur kann anhand der Taxonomie von Erler et al. ~\cite{erler2024} genau charakterisiert werden, in der die Autorinnen und Autoren ihren eigenen Entwurf einordnen \cite{erler2024}. Die Gesundheitsdaten bleiben off-chain und dezentral in den internen Systemen der datenhaltenden medizinischen Einrichtungen; als Ledger dient eine public permissioned Blockchain \cite{erler2023}. Das Identitätsmanagement folgt dem SSI-Paradigma mit nutzerzentrierter Komponente, da das Credential Wallet lokal durch ein Passwort abgesichert wird. Die Zugriffskontrolle liegt vollständig beim Patienten und wird über eine feingranulare DAC-Logik umgesetzt; die Zugriffsgewährung erfolgt über Tokenization in Kombination mit digitalen Signaturen innerhalb der DIDComm-Kommunikation \cite{erler2024}. Diese Einordnung benennt Eigenschaften, die eine HCS-basierte Alternative der Ledger-Schicht erhalten muss: Der Ledger funktioniert in der Referenzarchitektur ausschließlich als Vertrauensanker und Identitätsverzeichnis, nicht als Speicherort für Gesundheitsdaten.
 
 \subsection{Schichtenstruktur der Referenzarchitektur}
 \label{subsec:schichtenstruktur}
@@ -79,3 +79,107 @@ Die Analyse der Referenzarchitektur im Abschnitt~\ref{sec:konzipierung-referenza
   \item[FA5 - Manipulationsresistente, nachvollziehbare Historie:] Alle Schreiboperationen auf der Ledger-Schicht müssen in einer kryptografisch gesicherten, zeitlich geordneten und nachträglich nicht unbemerkt veränderbaren Historie gespeichert werden, die als Audit-Grundlage dienen kann.
   \item[FA6 - Kompatibilität zur Agentenschicht:] Die Ledger-Schicht muss ihre Funktionen über Schnittstellen bereitstellen, die von der unverändert übernommenen Aries-Agentenschicht genutzt werden können, ohne dass Änderungen an den DIDComm-Protokollen oder den Peer-DID-Mechanismen erforderlich werden.
 \end{description}
+
+\subsection{Nicht-funktionale Anforderungen}
+\label{subsec:nichtfunktionale-anforderungen}
+
+Die nicht-funktionalen Anforderungen ergeben sich direkt aus den im Kapitel~\ref{cha:state_of_the_art} hergeleiteten Vergleichskriterien (Tabelle~\ref{tab:synthese_vergleichskriterien}) und werden eins zu eins den dort identifizierten acht Kriterien der drei Dimensionen Performanz, Skalierbarkeit und Sicherheit zugeordnet. Im Gegensatz zu funktionalen Anforderungen formulieren die nicht-funktionalen Anforderungen bewusst keine konkreten Schwellenwerte, da die Messung und der Vergleich dieser Werte zwischen der Indy- und der HCS-basierten Ledger-Schicht das empirische Ziel dieser Arbeit ist. Stattdessen beschreibt jede nicht-funktionale Anforderung, welche strukturelle Eigenschaft die zu entworfene Architektur unterstützen muss, damit sie entlang des jeweiligen Kriteriums sinnvoll gemessen und mit der Referenzarchitektur verglichen werden kann.
+
+\begin{description}
+  \item[NFA1 - Durchsatz:] Die Ledger-Schicht muss eine bestimmte Rate paralleler Schreiboperationen, z.B. NYM-, Schema-, Credential-Definition- und Revocation-Transaktionen, verarbeiten können, ohne dass Nachrichten verworfen werden, sodass der Durchsatz unter identischer Last für beide Ledger-Varianten erhoben werden kann.
+  \item[NFA2 - Latenz:] Die Ledger-Schicht muss für jede der im Abschnitt~\ref{subsec:ledger-funktionen} identifizierten Kernfunktionen einen beobachtbaren, klar definierten Zeitpunkt der Finalität bereitstellen, der nach Operationstyp differenziert ist, sodass operationsspezifische Latenzen zwischen Indy und HCS vergleichbar gemessen werden können.
+  \item[NFA3 - Ressourcenverbrauch:] Die an der Ledger-Schicht beteiligten Client- und Infrastrukturkomponenten müssen ihren CPU- und Speicherverbrauch während der Evaluation beobachtbar und den einzelnen Ledger-Funktionen zuordenbar machen.
+  \item[NFA4 - Lastskalierung:] Die Ledger-Schicht muss so konzipiert sein, dass Durchsatz und Latenz unter kontrollierter Steigung der Transaktionsrate und wachsender Teilnehmerzahl gemessen werden können, um das Skalierungsverhalten der Indy- und der HCS-basierten Variante vergleichen zu können.
+  \item[NFA5 - Datenwachstum:] Die Ledger-Schicht muss den mit wachsendem Datenbestand verbundenen Speicherbedarf auf Ledger- und Knoten-Ebene nachvollziehbar und quantifizierbar machen, sodass das Datenwachstum der gewählten Zustandsrekonstruktionsstrategie mit dem nativen Zustandsspeicher von Indy verglichen werden kann.
+  \item[NFA6 - Konsens-Fehlertoleranz:] Die Ledger-Schicht muss Aussagen über die Fehlertoleranz und die Finalität ihres Konsensmechanismus ermöglichen, sodass das aBFT-Modell des Hedera-Hashgraph-Konsens und das RBFT-Modell von Indy-Plenum entlang byzantinischer Fehlertoleranz verglichen werden können.
+  \item[NFA7 - Zugriffskontrolle und Widerruf:] Die Ledger-Schicht muss sicherstellen, dass ausschließlich berechtigte Akteure Schreiboperationen entsprechend der in FA1 definierten Vertrauenshierarchie ausführen können, und muss die Wirksamkeit des in FA4 geforderten Widerrufsmechanismus überprüfbar machen.
+  \item[NFA8 - Bedrohungsresistenz:] Die Ledger-Schicht muss einer systematischen Bedrohungsanalyse, beispielsweise nach STRIDE, zugänglich sein, die auf die von Erler et al.~\cite{erler2023} für die Referenzarchitektur durchgeführte Bedrohungsmodellierung basiert, um zu prüfen, ob der Austausch der Ledger-Schicht neue Bedrohungen einführt oder bestehende Bedrohungen mindert.
+\end{description}
+
+Die funktionalen und nicht-funktionalen Anforderungen bilden zusammen den Bewertungsmaßstab für die im folgenden Abschnitt entwickelten Entwurfsentscheidungen: Jede dort getroffene Entscheidung wird explizit gegen die hier formulierten Anforderungen abgewogen.
+
+\section{Entwurf}
+\label{sec:konzipierung-entwurf}
+Basierend auf den im Abschnitt~\ref{sec:konzipierung-anforderungen} beschriebenen funktionalen und nicht-funktionalen Anforderungen werden im Folgenden die wichtigsten Entwurfsentscheidungen für die HCS-basierte Ledger-Schicht getroffen. Jede Entscheidung wird nach demselben Schema behandelt: zuerst wird das Problem beschrieben, das aus der Differenz zwischen Hyperledger Indy und dem Hedera Consensus Service stimmt, anschließend werden die mögliche Optionen benannt und gegen die Anforderungen aus Abschnitt~\ref{sec:konzipierung-anforderungen} bewertet, bevor die getroffene Entscheidung begründet wird.
+
+\subsection{Grundproblem: Zustands-Ledger gegenüber Ordnungsdienst}
+\label{subsec:grundproblem-state-vs-ordering}
+Wie im Abschnitt~\ref{subsec:ledger-funktionen} herausgefunden, implementiert Hyperledger Indy DIDs, Schemas, Credential Definitions und Revocation-Einträge als native, direkt abfragbare Objekttypen des Ledgers~\cite{torongo2023}. Im Gegensatz dazu verwendet der Hedera Consensus Service ein grundlegend anderes Prinzip: er ordnet und stempelt ausschließlich Nachrichten, die an einen Topic gesendet werden, speichert jedoch selbst keinen Anwendungszustand \cite{bairdgross2019}. Jede der unten beschriebenen Entwurfsentscheidungen ergibt sich aus dieser grundlegenden Grunddifferenz: während Indy die Semantik der fünf Ledger-Funktionen bereits im Protokoll bereitstellt, muss diese Semantik für die HCS-basierte Alternative explizit auf der Anwendungsebene reproduziert werden.
+
+\subsection{E1 - Rekonstruktion des Ledger-Zustands}
+\label{subsec:e1-zustandsrekonstruktion}
+
+\paragraph{Problem.}
+Da HCS keinen Zustand speichert, muss bestimmt werden, wie aus dem geordneten Nachrichtenfluss eines Topics der für die fünf Ledger-Funktionen benötigte Anwendungszustand - z.B. der aktuelle Gültigkeitsstatus eines Credentials - rekonstruiert wird.
+
+\paragraph{Optionen.}
+Drei Optionen stehen zur Auswahl. Erstens die vollständige Kodierung jeder Zustandsänderung als eigenständige Topic-Nachricht, aus der Mirror-Node-Anwendungen den Zustand durch Replay des gesamten Nachrichtenstroms rekonstruieren - ein Muster, das dem von Baird und Harmon beschriebenen Appnet-Konzept entspricht, bei dem Mirror Nodes als rein lesende Komponenten den Nachrichtenstrom empfangen, ohne am Konsens teilzunehmen~\cite{bairdharmon2019}. Zweitens das Hash-Anchoring, bei dem nur ein kryptografischer Hashwert der eigentlichen, off-chain gespeicherten Daten auf HCS verankert wird. Drittens der HCS-1-Standard, der Kodierung, Chunking und Wiederzusammensetzung größerer Dateien über mehrere Topic-Nachrichten definiert und dabei jeden Chunk auf maximal 1024 Byte begrenzt.\footnote{Hashgraph Online: \emph{HCS-1: File Management}, \url{https://hashgraphonline.com/docs/standards/hcs-1/}}
+
+\paragraph{Bewertung.}
+FA5 verlangt eine manipulationsresistente, nachvollziehbare Historie aller Schreiboperationen. Diese Anforderung ist bei Hash-Anchoring nur eingeschränkt erfüllt, da die Integrität der eigentlichen Daten von einer Off-Chain-Komponente abhängt, die außerhalb des Konsensmechanismus liegt und damit eine zusätzliche Vertrauensannahme einführt, die die Referenzarchitektur für die Ledger-Schicht nicht vorsieht~\cite{erler2023}. Die vollständige Zustandskodierung erfüllt FA5 hingegen unmittelbar, da die Integrität aller Zustandsänderungen direkt durch den Hashgraph-Konsens gesichert wird. Da die betroffenen Objekte - DIDs, Schemas, Credential Definitions, Revocation-Einträge - typischerweise deutlich unterhalb der Größengrenze einzelner HCS-Nachrichten liegen, ist eine Chunking-Lösung im Regelfall nicht erforderlich.
+
+\paragraph{Entscheidung.}
+Es wird die vollständige Objektkodierung direkt in Topic-Nachrichten gewählt. Für den Ausnahmefall, dass ein einzelnes Objekt - etwa eine große Revocation-Registry-Definition - die Größengrenze einer einzelnen Nachricht überschreitet, wird ergänzend auf den HCS-1-Standard zurückgegriffen, der in der Hiero AnonCreds Method bereits für die Ablage von Schemas, Credential Definitions und Revocation-Registry-Definitionen als Referenzmechanismus vorgesehen ist.\footnote{Hiero: \emph{Hiero AnonCreds Method}, \url{https://dsrcorporation.github.io/hedera-anoncreds-method/}}
+
+
+
+\subsection{E2 - Wahl der DID-Methode}
+\label{subsec:e2-did-methode}
+
+\subsection{E3 - Vertrauenshierarchie und Schreibberechtigung}
+\label{subsec:e3-vertrauenshierarchie}
+
+\subsection{E4 - Credential-Format und Ablage von Schemas und
+Credential Definitions}
+\label{subsec:e4-credential-format}
+
+\subsection{E5 - Widerrufsmechanismus}
+\label{subsec:e5-widerruf}
+
+\subsection{E6 - Topic-Topologie}
+\label{subsec:e6-topic-topologie}
+
+\subsection{E7 - Anbindung an die Agenten-Schicht}
+\label{subsec:e7-agentenanbindung}
+
+\subsection{Zusammenfassung der Entwurfsentscheidungen}
+\label{subsec:entwurfsentscheidungen-uebersicht}
+
+\section{Zielarchitektur der HCS-basierten Ledger-Schicht}
+\label{sec:konzipierung-zielarchitektur}
+
+\subsection{Komponentensicht}
+\label{subsec:zielarchitektur-komponenten}
+
+\subsection{Ablauf: Registrierung institutioneller Teilnehmer}
+\label{subsec:ablauf-registrierung}
+
+\subsection{Ablauf: Publikation von Schemas und Credential Definitions}
+\label{subsec:ablauf-schema}
+
+\subsection{Ablauf: Ausstellung und Verifikation von Credentials}
+\label{subsec:ablauf-credential}
+
+\section{Konzeptionelle Gegenüberstellung der beiden Ledger-Schichten}
+\label{sec:konzipierung-gegenueberstellung}
+
+\section{Evaluationskonzept}
+\label{sec:konzipierung-evaluation}
+
+\subsection{Testumgebung und Vergleichsaufbau}
+\label{subsec:evaluation-testumgebung}
+
+\subsection{Lastszenarien}
+\label{subsec:evaluation-szenarien}
+
+\subsection{Operationalisierung der Vergleichskriterien}
+\label{subsec:evaluation-metriken}
+
+\subsection{Sicherheitsanalyse}
+\label{subsec:evaluation-sicherheit}
+
+\subsection{Bedrohungen der Validität}
+\label{subsec:evaluation-validitaet}
+
+\section{Zusammenfassung des Konzepts}
+\label{sec:konzipierung-zusammenfassung}
