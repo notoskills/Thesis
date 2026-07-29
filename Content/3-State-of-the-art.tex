@@ -102,6 +102,9 @@ Verma et al. \cite{verma2024} schlagen mit ihrer Arbeit die erste konkrete hashg
 
 Minango et al. \cite{minango2025} untersuchen die technische Machbarkeit eines DLT-basierten Gesundheitssystems auf Basis von Corda-DLT und entwickeln dafür eine verteilte Anwendung zur Verwaltung medizinischer Akten. Corda unterscheidet sich architektonisch von klassischen Blockchains dadurch, dass Transaktionsdaten nicht im gesamten Netzwerk repliziert werden, sondern ausschließlich zwischen den beteiligten Knoten geteilt werden, während ein Notary-Dienst die Eindeutigkeit von Zuständen sicherstellt \cite{minango2025}. Digitale Signaturen und Zertifikate sichern Authentizität; Smart Contracts (Flows) bilden die Prozesslogik des Versorgungszyklus ab. Die Evaluation misst Durchsatz, Latenz, CPU- und Speicherauslastung sowohl in lokalen als auch in cloudbasierten Deployments \cite{minango2025}. Für die eigentliche Arbeit erweitert diese Arbeit das Spektrum der Vergleichsarchitekturen um eine dritte DLT-Familie jenseits von Blockchain und Hashgraph und liefert mit der Betrachtung von Ressourcenverbrauch ein zusätzliches Performanzkriterium.
 
+\paragraph{Zusammenfassung}
+\label{par:literatur_architectures_zusammenfassung}
+
 In allen Arbeiten dieses Blocks hinweg wiederholen sich drei wiederkehrende  Architekturentscheidungen zu Vergleichsachsen für die eigentliche Arbeit.  Erstens das Speichermuster: Die tatsächlichen Gesundheitsdaten liegen ständig off-chain (IPFS, Cloud oder institutionelle Datenbanken), während der Ledger die Rolle eines Vertrauens- und Verifikationsankers hat, der Hashes, Metadaten, Zugriffsrichtlinien und Audit-Informationen verwaltet - von Mamoru et al. \cite{mamoru2026} durch Skalierbarkeitaspekten und von Giao et al. \cite{giao2026} durch Datenschutz begründet. Zweitens die Konsensauswahl innerhalb permissioned Netzwerke (PBFT, Raft, PoA-Varianten, PoS) als klarer Kompromiss zwischen Fehlertoleranzmodell, Latenz, Finalität und Ressourcenaufwand \cite{joshimahajan2025, farin2025, amanat2022, tawfik2025}. Drittens die Verankerung von Zugriffskontrolle und Widerruf: da der Ledger selbst nur Ordnungs- und Integritätsgarantien liefert, müssen Zugriffslogik, Einwilligungsmanagement und Revocation auf Anwendungsebene implementiert werden \cite{mamoru2026, tawfik2025, guptaverma2026}. Alle drei Achsen sind unmittelbar auf die in dieser Arbeit zu treffende Entscheidung übertragbar, ob Schema- und 
 Credential-Definition-Daten direkt in HCS-Topic-Nachrichten kodiert oder off-chain gespeichert und nur per Hash-Anker auf HCS verankert werden.
 
@@ -143,34 +146,35 @@ Die Dimensionen und Ausprägungen der Taxonomie wurden gemäß dem Taxonomie-Ent
 \setlength{\tabcolsep}{2.5pt}
 \caption{Taxonomie der relevanten Paper: architektonische Einordnung}
 \label{tab:taxonomie_core}
-\begin{tabular}{p{3.4cm} ccc cccccccc ccccccc cccc}
+\begin{tabular}{p{3.4cm} ccc ccc ccccccc cccccc ccc}
 \toprule
-& \multicolumn{3}{c}{\textbf{DLT-Art}} & \multicolumn{8}{c}{\textbf{Framework}} & \multicolumn{7}{c}{\textbf{Konsens-Familie}} & \multicolumn{4}{c}{\textbf{Identitätsmodell}} \\
-\cmidrule(lr){2-4} \cmidrule(lr){5-12} \cmidrule(lr){13-19} \cmidrule(lr){20-23}
+& \multicolumn{3}{c}{\textbf{DLT-Art}} & \multicolumn{3}{c}{\textbf{Netzwerktyp}} & \multicolumn{7}{c}{\textbf{Framework}} & \multicolumn{6}{c}{\textbf{Konsens-Familie}} & \multicolumn{3}{c}{\textbf{Identitätsmodell}} \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-14} \cmidrule(lr){15-20} \cmidrule(lr){21-23}
 \textbf{Paper} &
-\rotatebox{90}{Blockchain} & \rotatebox{90}{Hashgraph} & \rotatebox{90}{Sonstige} &
-\rotatebox{90}{Hyperledger Indy/Aries} & \rotatebox{90}{Hyperledger Fabric} & \rotatebox{90}{Hyperledger Besu} & \rotatebox{90}{Ethereum (privat)} & \rotatebox{90}{Hedera} & \rotatebox{90}{R3 Corda} & \rotatebox{90}{EBSI} & \rotatebox{90}{n.\,a.} &
-\rotatebox{90}{BFT (Voting)} & \rotatebox{90}{aBFT (Gossip)} & \rotatebox{90}{Leader-b. (Raft)} & \rotatebox{90}{Proof of Authority} & \rotatebox{90}{Proof of Stake} & \rotatebox{90}{Notary-basiert} & \rotatebox{90}{n.\,a.} &
-\rotatebox{90}{Dezentral: SSI} & \rotatebox{90}{Dezentral: DTI} & \rotatebox{90}{Schlüssel-/zertifikatsb.} & \rotatebox{90}{n.\,a.} \\
+\rotatebox{90}{Blockchain} & \rotatebox{90}{Hashgraph} & \rotatebox{90}{Corda} &
+\rotatebox{90}{Privat} & \rotatebox{90}{Konsortium} & \rotatebox{90}{Öffentlich} &
+\rotatebox{90}{Hyperledger Indy/Aries} & \rotatebox{90}{Hyperledger Fabric} & \rotatebox{90}{Hyperledger Besu} & \rotatebox{90}{Ethereum (privat)} & \rotatebox{90}{Hedera} & \rotatebox{90}{R3 Corda} & \rotatebox{90}{EBSI} &
+\rotatebox{90}{BFT (Voting)} & \rotatebox{90}{aBFT (Gossip)} & \rotatebox{90}{Leader-b. (Raft)} & \rotatebox{90}{Proof of Authority} & \rotatebox{90}{Proof of Stake} & \rotatebox{90}{Notary-basiert} &
+\rotatebox{90}{Dezentral: SSI} & \rotatebox{90}{Dezentral: DTI} & \rotatebox{90}{Schlüssel-/zertifikatsb.} \\
 \midrule
-Erler et al. \cite{erler2023} & \checkmark &  &  & \checkmark &  &  &  &  &  &  &  & \checkmark &  &  &  &  &  &  & \checkmark &  &  &  \\
-Manoj et al. \cite{manoj2022} & \checkmark &  &  & \checkmark &  &  &  &  &  &  &  & \checkmark &  &  &  &  &  &  & \checkmark &  &  &  \\
-Torongo, Toorani \cite{torongo2023} & \checkmark &  &  & \checkmark &  &  &  &  &  &  &  & \checkmark &  &  &  &  &  &  & \checkmark &  &  &  \\
-Chainarong et al. \cite{chainarong2025} & \checkmark &  &  &  & \checkmark &  &  &  &  &  &  &  &  &  &  &  &  & \checkmark & \checkmark &  &  &  \\
+Erler et al. \cite{erler2023} & \checkmark &  &  &  & \checkmark &  & \checkmark &  &  &  &  &  &  & \checkmark &  &  &  &  &  & \checkmark &  &  \\
+Manoj et al. \cite{manoj2022} & \checkmark &  &  &  & \checkmark &  & \checkmark &  &  &  &  &  &  & \checkmark &  &  &  &  &  & \checkmark &  &  \\
+Torongo, Toorani \cite{torongo2023} & \checkmark &  &  &  &  & \checkmark & \checkmark &  &  &  &  &  &  & \checkmark &  &  &  &  &  & \checkmark &  &  \\
+Chainarong et al. \cite{chainarong2025} & \checkmark &  &  &  & \checkmark &  &  & \checkmark &  &  &  &  &  &  &  &  &  &  &  & \checkmark &  &  \\
 \midrule
-Bittins et al. \cite{bittins2021} & \checkmark &  &  &  & \checkmark &  &  &  &  & \checkmark &  &  &  &  &  &  &  & \checkmark &  & \checkmark &  &  \\
+Bittins et al. \cite{bittins2021} & \checkmark &  &  &  & \checkmark &  &  & \checkmark &  &  &  &  & \checkmark &  &  &  &  &  &  &  & \checkmark &  \\
 \midrule
-Tawfik et al. \cite{tawfik2025} & \checkmark &  &  &  & \checkmark &  &  &  &  &  &  & \checkmark &  &  &  &  &  &  &  &  & \checkmark &  \\
-Joshi, Mahajan \cite{joshimahajan2025} & \checkmark &  &  &  & \checkmark &  &  &  &  &  &  &  &  & \checkmark &  &  &  &  &  &  & \checkmark &  \\
-Mamoru et al. \cite{mamoru2026} & \checkmark &  &  &  & \checkmark &  &  &  &  &  &  &  &  &  &  &  &  & \checkmark &  &  & \checkmark &  \\
-Farin et al. \cite{farin2025} & \checkmark &  &  &  &  & \checkmark &  &  &  &  &  &  &  &  & \checkmark &  &  &  &  &  & \checkmark &  \\
+Tawfik et al. \cite{tawfik2025} & \checkmark &  &  &  & \checkmark &  &  & \checkmark &  &  &  &  &  & \checkmark &  &  &  &  &  &  &  & \checkmark \\
+Joshi, Mahajan \cite{joshimahajan2025} & \checkmark &  &  &  & \checkmark &  &  & \checkmark &  &  &  &  &  &  &  & \checkmark &  &  &  &  &  & \checkmark \\
+Mamoru et al. \cite{mamoru2026} & \checkmark &  &  &  & \checkmark &  &  & \checkmark &  &  &  &  &  &  &  &  &  &  &  &  &  & \checkmark \\
+Farin et al. \cite{farin2025} & \checkmark &  &  & \checkmark &  &  &  &  & \checkmark &  &  &  &  &  &  &  & \checkmark &  &  &  &  & \checkmark \\
 \midrule
-Giao et al. \cite{giao2026} & \checkmark &  &  &  &  &  & \checkmark &  &  &  &  &  &  &  & \checkmark &  &  &  &  &  &  & \checkmark \\
-Gupta, Verma \cite{guptaverma2026} & \checkmark &  &  &  & \checkmark &  &  &  &  &  &  &  &  &  &  &  &  & \checkmark &  &  &  & \checkmark \\
-Amanat et al. \cite{amanat2022} & \checkmark &  &  &  &  &  &  &  &  &  & \checkmark &  &  &  &  & \checkmark &  &  &  &  &  & \checkmark \\
+Giao et al. \cite{giao2026} & \checkmark &  &  & \checkmark &  &  &  &  &  & \checkmark &  &  &  &  &  &  & \checkmark &  &  &  &  &  \\
+Gupta, Verma \cite{guptaverma2026} & \checkmark &  &  &  & \checkmark &  &  & \checkmark &  &  &  &  &  &  &  &  &  &  &  &  &  &  \\
+Amanat et al. \cite{amanat2022} & \checkmark &  &  &  &  & \checkmark &  &  &  &  &  &  &  &  &  &  &  & \checkmark &  &  &  &  \\
 \midrule
-Verma et al. \cite{verma2024} &  & \checkmark &  &  &  &  &  & \checkmark &  &  &  &  & \checkmark &  &  &  &  &  &  &  &  & \checkmark \\
-Minango et al. \cite{minango2025} &  &  & \checkmark &  &  &  &  &  & \checkmark &  &  &  &  &  &  &  & \checkmark &  &  &  & \checkmark &  \\
+Verma et al. \cite{verma2024} &  & \checkmark &  &  & \checkmark &  &  &  &  &  & \checkmark &  &  &  & \checkmark &  &  &  &  &  &  &  \\
+Minango et al. \cite{minango2025} &  &  & \checkmark & \checkmark &  &  &  &  &  &  &  & \checkmark &  &  &  &  &  & \checkmark &  &  & \checkmark &  \\
 \bottomrule
 \end{tabular}
 \end{table}
