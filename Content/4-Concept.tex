@@ -112,3 +112,44 @@ Basierend auf den im Abschnitt~\ref{sec:konzipierung-anforderungen} beschriebene
 \label{subsec:grundproblem-state-vs-ordering}
 Wie im Abschnitt~\ref{subsec:ledger-funktionen} herausgefunden, implementiert Hyperledger Indy DIDs, Schemas, Credential Definitions und Revocation-Einträge als native, direkt abfragbare Objekttypen des Ledgers~\cite{torongo2023}. Im Gegensatz dazu verwendet der Hedera Consensus Service ein grundlegend anderes Prinzip: er ordnet und stempelt ausschließlich Nachrichten, die an einen Topic gesendet werden, speichert jedoch selbst keinen Anwendungszustand \cite{bairdgross2019}. Jede der unten beschriebenen Entwurfsentscheidungen ergibt sich aus dieser grundlegenden Grunddifferenz: während Indy die Semantik der fünf Ledger-Funktionen bereits im Protokoll bereitstellt, muss diese Semantik für die HCS-basierte Alternative explizit auf der Anwendungsebene reproduziert werden.
 
+\subsection{E1 - Rekonstruktion des Ledger-Zustands}
+\label{subsec:e1-zustandsrekonstruktion}
+
+\paragraph{Problem.}
+Da HCS keinen Zustand speichert, muss bestimmt werden, wie aus dem geordneten Nachrichtenfluss eines Topics der für die fünf Ledger-Funktionen benötigte Anwendungszustand - z.B. der aktuelle Gültigkeitsstatus eines Credentials - rekonstruiert wird.
+
+\paragraph{Optionen.}
+Drei Optionen stehen zur Auswahl. Erstens die vollständige Kodierung jeder Zustandsänderung als eigenständige Topic-Nachricht, aus der Mirror-Node-Anwendungen den Zustand durch Replay des gesamten Nachrichtenstroms rekonstruieren - ein Muster, das dem von Baird und Harmon beschriebenen Appnet-Konzept entspricht, bei dem Mirror Nodes als rein lesende Komponenten den Nachrichtenstrom empfangen, ohne am Konsens teilzunehmen~\cite{bairdharmon2019}. Zweitens das Hash-Anchoring, bei dem nur ein kryptografischer Hashwert der eigentlichen, off-chain gespeicherten Daten auf HCS verankert wird. Drittens der HCS-1-Standard, der Kodierung, Chunking und Wiederzusammensetzung größerer Dateien über mehrere Topic-Nachrichten definiert~\cite{hcs1standard}.
+
+\paragraph{Vergleichbare Entwürfe.}
+In der in Kapitel~\ref{cha:state_of_the_art} betrachteten Literatur dominiert ein hybrider Ansatz: Farin et al.~\cite{farin2025}, Tawfik et al.~\cite{tawfik2025} sowie Mamoru et al.~\cite{mamoru2026} speichern die eigentlichen Daten verschlüsselt in IPFS und verankern lediglich deren Hashwert und Metadaten auf dem Ledger; Gupta und Verma~\cite{guptaverma2026} halten Zugriffsrichtlinien, Hashes und Audit-Spuren on-chain und die Datensätze off-chain. Mazlan et al.~\cite{mazlan2020} verallgemeinern dieses Muster als Speicheroptimierung, bei der statt der Daten selbst nur ein Referenzzeiger konstanter Größe on-chain abgelegt wird. Diese Arbeiten beziehen sich jedoch auf Gesundheitsdaten. Für Identitätsmetadaten verfahren die SSI-basierten Arbeiten gegenteilig: Sowohl Torongo und Toorani~\cite{torongo2023} als auch Manoj et al.~\cite{manoj2022} legen öffentliche DIDs, Schemas, Credential Definitions und Revocation-Registries vollständig auf dem Ledger ab; Manoj et al. begründen dies damit, dass dort ausschließlich öffentlich sichtbare Objekte und keinerlei personenbezogene Daten abgelegt werden~\cite{manoj2022}.
+
+\paragraph{Bewertung.}
+Die Bestimmung des Objekttyps ist hier entscheidend: In der Referenzarchitektur bleiben die Gesundheitsdaten off-chain in den Systemen der medizinischen Einrichtungen~\cite{erler2023}, daher gilt das Argument für Off-Chain-Speicherung auf der Ledger-Schicht nicht - dort bleiben nur die öffentlich vorgesehenen Identitätsobjekte. FA5 erfordert eine manipulationsresistente nachvollziehbare Historie aller Schreiboperationen. Diese Anforderung ist bei Hash-Anchoring nur eingeschränkt erfüllt, da die Integrität der tatsächlichen Daten von einer Off-Chain-Komponente abhängt, die außerhalb des Konsensmechanismus liegt, was eine zusätzliche Vertrauensannahme einführt, die die Referenzarchitektur für die Ledger-Schicht nicht vorsieht~\cite{erler2023}. Auf der anderen Seite entspricht die vollständige Zustandskodierung direkt den Anforderungen von FA5, da die Integrität aller Zustandsänderungen direkt durch den Hashgraph-Konsens gewährleistet wird. Satybaldy et al. zeigen zudem, dass die Rekonstruktion des Zustands durch Abonnieren eines Topics und Auswertung des geordneten Nachrichtenstroms über eine Mirror Node die niedrigste gemessene Auflösungslatenz aller von ihnen untersuchten DID-Methoden liefert~\cite{satybaldy2026}. Die gleiche Arbeit stellt jedoch fest, dass eine vollständige Klartextkodierung Metadaten über die Mirror-Node-Schnittstelle öffentlich sichtbar macht, und empfiehlt die Verankerung kompakter Commitments bei verschlüsselter Off-Chain-Ablage aus Datenschutzgründen~\cite{satybaldy2026}. Da die betroffenen Objekte (DIDs, Schemas, Credential Definitions, Revocation-Einträge) in der Regel wesentlich kleiner sind als die Größengrenze einzelner HCS-Nachrichten, ist eine Chunking-Lösung normalerweise nicht erforderlich.
+
+\paragraph{Entscheidung.}
+Die vollständige Objektkodierung direkt in Topic-Nachrichten wird ausgewählt. Wenn ein einzelnes Objekt die Größengrenze einer einzelnen Nachricht überschreitet, wird zusätzlich der HCS-1-Standard verwendet, der in der Hiero AnonCreds Method bereits für die Ablage von Schemas, Credential Definitions und Revocation-Registry-Definitionen als Referenzmechanismus vorgesehen ist~\cite{hieroanoncreds}.
+
+\subsection{E2 - Wahl der DID-Methode}
+\label{subsec:e2-did-methode}
+\paragraph{Problem.}
+FA2 erfordert die Registrierung öffentlicher DIDs institutioneller Teilnehmer sowie deren Auflösung zu DID-Dokumenten. Indy verwendet dafür die eigene Ledger-DID-Methode; für die HCS-basierte Alternative muss eine geeignete DID-Methode ausgewählt werden.
+
+\paragraph{Optionen.}
+Erstens wird \texttt{did:key} betrachtet - eine rein kryptografische Methode ohne Ledger-Anbindung, zweitens - die standardisierte Hedera-DID-Methode \texttt{did:hedera}, bei der Änderungen am DID-Dokument als Nachrichten auf einem HCS-Topic veröffentlicht werden~\cite{hasheddidmethod}.
+
+\paragraph{Vergleichbare Entwürfe.}
+Die SSI-basierten Arbeiten verwenden die vom Ledger vorgegebene DID-Methode: Torongo und Toorani~\cite{torongo2023} sowie Manoj et al.~\cite{manoj2022} nutzen Indy-Verinyms für öffentliche Identitäten und paarweise Peer-DIDs für die Kommunikation. Manoj et al. begründen die Vermeidung von einer smart-contract-basierte Identitätsverwaltung damit, dass die Bindung eines Identifikators an einen Smart Contract dessen unabhängige Existenz aufhebt und die Identität den Sicherheitsproblemen des Contracts aussetzt~\cite{manoj2022}. Farin et al. verwenden zwar W3C-konforme DIDs, lassen die zugehörigen privaten Schlüssel jedoch von der Middleware erzeugen und verwahren~\cite{farin2025}, wodurch die Schlüsselkontrolle beim Betreiber bleibt. Cádiz et al. verankern W3C-DIDs in einem permissioned Hashgraph-Ledger, halten das Schlüsselmaterial aber in einer hardwaregestützten Trusted Execution Environment~\cite{cadiz2025} und verlagern die Vertrauensannahme damit auf die Hardware.
+
+\paragraph{Bewertung.}
+\texttt{did:key} wird nicht verwendet, da die Methode keine Aktualisierung oder öffentliche Registrierung des DID-Dokuments vorsieht und damit weder FA1 noch FA2 erfüllt. Die von Farin et al. und Cádiz et al. gewählten Umsetzungen verlagern die Schlüsselkontrolle auf den Betreiber bzw. auf die Hardware und widersprechen damit dem nutzerzentrierten Ansatz, den die Referenzarchitektur für das Identitätsmanagement vorsieht~\cite{erler2023}. \texttt{did:hedera} folgt im Gegensatz dazu dem Muster der SSI-basierten Arbeiten, die Methode also vom Ledger selbst zu beziehen. Satybaldy et al. stellen zudem im direkten Vergleich von \texttt{did:ethr}, \texttt{did:hedera} und \texttt{did:xrpl} fest, dass \texttt{did:hedera} unter den drei untersuchten Methoden die geringste Latenz für Ledger-Operationen und zugleich die geringste Metadaten-Offenlegung ergibt~\cite{satybaldy2026}.
+
+\paragraph{Entscheidung.}
+Es wird die standardisierte \texttt{did:hedera} Methode verwendet.
+
+
+\subsection{E3 - Vertrauenshierarchie und Schreibberechtigung}
+\label{subsec:e3-vertrauenshierarchie}
+
+\paragraph{Problem.}
+FA1 erfordert eine Vertrauenshierarchie, in der nur berechtigte Akteure neue institutionelle Teilnehmer registrieren können. In Indy legt der Ledger diese Hierarchie selbst fest: Nur Akteure mit entsprechender Rolle können gültige NYM-Transaktionen einreichen~\cite{torongo2023}. HCS kennt keine rollenbasierte Schreibberechtigung.
