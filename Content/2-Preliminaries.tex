@@ -1,6 +1,6 @@
 \label{cha:grundlagen}
 \chapter{Grundlagen}
-Distributed Ledger Technology (DLT) ist ein allgemeiner Begriff für verteilte replizierte Datenbanksysteme, bei denen mehrere Netzwerkknoten ohne zentrale Instanz mittels eines Konsensverfahrens eine gemeinsame konsistente Sicht gespeicherter Transaktionsdaten erstellen \cite{ferdous2020}. Blockchain und Hashgraph, die im Kern diese Arbeit stehen, sind zwei unterschiedliche Datenstrukturen und Konsensmechanismen, mit denen dieses Prinzip umgesetzt wird. Dieses Kapitel führt die konzeptionellen Grundlagen ein, die für das Verständnis der eigentlichen Arbeit benötigt sind. Zuerst werden die Blockchain-Technologie und das darauf aufbauende Hyperledger-Indy/Aries-Ökosystem vorgestellt (Abschnitt~\ref{sec:grundlagen-blockchain}), gefolgt von den Grundlagen des Hashgraph-Konsens und des Hedera Consensus Services (Abschnitt~\ref{sec:grundlagen-hashgraph}). Abschließend werden die Konzepte der Self-Sovereign Identity, der Decentralized Identifiers sowie das Credential-Format AnonCreds beschrieben (Abschnitt~\ref{sec:grundlagen-ssi}).
+Distributed Ledger Technology (DLT) ist ein allgemeiner Begriff für verteilte replizierte Datenbanksysteme, bei denen mehrere Netzwerkknoten ohne zentrale Instanz mittels eines Konsensverfahrens eine gemeinsame konsistente Sicht gespeicherter Transaktionsdaten erstellen \cite{ferdous2020}. Blockchain und Hashgraph, die im Kern diese Arbeit stehen, sind zwei unterschiedliche Datenstrukturen und Konsensmechanismen, mit denen dieses Prinzip umgesetzt wird. Dieses Kapitel führt die konzeptionellen Grundlagen ein, die für das Verständnis der eigentlichen Arbeit benötigt sind. Zuerst werden die Blockchain-Technologie und das darauf aufbauende Hyperledger-Indy/Aries-Ökosystem vorgestellt (Abschnitt~\ref{sec:grundlagen-blockchain}), gefolgt von den Grundlagen des Hashgraph-Konsens und des Hedera Consensus Services (Abschnitt~\ref{sec:grundlagen-hashgraph}). Anschließend werden die Konzepte der Self-Sovereign Identity, der Decentralized Identifiers sowie das Credential-Format AnonCreds beschrieben (Abschnitt~\ref{sec:grundlagen-ssi}). Der Abschnitt~\ref{sec:grundlagen-speichermodelle} stellt darauf aufbauend gegenüber, wie diese Identitätsobjekte auf den beiden Ledger-Technologien tatsächlich gespeichert und abgerufen werden. Abschließend führt der Abschnitt~\ref{sec:grundlagen-beispiel} die eingeführten Bausteine an einem durchgängigen Beispiel zusammen.
 
 \section{Blockchain}
 \label{sec:grundlagen-blockchain}
@@ -61,7 +61,7 @@ Verifiable Credentials (VCs) sind ein ebenfalls vom W3C standardisierte Datenfor
 
 \subsection{AnonCreds als Credential-Format}
 \label{subsec:grundlagen-anoncreds}
-Das W3C-Datenmodell für Verifiable Credentials legt nur fest, welche Bestandteile ein Credential enthält, nicht jedoch, mit welchem kryptographischen Verfahren es signiert und geprüft wird. Anonymous Credentials (AnonCreds) sind eine konkrete Umsetzung dieses Datenmodells, die ursprünglich im Rahmen von Hyperledger Indy entstanden ist und inzwischen als eigenständige Spezifikation geführt wird \cite{anoncredsspec}. AnonCreds verwendet CL-Signaturen (Camenisch-Lysyanskaya), die es dem Holder erlauben, aus einem ausgestellten Credential eine Präsentation abzuleiten, in der nur ausgewählte Attribute offengelegt werden (Selective Disclosure) und in der Prädikate über Attribute als Zero-Knowledge-Proof nachgewiesen werden können, ohne den Attributwert selbst öffentlich zu machen \cite{anoncredsspec}. Außerdem verbindet ein sogenanntes Link Secret das Credential mit Holder, ohne dass dieser Wert dem Issuer bekannt wird, wodurch Präsentationen desselben Credentials nicht miteinander korreliert werden können \cite{anoncredsspec}.
+Das W3C-Datenmodell für Verifiable Credentials legt nur fest, welche Bestandteile ein Credential enthält, und nicht, mit welchem kryptographischen Verfahren es signiert und geprüft wird. Anonymous Credentials (AnonCreds) sind eine konkrete Umsetzung dieses Datenmodells, die ursprünglich im Rahmen von Hyperledger Indy entstanden ist und inzwischen als eigenständige Spezifikation geführt wird. AnonCreds verwendet CL-Signaturen (Camenisch-Lysyanskaya), die es dem Holder erlauben, aus einem ausgestellten Credential eine Präsentation abzuleiten, in der nur ausgewählte Attribute offengelegt werden (Selective Disclosure) und in der Prädikate über Attribute als Zero-Knowledge-Proof nachgewiesen werden können, ohne den Attributwert selbst öffentlich zu machen. Außerdem verbindet ein sogenanntes Link Secret das Credential mit Holder, ohne dass dieser Wert dem Issuer bekannt wird, wodurch Präsentationen desselben Credentials nicht miteinander korreliert werden können. \cite{anoncredsspec}
 
 Für die eigentliche Arbeit ist es wichtig, welche Objekte AnonCreds außerhalb der Wallet des Holders behalten muss. Die Spezifikation definiert vier Objekttypen, die öffentlich auflösbar sein müssen: Schema (Menge der Attributnamen), Credential Definition (die vom Issuer verwendeten öffentlichen Schlüssel mit Verweis auf ein Schema), Revocation Registry Definition sowie die ständig aktualisierten Revocation Status Lists, die den Zustand des kryptographischen Akkumulators führen \cite{anoncredsspec}. Diese Objekte bilden genau die Inhalte, die in der Referenzarchitektur auf der Ledger-Schicht abgelegt werden.
 
@@ -123,7 +123,7 @@ Der Hedera Consensus Service kennt keine Objekttypen. Die einzige Schreibeinheit
 
 Die Größe einer einzelnen Nachricht ist auf 1024 Byte begrenzt; größere Nutzlasten werden von den Hedera-SDKs standardmäßig in bis zu 20 Fragmente zerlegt und von den Mirror Nodes wieder zusammengestellt \cite{hederasubmitmessage}. Für die Ablage größerer Objekte in mehreren Nachrichten existiert HCS-1 als ein eigener Standard \cite{hcs1standard}.
 
-HCS sieht keine Leseoperation im Sinne vom Abschnitt~\ref{subsec:grundlagen-speicher-indy} vor. Es gibt keine Anfrage, mit der sich der aktuelle Zustand eines Identitätsobjekts vom Netzwerk abgerufen werden kann, denn das Netzwerk führt keinen solchen Zustand. Stattdessen abonniert eine Anwendung den Nachrichtenstrom eines Topics über eine Mirror Node und leitet den Zustand selbst aus der Abfolge der Nachrichten ab \cite{bairdgross2019}. Daher wird die Semantik, die bei Indy im Protokoll liegt, bei HCS vollständig in die Anwendungsebene verlagert.9
+HCS sieht keine Leseoperation im Sinne vom Abschnitt~\ref{subsec:grundlagen-speicher-indy} vor. Es gibt keine Anfrage, mit der sich der aktuelle Zustand eines Identitätsobjekts vom Netzwerk abgerufen werden kann, denn das Netzwerk führt keinen solchen Zustand. Stattdessen abonniert eine Anwendung den Nachrichtenstrom eines Topics über eine Mirror Node und leitet den Zustand selbst aus der Abfolge der Nachrichten ab \cite{bairdgross2019}. Daher wird die Semantik, die bei Indy im Protokoll liegt, bei HCS vollständig in die Anwendungsebene verlagert.
 
 \subsection{Gegenüberstellung}
 \label{subsec:grundlagen-speicher-vergleich}
@@ -161,3 +161,53 @@ Die Tabelle~\ref{tab:speichermodelle} fasst die beschriebenen Unterschiede entla
 \end{table}
 
 Beide Technologien erreichen somit das gleiche Ziel einer manipulationsresistenten geordneten Historie, unterscheiden sich jedoch darin, wo aus dieser Historie ein Zustand entsteht: bei Indy innerhalb des Ledgers, bei HCS außerhalb davon.
+
+\section{Beispiel}
+\label{sec:grundlagen-beispiel}
+
+In den vorherigen Abschnitten wurden die Bausteine der Self-Sovereign Identity einzeln eingeführt. Dieser Abschnitt führt sie an einem Beispiel aus dem Gesundheitswesen zusammen und macht sichtbar, an welchen Stellen eines vollständigen Credential-Lebenszyklus die Ledger-Schicht beteiligt ist. Diese Unterscheidung ist für die eigentliche Arbeit zentral, da nur die ledger-gebundenen Operationen von einem Austausch der zugrunde liegenden Technologie betroffen sind.
+
+Entsprechend dem im Abschnitt~\ref{sec:grundlagen-ssi} beschriebenen Trust Triangle sind drei Akteure beteiligt: der Hausarzt Dr. Müller als Issuer, die Patientin Alice als Holder und eine Apotheke als Verifier. Gegenstand ist eine Impfbescheinigung, die als Verifiable Credential im AnonCreds-Format ausgestellt wird.
+
+\paragraph{Phase 0: Vorbereitung durch den Issuer}
+Bevor ein Credential ausgestellt werden kann, muss Dr. Müller als Issuer öffentlich zugänglich sein. Ein Steward registriert dazu seine öffentliche DID zusammen mit dem zugehörigen Verifikationsschlüssel und weist ihm die Endorser-Rolle zu, die er zu eigenen Schreiboperationen berechtigt \cite{torongo2023}. Anschließend veröffentlicht Dr. Müller selbst drei weitere Objekte: das Schema \texttt{Impfnachweis} mit der Menge der Attributennamen, eine darauf verweisende Credential Definition mit ihren öffentlichen Signaturschlüsseln sowie eine Revocation Registry Definition mit der zugehörigen initialen Revocation Status List \cite{anoncredsspec}.
+
+\paragraph{Phase 1: Verbindungsaufbau}
+Alice und Dr. Müller bauen über ihre Aries-Agenten eine DIDComm-Verbindung auf. Dabei erzeugen beide Seiten ein neues, nur für diese Beziehung gültiges Peer-DID-Paar und tauschen die zugehörigen Schlüssel aus \cite{mazzocca2025}. Da Peer-DIDs nicht öffentlich registriert werden, findet in dieser Phase kein Ledger-Zugriff statt. Alle folgenden Nachrichten zwischen den beiden Agenten laufen verschlüsselt über diese Verbindung.
+
+\paragraph{Phase 2: Ausstellung}
+Dr. Müller bietet Alice den Impfnachweis an. Alices Agent ruft die von Dr. Müller veröffentlichte Credential Definition ab, um die Signaturschlüssel zu erhalten, und bindet das Credential über sein Link Secret an sich, ohne diesen Wert dem Dr. Müller offenzulegen \cite{anoncredsspec}. Dr. Müller signiert die Attributwerte mit einer CL-Signatur und weist dem Credential gleichzeitig einen Index innerhalb ihrer Revocation Registry zu. Alice speichert das fertige Credential in ihrer Wallet. 
+
+\paragraph{Phase 3: Präsentation}
+Alice möchte den Nachweis in der Apotheke vorlegen. Die Apotheke definiert dazu eine Anfrage, die festlegt, welche Attribute benötigt werden und welchen Schemas und Issuern das Credential entstammen darf. Alices Agent erzeugt daraus eine Präsentation, in der nur die tatsächlich angefragten Attribute offengelegt werden \cite{anoncredsspec}. Die Apotheke prüft die Präsentation, indem sie die öffentliche DID von Dr. Müller auflöst, das referenzierte Schema und die Credential Definition abruft und den aktuellen Widerrufsstatus gegen die Revocation Status List prüft. Dr. Müller selbst wird zu keinem Zeitpunkt kontaktiert - die Prüfung basiert sich vollständig auf die öffentlich gespeicherten Objekte.
+
+\paragraph{Phase 4: Widerruf}
+Wenn der Nachweis sich später als ungültig herausstellt, widerruft Dr. Müller das Credential. Dazu aktualisiert er den kryptografischen Akkumulator seiner Revocation Registry so, dass der Index des betroffenen Credentials nicht mehr enthalten ist, und veröffentlicht die aktualisierte Revocation Status List \cite{anoncredsspec, torongo2023}. Alice behält das Credential technisch weiterhin in ihrer Wallet, kann daraus jedoch keinen gültigen Nicht-Widerrufsnachweis mehr erzeugen, sodass jede weitere Präsentation bei der Prüfung fehlschlägt.
+
+\paragraph{Zusammenfassung der Ledger-Zugriffe}
+Die Tabelle~\ref{tab:beispiel-ledgerzugriffe} ordnet den fünf Phasen die jeweils betroffenen Ledger-Operationen zu.
+
+\begin{table}[htbp]
+\renewcommand{\arraystretch}{1.3}
+  \centering
+  \caption{Ledger-Zugriffe im Lebenszyklus eines Verifiable Credentials}
+  \label{tab:beispiel-ledgerzugriffe}
+  \begin{tabular}{p{0.20\textwidth} p{0.14\textwidth} p{0.52\textwidth}}
+    \toprule
+    \textbf{Phase} & \textbf{Zugriffsart} & \textbf{Betroffene Objekte} \\
+    \midrule
+    0 - Vorbereitung & schreibend &
+    Öffentliche DID mit Rollenzuweisung, Schema, Credential Definition, Revocation Registry Definition \\
+    1 - Verbindung & kein Zugriff &
+    Peer-DIDs werden nicht öffentlich registriert \\
+    2 - Ausstellung & lesend &
+    Credential Definition \\
+    3 - Präsentation & lesend &
+    Öffentliche DID des Issuers, Schema, Credential Definition, Revocation Status List \\
+    4 - Widerruf & schreibend &
+    Aktualisierte Revocation Status List \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Zwei Beobachtungen aus dieser Zuordnung sind für den weiteren Verlauf der Arbeit wichtig. Erstens berührt die eigentliche Kommunikation zwischen den Agenten die Ledger-Schicht nicht, stützt sich nur auf Peer-DIDs und ist damit von der ausgewählte Ledger-Technologie unabhängig. Zweitens greifen alle Operationen auf genau vier Objekttypen zu (öffentliche DIDs, Schemas, Credential Definitions und Widerrufsinformationen) und zwar deutlich häufiger lesend als schreibend. Beide Beobachtungen bestimmen im Kapitel~\ref{cha:konzept} den Umfang des ausgeführten Austauschs und die Anforderungen an eine alternative Ledger-Schicht.
