@@ -68,3 +68,96 @@ Für die eigentliche Arbeit ist es wichtig, welche Objekte AnonCreds außerhalb 
 \subsection{DIDComm als Kommunikationsprotokoll}
 DIDComm ist ein Protokoll für eine verschlüsselte, transportunabhängige Peer-to-Peer-Kommunikation zwischen SSI-Agenten \cite{mazzocca2025}. Die Verschlüsselung und Authentifizierung der Nachrichten basiert direkt auf den in den DID-Documenten gespeicherten Schlüsseln der Kommunikationspartner, wodurch keine zusätzliche Public-Key-Infrastruktur benötigt wird. Auf DIDComm bauen höhere Protokolle für die Ausstellung und Präsentation von Verifiable Credentials auf. Da DIDComm ausschließlich DIDs und deren Schlüsselmaterial verwendet, ist es unabhängig von der konkreten Registry, in der öffentliche DIDs gespeichert sind  - eine Eigenschaft, die für den in dieser Arbeit betrachteten Austausch der Ledger-Schicht eine zentrale Rolle spielt.
 
+
+\section{Speicherung von Identitätsdaten im Vergleich}
+\label{sec:grundlagen-speichermodelle}
+
+In bisherigen Abschnitten wurden Blockchain und Hashgraph als Konsensverfahren sowie die SSI-Bausteine getrennt voneinander vorgestellt. Für die eigentliche Arbeit ist es jedoch wichtig, wie die im Abschnitt~\ref{sec:grundlagen-ssi} beschriebenen Identitätsobjekte auf den beiden Ledger-Technologien tatsächlich abgelegt und wieder abgerufen werden. Dieser Abschnitt stellt daher die Speichermechanismen von Hyperledger Indy und dem Hedera Consensus Service direkt gegenüber.
+
+\subsection{Identitätsdaten auf dem Domain Ledger von Hyperledger Indy}
+\label{subsec:grundlagen-speicher-indy}
+
+Indy-Plenum führt mehrere getrennte Ledger. Der Pool Ledger verwaltet die Validatorknoten des Netzwerks, der Config Ledger die Netzwerkkonfiguration, der Audit Ledger die übergreifende Transaktionsreihenfolge. Die Identitätsbezogene Daten werden ausschließlich auf dem Domain Ledger gespeichert: öffentliche DIDs mit ihren Verifikationsschlüsseln, Schemas, Credential Definitions und Widerrufsinformationen \cite{torongo2023}.
+
+Jeder dieser Objekttypen hat seinen eigenen Transaktionstyp. Eine NYM-Transaktion speichert eine DID zusammen mit dem zugehörigen Verifikationsschlüssel und der Rolle des Teilnehmers; das Feld \texttt{dest} enthält dabei die registrierte DID, \texttt{verkey} den Verifikationsschlüssel und \texttt{role} die zugewiesene Rolle \cite{indynode}:
+
+\begin{lstlisting}[basicstyle=\ttfamily\footnotesize, frame=single, caption={Inhalt einer NYM-Transaktion (vereinfacht)}, label={lst:nym}]
+{
+  "type":   "1",                        // NYM
+  "dest":   "V4SGRU86Z58d6TV7PBUe6f",   // registrierte DID
+  "verkey": "~7TYfekw4GUagBnBVCqPjiC",  // Verifikationsschluessel
+  "role":   "101"                       // Endorser
+}
+\end{lstlisting}
+
+Analog dazu enthält eine SCHEMA-Transaktion die Attributenmenge, auf die sich spätere Credentials beziehen:
+
+\begin{lstlisting}[basicstyle=\ttfamily\footnotesize, frame=single, caption={Inhalt einer SCHEMA-Transaktion (vereinfacht)}, label={lst:schema}]
+{
+  "type": "101",                        // SCHEMA
+  "data": {
+    "name":       "Impfnachweis",
+    "version":    "1.0",
+    "attr_names": ["name", "geburtsdatum", "impfstoff"]
+  }
+}
+\end{lstlisting}
+
+Schließlich verweist eine CRED\_DEF-Transaktion über die Sequenznummer auf ein solches Schema und ergänzt die öffentlichen Signaturschlüssel des Ausstellers sowie die Widerrufsparameter \cite{indynode}. Damit wird der im Abschnitt~\ref{subsec:grundlagen-anoncreds} vorgestellte AnonCreds-Objektsatz vollständig auf native Transaktionstypen des Domain Ledgers abgebildet.
+
+Wichtig für das Verständnis der späteren Arbeit ist, dass der Ledger diese Objekte nicht nur speichert, sondern auch adressierbar macht. Indy-Plenum hält zu jedem Ledger neben dem Transaktionslog einen daraus abgeleiteten Zustandsspeicher, gegen den die Validatorknoten Leseanfragen beantworten \cite{indynode}. Der Client, der ein Schema benötigt, sendet daher keine Anfrage nach einem Block oder einer Transaktionsnummer, sondern eine dem Protokoll entsprechende Leseoperation (\texttt{GET\_NYM}, \texttt{GET\_SCHEMA}, \texttt{GET\_CRED\_DEF}) mit der Angabe des Objektidentifikators und bekommt das aktuelle Objekt zurück. Der Ledger stellt die Semantik der Identitätsobjekte also selbst bereit.
+
+\subsection{Identitätsdaten in einem Topic des Hedera Consensus Service}
+\label{subsec:grundlagen-speicher-hcs}
+Der Hedera Consensus Service kennt keine Objekttypen. Die einzige Schreibeinheit ist eine Nachricht, die an einen zuvor angelegten Topic gesendet wird; ihr Inhalt ist für das Netzwerk eine uninterpretierte Bytefolge. Das Netzwerk ordnet die Nachricht mittels Hashgraph-Konsens ein und quittiert sie mit drei Angaben: dem Konsens-Zeitstempel, einer Sequenznummer innerhalb des Topics sowie einem Running Hash, der alle bisherigen Nachrichten des Topics einbezieht \cite{bairdgross2019, hederasubmitmessage}. Der Running Hash erfüllt funktional die Rolle, die in der Blockchain die Verkettung der Blöcke über Hashreferenzen einnimmt: Er verknüpft jede Nachricht mit der gesamten vorangegangenen Historie ihres Topics.
+
+\begin{lstlisting}[basicstyle=\ttfamily\footnotesize, frame=single, caption={Von einer Mirror Node ausgelieferter Topic-Eintrag (vereinfacht)}, label={lst:hcsmsg}]
+{
+  "topicId":            "0.0.4589123",
+  "sequenceNumber":     47,
+  "consensusTimestamp": "1721304512.123456789",
+  "runningHash":        "0x9f2c...",
+  "message":            "<Base64-kodierter Inhalt>"
+}
+\end{lstlisting}
+
+Die Größe einer einzelnen Nachricht ist auf 1024 Byte begrenzt; größere Nutzlasten werden von den Hedera-SDKs standardmäßig in bis zu 20 Fragmente zerlegt und von den Mirror Nodes wieder zusammengestellt \cite{hederasubmitmessage}. Für die Ablage größerer Objekte in mehreren Nachrichten existiert HCS-1 als ein eigener Standard \cite{hcs1standard}.
+
+HCS sieht keine Leseoperation im Sinne vom Abschnitt~\ref{subsec:grundlagen-speicher-indy} vor. Es gibt keine Anfrage, mit der sich der aktuelle Zustand eines Identitätsobjekts vom Netzwerk abgerufen werden kann, denn das Netzwerk führt keinen solchen Zustand. Stattdessen abonniert eine Anwendung den Nachrichtenstrom eines Topics über eine Mirror Node und leitet den Zustand selbst aus der Abfolge der Nachrichten ab \cite{bairdgross2019}. Daher wird die Semantik, die bei Indy im Protokoll liegt, bei HCS vollständig in die Anwendungsebene verlagert.9
+
+\subsection{Gegenüberstellung}
+\label{subsec:grundlagen-speicher-vergleich}
+Die Tabelle~\ref{tab:speichermodelle} fasst die beschriebenen Unterschiede entlang derselben Kriterien zusammen.
+
+\begin{table}[htbp]
+\renewcommand{\arraystretch}{1.3}
+  \centering
+  \caption{Speicherung von Identitätsdaten auf dem Indy-Domain-Ledger und im HCS-Topic}
+  \label{tab:speichermodelle}
+  \begin{tabular}{p{0.22\textwidth} p{0.33\textwidth} p{0.35\textwidth}}
+    \toprule
+    \textbf{Kriterium} & \textbf{Hyperledger Indy (Domain Ledger)} & \textbf{Hedera Consensus Service (Topic)} \\
+    \midrule
+    Schreibeinheit &
+    Typisierte Transaktion (NYM, SCHEMA, CRED\_DEF, Revocation) &
+    Untypisierte Nachricht an einen Topic \\
+    Adressierung &
+    Objektidentifikator (DID, Schema-ID, Credential-Definition-ID) &
+    Topic-ID und Sequenznummer \\
+    Leseoperation &
+    Protokoll-eigene Anfragen gegen den Zustandsspeicher der Validatorknoten &
+    Keine; Abonnement des Nachrichtenstroms über eine Mirror Node \\
+    Zustandshaltung &
+    Durch das Netzwerk &
+    Durch die Anwendung \\
+    Integritätssicherung &
+    Kryptografisch verkettetes Transaktionslog, konsensbasiert repliziert &
+    Running Hash je Topic und Konsens-Zeitstempel \\
+    Größe der Schreibeinheit &
+    Durch den Objekttyp bestimmt &
+    1024 Byte je Nachricht, Fragmentierung bzw. HCS-1 für größere Objekte \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Beide Technologien erreichen somit das gleiche Ziel einer manipulationsresistenten geordneten Historie, unterscheiden sich jedoch darin, wo aus dieser Historie ein Zustand entsteht: bei Indy innerhalb des Ledgers, bei HCS außerhalb davon.
