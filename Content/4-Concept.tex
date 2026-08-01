@@ -198,4 +198,38 @@ Für die Topic-Struktur ist zunächst die Vorgabe der gewählten Methoden festzu
 \paragraph{Entscheidung.}
 Die Vertrauenshierarchie wird auf einem einzelnen Topic geführt, dessen \texttt{submitKey} als Threshold Key von den Steward-Instanzen gemeinsam kontrolliert wird und die Registrierung neuer Steward-Akteure netzwerkseitig absichert. Endorser-Rechte werden über signierte Delegationsnachrichten auf demselben Topic vergeben; ihre Gültigkeit prüft die auswertende Anwendung, bevor sie nachfolgende Registrierungsnachrichten des betreffenden Akteurs als gültig akzeptiert. Die in FA5 geforderte schichtübergreifende Historie wird aus den Konsens-Zeitstempeln der beteiligten Topics rekonstruiert; der Aufwand dieser Rekonstruktion wird im Rahmen von NFA5 erhoben.
 
+\subsection{Überblick}
 
+Die Tabelle~\ref{tab:entwurfsentscheidungen} fasst die vier Entwurfsentscheidungen mit
+der jeweils gewählten Option und den dadurch adressierten Anforderungen zusammen.
+
+\begin{table}[htbp]
+\renewcommand{\arraystretch}{1.3}
+  \centering
+  \caption{Entwurfsentscheidungen der HCS-basierten Ledger-Schicht im Überblick}
+  \label{tab:entwurfsentscheidungen}
+  \begin{tabular}{p{0.20\textwidth} p{0.45\textwidth} p{0.22\textwidth}}
+    \toprule
+    \textbf{Entscheidung} & \textbf{Gewählte Option} & \textbf{Adressierte Anforderungen} \\
+    \midrule
+    E1 - Netzwerkbetriebsmodell und Vertrauensgrenze &
+    Selbst betriebenes Hashgraph-Netzwerk unter Kontrolle der beteiligten
+    Institutionen &
+    FA1, NFA6; Vergleichbarkeit der Messung (NFA1, NFA4) \\
+    E2 - Rekonstruktion des Ledger-Zustands &
+    Vollständige Kodierung der Identitätsobjekte auf dem Ledger und Ableitung des
+    Zustands durch Replay des geordneten Nachrichtenstroms &
+    FA3, FA4, FA5; NFA2, NFA5 \\
+    E3 - Wahl der DID-Methode &
+    \texttt{did:hedera} mit einem eigenen Topic je öffentlicher DID &
+    FA1, FA2; NFA2 \\
+    E4 - Vertrauenshierarchie, Schreibberechtigung und Topic-Struktur &
+    Ein einzelnes Vertrauens-Topic; Wurzel netzwerkseitig über einen Threshold Key
+    als \texttt{submitKey}, delegierte Endorser-Stufe über signierte
+    Delegationsnachrichten mit anwendungsseitiger Prüfung &
+    FA1, FA5; NFA7 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Die getroffenen Entscheidungen betreffen jeweils einen Teilaspekt der Ledger-Schicht. Der folgende Abschnitt führt sie zu einer Gesamtarchitektur zusammen und zeigt, wie die fünf im Abschnitt~\ref{subsec:ledger-funktionen} identifizierten Ledger-Funktionen im Zusammenspiel der Komponenten erbracht werden.
