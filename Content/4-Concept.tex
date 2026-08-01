@@ -114,8 +114,29 @@ Basierend auf den im Abschnitt~\ref{sec:konzipierung-anforderungen} beschriebene
 \label{subsec:grundproblem-state-vs-ordering}
 Der Abschnitt~\ref{sec:grundlagen-speichermodelle} hat gezeigt, dass Hyperledger Indy und der Hedera Consensus Service dieselbe Aufgabe - eine geordnete, manipulationsresistente Historie - unterschiedlich lösen: Indy verwaltet den aus dieser Historie abgeleiteten Zustand selbst und macht Identitätsobjekte über Leseoperationen adressierbar, während HCS ausschließlich ordnet und zeitstempelt und die Zustandshaltung der Anwendung überlässt (Tabelle~\ref{tab:speichermodelle}). Für den weiteren Entwurf bedeutet das konkret: die fünf im Abschnitt~\ref{subsec:ledger-funktionen} identifizierten Ledger-Funktionen sind bei Indy bereits im Protokoll vorhanden, für die HCS-basierte Alternative müssen sie dagegen auf der Anwendungsebene explizit reproduziert werden.
 
-\subsection{E1 - Rekonstruktion des Ledger-Zustands}
-\label{subsec:e1-zustandsrekonstruktion}
+\subsection{E1 - Netzwerkbetriebsmodell und Vertrauensgrenze}
+\label{subsec:e1-netzwerkmodell}
+
+\paragraph{Problem.}
+Die Referenzarchitektur setzt eine public permissioned Blockchain voraus, deren Validatorknoten von den beteiligten Institutionen selbst betrieben werden; die Steward-Rolle ist dort eine Rolle im Konsens~\cite{erler2023,torongo2023}. Hedera ist im Gegensatz ein einziges öffentliches Netzwerk, dessen Konsensknoten von den Mitgliedsorganisationen des Governing Council betrieben werden und auf das Nutzer zugreifen, statt eine eigene Instanz zu betreiben~\cite{bairdharmon2019}. Damit verschiebt sich die Vertrauensgrenze: Wer auf ein HCS-Topic schreiben darf, entscheidet nicht mehr das Konsensnetzwerk, sondern ausschließlich die Anwendungsebene. Vor allen weiteren Entscheidungen ist deshalb festzulegen, auf welchem Netzwerk die HCS-basierte Ledger-Schicht betrieben wird, da davon abhängt, welche Eigenschaften netzwerkseitig garantiert sind und welche in der Anwendung reproduziert werden müssen.
+
+\paragraph{Optionen.}
+Die erste Option ist der Betrieb auf dem öffentlichen Hedera-Netzwerk. Verma et al. wählen diesen Weg für ihre hashgraphbasierte Architektur zur Verwaltung elektronischer Patientenakten; sie bezeichnen ihr Netzwerk zwar als permissioned, betreiben ihre Anwendung jedoch auf dem öffentlichen Hedera-Netzwerk, dessen Lesezugriff öffentlich ist~\cite{verma2024}. Die zweite Option ist der Betrieb eines selbst kontrollierten Hashgraph-Netzwerks. Cádiz et al. verankern W3C-konforme DIDs und Verifiable Credentials auf einem permissioned Teegraph-Ledger, dessen Knoten von den beteiligten Akteuren selbst betrieben werden~\cite{cadiz2025}. Für die Hedera-Software existiert diese Möglichkeit ebenfalls in Form lokal betreibbarer Netzwerkinstanzen~\cite{hederanetworks}.
+
+\paragraph{Bewertung.}
+Die beiden Optionen unterscheiden sich in der Frage, wer die Konsensknoten kontrolliert, und damit in drei für die eigentliche Arbeit relevanten Punkten.
+
+Erstens die Vertrauensanker-Funktion. Erler et al. weisen der Ledger-Schicht die Rolle eines zusätzlichen Vertrauensankers zu, in dem verifizierte digitale Identitäten institutioneller Teilnehmer öffentlich verankert werden~\cite{erler2023}. Auf dem öffentlichen Netzwerk kann jeder Teilnehmer ein Topic anlegen und Nachrichten senden; die Beschränkung auf berechtigte Akteure ist dort keine Netzwerkeigenschaft mehr, sondern muss vollständig über die in Abschnitt~\ref{subsec:e4-vertrauenshierarchie} behandelten Mechanismen abgebildet werden. In einem selbst betriebenen Netzwerk würde die Kontrolle über die Knoten beim Konsortium bleiben, entsprechen damit strukturell näher der Referenzarchitektur, verlagert aber gleichzeitig die Verantwortung für Betrieb und Verfügbarkeit auf die beteiligten Institutionen.
+
+Zweitens die Fehlertoleranz nach NFA6. Das öffentliche Hedera-Netzwerk erreicht seine aBFT-Eigenschaften über die vom Governing Council betriebene Knotenmenge~\cite{bairdharmon2019}. In einem selbst betriebenen Netzwerk würde die Fehlertoleranz dagegen von der Anzahl und Verteilung der eigenen Knoten abhängen und wäre damit eine Eigenschaft des Deployments und nicht der Technologie. Für den in dieser Arbeit angestrebten Vergleich mit dem RBFT-Konsens von Indy-Plenum ist diese Unterscheidung wesentlich, da nur im zweiten Fall beide Varianten unter vergleichbaren Knotenkonfigurationen gemessen werden können.
+
+Drittens die Vergleichbarkeit der Messung. Die Referenzarchitektur setzt ein permissioned Netzwerk voraus, das im Rahmen dieser Arbeit als Vergleichsobjekt selbst betrieben werden muss. Ein Vergleich zwischen einem lokal betriebenen Indy-Netzwerk und dem öffentlichen Hedera-Netzwerk würde Unterschiede messen, die auf Netzwerkgröße, geografische Verteilung und Fremdlast zurückgehen, statt auf die Ledger-Technologie - und damit der in Abschnitt~\ref{subsec:abgrenzung} formulierten Anforderung widersprechen, gemessene Unterschiede der Ledger-Schicht zuordnen zu können.
+
+\paragraph{Entscheidung.}
+Die HCS-basierte Ledger-Schicht wird auf einem selbst betriebenen Hashgraph-Netzwerk konzipiert, dessen Konsensknoten unter der Kontrolle der beteiligten Institutionen stehen. Damit bleibt die Vertrauensgrenze der Referenzarchitektur erhalten und beide Ledger-Varianten können unter vergleichbaren Bedingungen gemessen werden. Die konkrete Wahl der Netzwerkinstanz und deren Konfiguration ist eine Frage der Umsetzung und wird im Implementierung-Kapitel behandelt.
+
+\subsection{E2 - Rekonstruktion des Ledger-Zustands}
+\label{subsec:e2-zustandsrekonstruktion}
 
 \paragraph{Problem.}
 Da HCS keinen Zustand speichert, muss festgelegt werden, wie aus dem geordneten Nachrichtenfluss eines Topics der benötigte Anwendungszustand - z.B. der aktuelle Gültigkeitsstatus eines Credentials - wiederhergestellt wird. Diese Entscheidung geht den anderen voraus, da sie bestimmt, was überhaupt auf dem Ledger gespeichert wird. 
@@ -134,14 +155,14 @@ Erler et al.~\cite{erler2023} nennen für die Ledger-Schicht genau vier Objektgr
 
 Daher gelten die Argumente, mit denen die betrachteten Arbeiten das Hash-Anchoring begründen, hier nicht: Mazlan et al. führen das Muster auf die Speicherersparnis bei großen Datensätzen zurück~\cite{mazlan2020}, und die genannten Umsetzungen wenden es durchgehend auf Gesundheitsdaten an~\cite{farin2025,tawfik2025,mamoru2026,guptaverma2026}. Für Identitätsmetadaten verfahren die SSI-basierten Arbeiten umgekehrt und speichern öffentliche DIDs, Schemas, Credential Definitions und Revocation-Registries vollständig auf dem Ledger; Manoj et al. begründen dies damit, dass dort ausschließlich öffentlich sichtbare Objekte und keine personenbezogene Daten abgelegt werden~\cite{torongo2023,manoj2022}. Dazu kommt, dass FA5 eine manipulationsresistente Historie aller Schreiboperationen auf der Ledger-Schicht erfordert. Das Hash-Anchoring sichert aber nur die Unveränderlichkeit des Hashwerts durch den Konsens, während Verfügbarkeit und Integrität des referenzierten Objekts von einer Komponente außerhalb des Konsenses abhängen. Im Gegensatz entspricht die vollständige Kodierung FA5 direkt. Satybaldy et al. begründen diese Option zusätzlich empirisch: die Rekonstruktion des Zustands durch Abonnieren eines Topics und Auswertung des geordneten Nachrichtenstroms über eine Mirror Node liefert die niedrigste gemessene Auflösungslatenz aller von ihnen untersuchten DID-Methoden~\cite{satybaldy2026}. 
 
-Die dritte Option unterscheidet sich nicht vor der ersten, sondern konkretisiert sie für einzelne Objekttypen: beide speichern das vollständige Objekt auf dem Ledger und unterscheiden sich nur in der Kodierung. Welche der beiden Kodierungsformen jeweils eingesetzt wird, ist damit keine freie Wahl, sondern folgt aus der im Abschnitt~\ref{subsec:ledger-funktionen} festgehaltenen Bindung an das AnonCreds-Datenmodell sowie aus der in Abschnitt~\ref{subsec:e2-did-methode} zu treffenden Entscheidung über die DID-Methode.
+Die dritte Option unterscheidet sich nicht vor der ersten, sondern konkretisiert sie für einzelne Objekttypen: beide speichern das vollständige Objekt auf dem Ledger und unterscheiden sich nur in der Kodierung. Welche der beiden Kodierungsformen jeweils eingesetzt wird, ist damit keine freie Wahl, sondern folgt aus der im Abschnitt~\ref{subsec:ledger-funktionen} festgehaltenen Bindung an das AnonCreds-Datenmodell sowie aus der in Abschnitt~\ref{subsec:e3-did-methode} zu treffenden Entscheidung über die DID-Methode.
 
 \paragraph{Entscheidung.}
-Die vollständige Objektkodierung auf dem Ledger wird ausgewählt; das Hash-Anchoring wird verworfen. In welcher der beiden Kodierungsformen (HCS-1-Datei oder einzelne Topic-Nachricht) ein Objekt jeweils gespeichert wird, ist keine eigenständige Entscheidung, sondern ergibt sich aus den im Abschnitt~\ref{subsec:ledger-funktionen} festgehaltenen Bindung an das AnonCreds-Format über die Hiero AnonCreds Method sowie aus der im Abschnitt~\ref{subsec:e2-did-methode} gewählten DID-Methode.
+Die vollständige Objektkodierung auf dem Ledger wird ausgewählt; das Hash-Anchoring wird verworfen. In welcher der beiden Kodierungsformen (HCS-1-Datei oder einzelne Topic-Nachricht) ein Objekt jeweils gespeichert wird, ist keine eigenständige Entscheidung, sondern ergibt sich aus den im Abschnitt~\ref{subsec:ledger-funktionen} festgehaltenen Bindung an das AnonCreds-Format über die Hiero AnonCreds Method sowie aus der im Abschnitt~\ref{subsec:e3-did-methode} gewählten DID-Methode.
 
 
-\subsection{E2 - Wahl der DID-Methode}
-\label{subsec:e2-did-methode}
+\subsection{E3 - Wahl der DID-Methode}
+\label{subsec:e3-did-methode}
 
 \paragraph{Problem.}
 FA2 erfordert die Registrierung öffentlicher DIDs institutioneller Teilnehmer sowie deren Auflösung zu DID-Dokumenten mit zugehörigem Verifikationsschlüssel. Indy verwendet dafür seine eigene Ledger-DID-Methode; für die HCS-basierte Alternative muss eine DID-Methode ausgewählt werden.
@@ -156,8 +177,8 @@ Der Optionsraum ist hier durch die Fragestellung dieser Arbeit bereits weitgehen
 Es wird die Methode \texttt{did:hedera} verwendet. Für die folgenden Entscheidungen ist eine Konsequenz festzuhalten: Da die Topic-ID Bestandteil des Identifikators ist, legt die Methode für jede öffentliche DID ein eigenes Topic an und gibt damit einen Teil der Topic-Struktur der Ledger-Schicht bereits vor~\cite{hasheddidmethod}.
 
 
-\subsection{E3 - Vertrauenshierarchie, Schreibberechtigung und Topic-Struktur}
-\label{subsec:e3-vertrauenshierarchie}
+\subsection{E4 - Vertrauenshierarchie, Schreibberechtigung und Topic-Struktur}
+\label{subsec:e4-vertrauenshierarchie}
 
 \paragraph{Problem.}
 FA1 erfordert eine Vertrauenshierarchie, in der nur berechtigte Akteure neue institutionelle Teilnehmer registrieren können. In Indy definiert der Ledger diese Hierarchie selbst: Nur Akteure mit entsprechender Rolle können gültige NYM-Transaktionen einreichen~\cite{torongo2023}. HCS kennt keine rollenbasierte Schreibberechtigung. Zu entscheiden ist daher: über welchen Mechanismus die Hierarchie implementiert wird und auf welcher Topic-Struktur sie geführt wird. Der zweite Teil betrifft ausschließlich die Vertrauenshierarchie selbst, da die Topics der DID-Registry sowie der AnonCreds-Objekte durch die in E2 und E4 gewählten Methoden bereits vorgegeben sind~\cite{hasheddidmethod,hieroanoncreds}. Zu entscheiden ist zunächst, über welchen Mechanismus die Hierarchie umgesetzt wird. Davon abhängig ist der zweite Teil, auf welcher Topic-Struktur diese Hierarchie geführt wird.
@@ -176,3 +197,5 @@ Für die Topic-Struktur ist zunächst die Vorgabe der gewählten Methoden festzu
 
 \paragraph{Entscheidung.}
 Die Vertrauenshierarchie wird auf einem einzelnen Topic geführt, dessen \texttt{submitKey} als Threshold Key von den Steward-Instanzen gemeinsam kontrolliert wird und die Registrierung neuer Steward-Akteure netzwerkseitig absichert. Endorser-Rechte werden über signierte Delegationsnachrichten auf demselben Topic vergeben; ihre Gültigkeit prüft die auswertende Anwendung, bevor sie nachfolgende Registrierungsnachrichten des betreffenden Akteurs als gültig akzeptiert. Die in FA5 geforderte schichtübergreifende Historie wird aus den Konsens-Zeitstempeln der beteiligten Topics rekonstruiert; der Aufwand dieser Rekonstruktion wird im Rahmen von NFA5 erhoben.
+
+
