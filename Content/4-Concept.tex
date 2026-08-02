@@ -145,9 +145,6 @@ Die HCS-basierte Ledger-Schicht wird auf einem selbst betriebenen Hashgraph-Netz
 \label{subsec:e2-speicherform}
 
 \paragraph{Problem.}
-Da HCS keinen Zustand speichert, muss definiert werden, was überhaupt als Nachricht auf den Ledger geschrieben wird: die Identitätsobjekte selbst oder nur ein Verweis auf sie. Diese Entscheidung geht den Entscheidungen über die einzelnen Objekttypen voraus, da sie bestimmt, welche Methoden für diese Objekttypen überhaupt in Frage kommen.
-
-\paragraph{Problem.}
 Da HCS keinen Zustand speichert, muss definiert werden, was überhaupt als Nachricht auf den Ledger geschrieben wird. Dabei sind zwei Ebenen zu unterscheiden. Für die Gesundheitsdaten selbst ist die Frage durch die Referenzarchitektur bereits entschieden: Sie bleiben off-chain in den internen Systemen der erzeugenden Einrichtungen~\cite{erler2023} und sind nach dem Abschnitt~\ref{subsec:abgrenzung} nicht Gegenstand des Austauschs. Offen ist die Frage für die zweite Ebene, nämlich die vier Objektgruppen, die die Ledger-Schicht selbst führt: öffentliche DIDs, Schemas, Credential Definitions und Widerrufsinformationen. Für sie stellt sich die Frage bei Indy nicht, da der Domain Ledger sie als native Objekttypen hält (Abschnitt~\ref{subsec:grundlagen-speicher-indy}). Auf HCS entsteht sie, weil eine einzelne Nachricht auf 1024 Byte begrenzt ist (Abschnitt~\ref{subsec:grundlagen-speicher-hcs}), während Credential Definitions und Revocation Status Lists diese Grenze deutlich überschreiten. Die vollständige Ablage eines Identitätsobjekts auf dem Ledger ist damit nicht mehr ein einzelner Schreibvorgang, sondern erfordert eine Aufteilung auf mehrere Nachrichten. Damit ist die Frage, ob die Objekte überhaupt auf dem Ledger liegen oder nur referenziert werden sollen, tatsächlich offen. Diese Entscheidung geht den Entscheidungen über die einzelnen Objekttypen voraus, da sie bestimmt, welche Methoden für diese Objekttypen in Frage kommen.
 
 \paragraph{Optionen.}
