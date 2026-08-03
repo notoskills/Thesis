@@ -34,7 +34,7 @@ Aus der Aufgabenzuweisung der Referenzarchitektur~\cite{erler2023} ergeben sich 
   \item \textbf{Manipulationsresistente Transaktionshistorie:} Alle Schreiboperationen werden als kryptografisch verkettete Transaktionen gespeichert. Dadurch entsteht eine nachvollziehbare, manipulationsresistente Historie aller Änderungen an Identitäts- und Credentials-Metadaten, die als Audit-Grundlage dient~\cite{torongo2023} und damit die Vertrauensanker-Funktion der Referenzarchitektur stützt~\cite{erler2023}.
 \end{enumerate}
 
-Wie im Abschnitt~\ref{sec:grundlagen-speichermodelle} beschrieben, implementiert Indy diese Funktionen als native, direkt abfragbare Objekttypen des Domain Ledgers und wirkt damit nicht nur als Ordnungsdienst, sondern auch als Zustandsspeicher mit integrierter Lese-Semantik ~\cite{torongo2023, indynode}. Diese Eigenschaft ist für die spätere Abbildung auf den Hedera Consensus Service wichtig, da dieser ausschließlich Ordnung und Zeitstempelung von Nachrichten gewährleistet. Inhaltlich geht es bei den Schemas, Credential Definitions und Revocation-Einträgen um die im Abschnitt~\ref{subsec:grundlagen-anoncreds} eingeführten AnonCreds-Objekttypen, die Indy als native Ledger-Objekte umsetzt~\cite{anoncredsspec, torongo2023}. Diese Unterscheidung zwischen dem Credential-Format und seinem Speicherort ist die Voraussetzung des in dieser Arbeit vorgenommenen Austauschs: Da AnonCreds den Speicherort über die Abstraktion einer Verifiable Data Registry offen lässt~\cite{anoncredsspec}, muss eine alternative Ledger-Schicht nicht das kryptographische Protokoll, sondern ausschließlich die Auflösung dieser Objekte neu implementieren. Die Tabelle~\ref{tab:ledger-funktionen-indy} fasst die Zuordnung der Funktionen zu den Indy-Mechanismen nach~\cite{torongo2023} zusammen. Diese Bindung an das bestehende Format ist gleichzeitig wichtig für den weiteren Entwurf: ein Wechsel auf ein anderes Credential-Format, z.B. das W3C-Verifiable-Credentials-Datenmodell~\cite{w3cvcdm}, steht nicht zur Auswahl, da die Aries-Protokolle zur Ausstellung und Prüfung an das AnonCreds-Format gebunden sind und eine Änderung damit FA6 sowie die im Abschnitt~\ref{subsec:abgrenzung} festgelegte Abgrenzung verletzen würde. Dasselbe gilt für den Widerrufsmechanismus: \texttt{RevRegDef} und \texttt{RevRegEntry} sind native, an das Akkumulatorverfahren gebundene AnonCreds-Objekttypen, gegen die der Nicht-Widerrufsnachweis als Bestandteil des Zero-Knowledge-Proofs geführt wird~\cite{anoncredsspec}. Alternative Verfahren - z.B. die Abbildung des Widerrufs als eigene Zustandstransaktion, wie sie Mamoru et al. umsetzen~\cite{mamoru2026} - würden das Present-Proof-Protokoll der Agenten verändern und stehen daher ebenfalls nicht zur Auswahl.
+Wie im Abschnitt~\ref{sec:grundlagen-speichermodelle} beschrieben, implementiert Indy diese Funktionen als native, direkt abfragbare Objekttypen des Domain Ledgers und wirkt damit nicht nur als Ordnungsdienst, sondern auch als Zustandsspeicher mit integrierter Lese-Semantik ~\cite{torongo2023, indynode}. Diese Eigenschaft ist für die spätere Abbildung auf den Hedera Consensus Service wichtig, da dieser ausschließlich Ordnung und Zeitstempelung von Nachrichten gewährleistet. Inhaltlich geht es bei den Schemas, Credential Definitions und Revocation-Einträgen um die im Abschnitt~\ref{subsec:grundlagen-anoncreds} eingeführten AnonCreds-Objekttypen, die Indy als native Ledger-Objekte umsetzt~\cite{anoncredsspec, torongo2023}. Diese Unterscheidung zwischen dem Credential-Format und seinem Speicherort ist die Voraussetzung des in dieser Arbeit vorgenommenen Austauschs: Da AnonCreds den Speicherort über die Abstraktion einer Verifiable Data Registry (Abschnitt~\ref{subsec:grundlagen-vdr}) offen lässt~\cite{anoncredsspec}, muss eine alternative Ledger-Schicht nicht das kryptographische Protokoll, sondern ausschließlich die Auflösung dieser Objekte neu implementieren. Die Tabelle~\ref{tab:ledger-funktionen-indy} fasst die Zuordnung der Funktionen zu den Indy-Mechanismen nach~\cite{torongo2023} zusammen. Diese Bindung an das bestehende Format ist gleichzeitig wichtig für den weiteren Entwurf: ein Wechsel auf ein anderes Credential-Format, z.B. das W3C-Verifiable-Credentials-Datenmodell~\cite{w3cvcdm}, steht nicht zur Auswahl, da die Aries-Protokolle zur Ausstellung und Prüfung an das AnonCreds-Format gebunden sind und eine Änderung damit FA6 sowie die im Abschnitt~\ref{subsec:abgrenzung} festgelegte Abgrenzung verletzen würde. Dasselbe gilt für den Widerrufsmechanismus: \texttt{RevRegDef} und \texttt{RevRegEntry} sind native, an das Akkumulatorverfahren gebundene AnonCreds-Objekttypen, gegen die der Nicht-Widerrufsnachweis als Bestandteil des Zero-Knowledge-Proofs geführt wird~\cite{anoncredsspec}. Alternative Verfahren - z.B. die Abbildung des Widerrufs als eigene Zustandstransaktion, wie sie Mamoru et al. umsetzen~\cite{mamoru2026} - würden das Present-Proof-Protokoll der Agenten verändern und stehen daher ebenfalls nicht zur Auswahl.
 
 
 \begin{table}[htbp]
@@ -236,7 +236,7 @@ Der Zustand wird nach dem Appnet-Muster durch eine dauerhaft abonnierende Kompon
 FA1 erfordert eine Vertrauenshierarchie mit mindestens zwei Berechtigungsstufen, in der nur autorisierte Akteure schreiben dürfen. In Indy definiert der Ledger diese Hierarchie selbst: Nur Akteure mit entsprechender Rolle können gültige NYM-Transaktionen einreichen~\cite{torongo2023}. HCS kennt keine rollenbasierte Schreibberechtigung. Zu entscheiden ist zunächst, über welchen Mechanismus die Hierarchie umgesetzt wird; davon abhängig ist der zweite Teil, auf welcher Topic-Struktur sie geführt wird. Der zweite Teil betrifft ausschließlich die Vertrauenshierarchie selbst, da die Topics der DID-Registry sowie der AnonCreds-Objekte durch die in E3 und E4 gewählten Methoden bereits vorgegeben sind~\cite{hasheddidmethod,hieroanoncreds}.
 
 \paragraph{Optionen.}
-Der Optionsraum für den Mechanismus kann nicht aus der Literatur definiert werden, da keine der untersuchten Arbeiten eine Vertrauenshierarchie auf HCS umsetzt. Er ergibt sich stattdessen aus der Vollständigkeit der von HCS bereitgestellten Kontrollpunkte; die Spezifikationen dokumentieren genau zwei. Der erste ist der netzwerkseitige \texttt{submitKey} eines Topics: Ist er gesetzt, akzeptiert das Netzwerk nur Nachrichten, die mit dem zugehörigen privaten Schlüssel signiert sind; andernfalls darf jeder Teilnehmer an das Topic senden. Der \texttt{submitKey} kann dabei auch ein Threshold Key sein, also eine Liste von $M$ Schlüsseln, von denen $N$ signieren müssen, wobei die einzelnen Schlüssel ihrerseits Threshold Keys sein können (Abschnitt~\ref{subsec:grundlagen-speicher-hcs}). Der zweite Kontrollpunkt ist die anwendungsseitige Prüfung im Appnet-Modell, bei der die auswertende Anwendung den geordneten Nachrichtenstrom nach eigenen Regeln validiert und Nachrichten ohne gültigen Rollennachweis beim Aufbau ihres lokalen Zustands verwirft~\cite{bairdgross2019}. Aus der Kombination beider Kontrollpunkte ergibt sich eine dritte Möglichkeit.
+Der Optionsraum für den Mechanismus kann nicht aus der Literatur definiert werden, da keine der untersuchten Arbeiten eine Vertrauenshierarchie auf HCS umsetzt. Er ergibt sich stattdessen aus der Vollständigkeit der von HCS bereitgestellten Kontrollpunkte; die Spezifikationen dokumentieren genau zwei. Der erste ist der netzwerkseitige \texttt{submitKey} eines Topics: Ist er gesetzt, akzeptiert das Netzwerk nur Nachrichten, die mit dem zugehörigen privaten Schlüssel signiert sind; andernfalls darf jeder Teilnehmer an das Topic senden. Der \texttt{submitKey} kann dabei auch ein Threshold Key sein und die Schreibberechtigung damit als $N$-aus-$M$-Regel mehrerer Instanzen ausdrücken (Abschnitt~\ref{subsec:grundlagen-hcs-topics}). Der zweite Kontrollpunkt ist die anwendungsseitige Prüfung im Appnet-Modell, bei der die auswertende Anwendung den geordneten Nachrichtenstrom nach eigenen Regeln validiert und Nachrichten ohne gültigen Rollennachweis beim Aufbau ihres lokalen Zustands verwirft~\cite{bairdgross2019}. Aus der Kombination beider Kontrollpunkte ergibt sich eine dritte Möglichkeit.
 
 Für die Topic-Struktur der Vertrauenshierarchie liefern die Fabric-basierten Arbeiten beide Extreme des Spektrums: Joshi und Mahajan steuern das gesamte Netzwerk über einen einzigen Kanal~\cite{joshimahajan2025}, während Tawfik et al. innerhalb eines Kanals vier nach Funktion getrennte Teil-Ledger mit jeweils eigener Blockchain und eigenem Zustand führen~\cite{tawfik2025}. Zur Auswahl stehen dementsprechend ein einzelnes gemeinsames Topic für die gesamte Hierarchie oder eine Aufteilung auf mehrere Topics.
 
@@ -258,7 +258,7 @@ Die Vertrauenshierarchie wird auf einem einzelnen Topic geführt, dessen \texttt
 FA6 verlangt, dass die Aries-Agentenschicht die entworfene Ledger-Schicht ohne Änderung ihrer Protokolle verwenden kann. Die Agenten der Referenzarchitektur sprechen jedoch die Indy-eigenen Lese- und Schreiboperationen an (Abschnitt~\ref{subsec:grundlagen-speicher-indy}), die HCS nicht kennt. Zu entscheiden ist daher, über welche Komponente die in E2 bis E6 entworfene Ledger-Schicht an die unveränderte Agentenschicht angebunden wird.
 
 \paragraph{Optionen.}
-Der Optionsraum wird durch die im Abschnitt~\ref{subsec:ledger-funktionen} beschriebene Abstraktion der Verifiable Data Registry eröffnet: AnonCreds trennt das kryptografische Protokoll vom Speicherort und definiert die Registry als austauschbare Schnittstelle~\cite{anoncredsspec}. Die erste Option ist eine im Rahmen dieser Arbeit entwickelte Registry- und Resolver-Implementierung, die diese Schnittstelle gegen die in E3 bis E5 festgelegten Mechanismen bedient. Die zweite Option ist die Verwendung einer bestehenden Erweiterung des Agentenframeworks: Für Aries Cloud Agent Python existiert eine Hedera-Erweiterung, die \texttt{did:hedera} auflöst und AnonCreds-Objekte über HCS bereitstellt~\cite{acapyhedera}.
+Der Optionsraum wird durch die im Abschnitt~\ref{subsec:ledger-funktionen} beschriebene Abstraktion der Verifiable Data Registry (Abschnitt~\ref{subsec:grundlagen-vdr}) eröffnet: AnonCreds trennt das kryptografische Protokoll vom Speicherort und definiert die Registry als austauschbare Schnittstelle~\cite{anoncredsspec}. Die erste Option ist eine im Rahmen dieser Arbeit entwickelte Registry- und Resolver-Implementierung, die diese Schnittstelle gegen die in E3 bis E5 festgelegten Mechanismen bedient. Die zweite Option ist die Verwendung einer bestehenden Erweiterung des Agentenframeworks: Für Aries Cloud Agent Python existiert eine Hedera-Erweiterung, die \texttt{did:hedera} auflöst und AnonCreds-Objekte über HCS bereitstellt~\cite{acapyhedera}.
 
 \paragraph{Bewertung.}
 Beide Optionen lassen die DIDComm- und Peer-DID-Mechanismen unberührt, da diese nach Abschnitt~\ref{subsec:schichtenstruktur} den Ledger konzeptionell nicht berühren. Sie unterscheiden sich in zwei Punkten.
@@ -293,8 +293,7 @@ Die Tabelle~\ref{tab:entwurfsentscheidungen} fasst die sieben Entwurfsentscheidu
     Node unter Kontrolle der beteiligten Institutionen &
     NFA6, NFA8; Vergleichbarkeit der Messung (NFA1, NFA2, NFA4) \\
     E2 - Speicherform der Identitätsobjekte &
-    Vollständige Kodierung der Identitätsobjekte auf dem Ledger; kein
-    Hash-Anchoring &
+    Vollständige Kodierung der Identitätsobjekte auf dem Ledger &
     FA3, FA4, FA5; NFA5, NFA8 \\
     E3 - Wahl der DID-Methode &
     \texttt{did:hedera} mit einem eigenen Topic je öffentlicher DID &
@@ -322,3 +321,90 @@ Die Tabelle~\ref{tab:entwurfsentscheidungen} fasst die sieben Entwurfsentscheidu
 \normalsize
 
 Die getroffenen Entscheidungen betreffen jeweils einen Teilaspekt der Ledger-Schicht. Der folgende Abschnitt führt sie zu einer Gesamtarchitektur zusammen und zeigt, wie die fünf im Abschnitt~\ref{subsec:ledger-funktionen} identifizierten Ledger-Funktionen im Zusammenspiel der Komponenten erbracht werden.
+
+\section{Zielarchitektur}
+\label{sec:konzipierung-zielarchitektur}
+
+Die Entscheidungen E1 bis E7 ergeben zusammen die Zielarchitektur der HCS-basierten Ledger-Schicht. Dieser Abschnitt fasst sie zusammen: zuerst die beteiligten Komponenten, anschließend die Abbildung der fünf Ledger-Funktionen aus Abschnitt~\ref{subsec:ledger-funktionen} auf HCS-Mechanismen und zuletzt der Schreib- und der Lesepfad.
+
+\subsection{Komponenten}
+\label{subsec:zielarchitektur-komponenten}
+
+\begin{description}
+  \item[Konsensnetzwerk:] Mehrknotiges, selbst betriebenes Hashgraph-Netzwerk; erbringt Ordnung, Konsens-Zeitstempel und Finalität (E1). Die konkrete Ausbringung wird im Kapitel~\ref{cha:implementierung} festgelegt.
+  \item[Mirror Node:] Selbst betrieben; hält die Nachrichtenhistorie dauerhaft vor und stellt Abfrage- und Abonnementschnittstelle bereit~\cite{hederamirrornodes} (E1, E5).
+  \item[Topics:] Ein Vertrauens-Topic für Registrierungs- und Delegationsnachrichten (E6), je ein Topic pro öffentlicher DID~\cite{hasheddidmethod} (E3) sowie die Topics der AnonCreds-Objekte nach der Hiero AnonCreds Method~\cite{hieroanoncreds} (E4).
+  \item[Zustandskomponente:] Abonniert die Topics dauerhaft, prüft die Schreibberechtigung und schreibt den Zustand der Identitätsobjekte lokal fort (E5, E6).
+  \item[Registry-Adapter:] Bindet die Zustandskomponente über die Verifiable-Data-Registry-Schnittstelle von AnonCreds an den Agenten an~\cite{acapyhedera} (E7).
+  \item[Agentenschicht:] Unverändert übernommen (Abschnitt~\ref{subsec:abgrenzung}); nicht Teil der Ledger-Schicht.
+\end{description}
+
+% TODO Abbildung: Komponenten + Datenflüsse (Schreib-/Lesepfad), Messgrenze gestrichelt eingezeichnet
+
+
+\subsection{Abbildung der Ledger-Funktionen}
+\label{subsec:zielarchitektur-funktionsabbildung}
+
+Die Tabelle~\ref{tab:ledger-funktionen-hcs} ist das Gegenstück zur Tabelle~\ref{tab:ledger-funktionen-indy} und ordnet jeder Kernfunktion den realisierenden Mechanismus sowie die zugrunde liegende Entwurfsentscheidung zu.
+
+\begin{table}[htbp]
+\renewcommand{\arraystretch}{1.3}
+\footnotesize
+  \centering
+  \caption{Funktionen der Ledger-Schicht und ihre Realisierung in der HCS-basierten Variante}
+  \label{tab:ledger-funktionen-hcs}
+  \begin{tabular}{p{0.24\textwidth} p{0.52\textwidth} p{0.10\textwidth}}
+    \toprule
+    \textbf{Ledger-Funktion} & \textbf{Mechanismus in der HCS-basierten Variante} & \textbf{Entsch.} \\
+    \midrule
+    Trust Anchor & Threshold Key als \texttt{submitKey} des Vertrauens-Topics (Wurzel); Endorser-Stufe über signierte Delegationsnachrichten mit anwendungsseitiger Prüfung & E6 \\
+    DID-Registry & \texttt{did:hedera}; DID-Dokument wird aus dem Nachrichtenstrom des DID-eigenen Topics rekonstruiert & E3, E5 \\
+    Schema-/Credential-Definition-Speicher & Vollständige Kodierung der Objekte nach der Hiero AnonCreds Method; Ablage als HCS-1-Dateien & E2, E4 \\
+    Revocation Registry & \texttt{RevRegDef} und \texttt{RevRegEntry} als Topic-Objekte; Akkumulatorzustand aus dem jüngsten Eintrag & E4 \\
+    Manipulationsresistente Historie & Konsens-Zeitstempel und Ordnung des Hashgraph-Konsens; dauerhafte Abrufbarkeit über die selbst betriebene Mirror Node & E1, E5 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+\normalsize
+
+\subsection{Schreib- und Lesepfad}
+\label{subsec:zielarchitektur-pfade}
+
+\paragraph{Schreibpfad.}
+(1) Die schreibende Komponente signiert die Nachricht und reicht sie über \texttt{ConsensusSubmitMessage} ein~\cite{hederasubmitmessage}. (2) Der Konsens vergibt Reihenfolge und Zeitstempel; damit ist die Operation final. (3) Die Mirror Node übernimmt die Nachricht in ihre Historie. (4) Die Zustandskomponente empfängt sie über das Abonnement, prüft die Berechtigung gegen das Vertrauens-Topic und schreibt das Objekt im lokalen Zustand fort.
+
+
+\paragraph{Lesepfad.}
+(1) Der Agent fordert ein Objekt über die Registry-Schnittstelle an. (2) Der Adapter löst die Kennung auf Topic bzw.\ HCS-1-Datei auf. (3) Die Antwort wird aus dem materialisierten Zustand bedient; ist dieser nicht verfügbar, erfolgt die Rekonstruktion aus der Mirror-Node-Historie. (4) Das Objekt wird im AnonCreds-Format zurückgegeben, sodass die Agentenschicht unverändert bleibt (FA6).
+
+
+\section{Evaluationskonzept}
+\label{sec:konzipierung-evaluationskonzept}
+
+Die Evaluation vergleicht die im Abschnitt~\ref{sec:konzipierung-zielarchitektur} entworfene HCS-basierte Ledger-Schicht differenziell mit der Indy-basierten Ledger-Schicht der Referenzarchitektur. Der Vergleich ist entlang der nicht-funktionalen Anforderungen NFA1 bis NFA8 organisiert, die ihrerseits eins zu eins den Vergleichskriterien aus Tabelle~\ref{tab:synthese_vergleichskriterien} entsprechen. Dieser Abschnitt legt fest, welche Größen gemessen werden, an welchen Punkten sie erhoben werden, unter welchen Szenarien gemessen wird und wie die Sicherheitsdimension bewertet wird. Die technische Umsetzung des Messaufbaus ist Gegenstand des Kapitels~\ref{cha:implementierung}, die Ergebnisdarstellung des Kapitels~\ref{sec:results}.
+
+\subsection{Messgrößen und Messpunkte}
+\label{subsec:eval-messgroessen}
+
+\begin{table}[htbp]
+\renewcommand{\arraystretch}{1.3}
+\footnotesize
+  \centering
+  \caption{Messgrößen und Messpunkte je nicht-funktionaler Anforderung}
+  \label{tab:messgroessen}
+  \begin{tabular}{p{0.20\textwidth} p{0.45\textwidth} p{0.24\textwidth}}
+    \toprule
+    \textbf{Anforderung} & \textbf{Messgröße} & \textbf{Messpunkt} \\
+    \midrule
+    NFA1 - Durchsatz & Erfolgreich abgeschlossene Schreiboperationen je Sekunde sowie Ablehnungsquote, getrennt nach Operationstyp & Registry-Adapter \\
+    NFA2 - Latenz & Dauer von der Einreichung bis zur Finalität (Schreiben) bzw. von der Anfrage bis zur Antwort (Lesen), berichtet als Median und 95. Perzentil & Registry-Adapter, Zustandskomponente \\
+    NFA3 - Ressourcenverbrauch & CPU- und Speicherauslastung je Komponente über die Messdauer & Alle Komponenten innerhalb der Messgrenze \\
+    NFA4 - Lastskalierung & Verlauf von Durchsatz und Latenz über steigende Nebenläufigkeit; Sättigungspunkt und auslastungsbegrenzende Komponente & Registry-Adapter, Komponentenmetriken \\
+    NFA5 - Datenwachstum & Speicherbedarf je Konsensknoten, je Mirror Node und je materialisiertem Zustand in Abhängigkeit von der Anzahl verwalteter Identitätsobjekte & Konsensknoten, Mirror Node, Zustandskomponente \\
+    NFA6 - Konsens-Fehlertoleranz & Verfügbarkeit und Latenz bei Ausfall von $f$ Knoten sowie Dauer bis zur Wiederaufnahme des Normalbetriebs & Konsensnetzwerk \\
+    NFA7 - Zugriffskontrolle und Widerruf & Ergebnis nicht autorisierter Schreibversuche; Verifikationsergebnis vor und nach dem Widerruf; Zeit bis zur Wirksamkeit des Widerrufs & Zustandskomponente, Agent \\
+    NFA8 - Bedrohungsresistenz & Qualitativ: Differenz der STRIDE-Bedrohungen gegenüber der Referenzarchitektur; über die Mirror Node öffentlich sichtbare Metadaten & Entwurfsdokumentation, Mirror-Node-Historie \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+\normalsize
