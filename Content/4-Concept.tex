@@ -145,7 +145,7 @@ Die HCS-basierte Ledger-Schicht wird auf einem selbst betriebenen Hashgraph-Netz
 \label{subsec:e2-speicherform}
 
 \paragraph{Problem.}
-Da HCS keinen Zustand speichert, muss definiert werden, was überhaupt als Nachricht auf den Ledger geschrieben wird. Dabei sind zwei Ebenen zu unterscheiden. Für die Gesundheitsdaten selbst ist die Frage durch die Referenzarchitektur bereits entschieden: Sie bleiben off-chain in den internen Systemen der erzeugenden Einrichtungen~\cite{erler2023} und sind nach dem Abschnitt~\ref{subsec:abgrenzung} nicht Gegenstand des Austauschs. Offen ist die Frage für die zweite Ebene, nämlich die vier Objektgruppen, die die Ledger-Schicht selbst führt: öffentliche DIDs, Schemas, Credential Definitions und Widerrufsinformationen. Für sie stellt sich die Frage bei Indy nicht, da der Domain Ledger sie als native Objekttypen hält (Abschnitt~\ref{subsec:grundlagen-speicher-indy}). Auf HCS entsteht sie, weil eine einzelne Nachricht auf 1024 Byte begrenzt ist (Abschnitt~\ref{subsec:grundlagen-speicher-hcs}), während Credential Definitions und Revocation Status Lists diese Grenze deutlich überschreiten. Die vollständige Ablage eines Identitätsobjekts auf dem Ledger ist damit nicht mehr ein einzelner Schreibvorgang, sondern erfordert eine Aufteilung auf mehrere Nachrichten. Damit ist die Frage, ob die Objekte überhaupt auf dem Ledger liegen oder nur referenziert werden sollen, tatsächlich offen. Diese Entscheidung geht den Entscheidungen über die einzelnen Objekttypen voraus, da sie bestimmt, welche Methoden für diese Objekttypen in Frage kommen.
+Da HCS keinen Zustand speichert, muss definiert werden, was überhaupt als Nachricht auf den Ledger geschrieben wird. Dabei sind zwei Ebenen zu unterscheiden. Für die Gesundheitsdaten selbst ist die Frage durch die Referenzarchitektur bereits entschieden: Sie bleiben off-chain in den internen Systemen der erzeugenden Einrichtungen~\cite{erler2023} und sind nach dem Abschnitt~\ref{subsec:abgrenzung} nicht Gegenstand des Austauschs. Offen ist die Frage für die zweite Ebene, nämlich die vier Objektgruppen, die die Ledger-Schicht selbst führt: öffentliche DIDs, Schemas, Credential Definitions und Widerrufsinformationen. Für sie stellt sich die Frage bei Indy nicht, da der Domain Ledger sie als native Objekttypen hält (Abschnitt~\ref{subsec:grundlagen-speicher-indy}). Auf HCS entsteht sie, weil eine einzelne Nachricht auf 1024 Byte begrenzt ist (Abschnitt~\ref{subsec:grundlagen-speicher-hcs}), während insbesondere Credential Definitions und Revocation Registry Definitions diese Grenze deutlich überschreiten - die Hiero AnonCreds Method dokumentiert dies an einem Beispiel, in dem eine CredDef auf sechs und eine RevRegDef auf zwei HCS-1-Nachrichten aufgeteilt werden~\cite{hieroanoncreds}. Die vollständige Ablage eines Identitätsobjekts auf dem Ledger ist damit nicht mehr ein einzelner Schreibvorgang, sondern erfordert eine Aufteilung auf mehrere Nachrichten. Damit ist die Frage, ob die Objekte überhaupt auf dem Ledger liegen oder nur referenziert werden sollen, tatsächlich offen. Diese Entscheidung geht den Entscheidungen über die einzelnen Objekttypen voraus, da sie bestimmt, welche Methoden für diese Objekttypen in Frage kommen.
 
 \paragraph{Optionen.}
 Der Optionsraum ergibt sich aus drei Speichermustern, die in der betrachteten Literatur und in den HCS-Spezifikationen beschrieben sind.
@@ -208,6 +208,26 @@ Dazu kommt ein methodisches Argument. Das Ziel dieser Arbeit ist der Vergleich z
 \paragraph{Entscheidung.}
 Die AnonCreds-Objekte werden nach der Hiero AnonCreds Method abgebildet~\cite{hieroanoncreds}; ein eigener Abbildungsentwurf wird verworfen. Für die Kodierungsfrage aus E2 folgt daraus, dass Schema, Credential Definition und Revocation-Registry-Definition als HCS-1-Dateien und die Revocation-Registry-Einträge als Nachrichten eines zugeordneten Topics gespeichert werden. Der Widerrufsmechanismus von AnonCreds (der kryptografische Akkumulator) bleibt unverändert; ausgetauscht wird ausschließlich der Ort, an dem sein Zustand veröffentlicht wird.
 
+
+\begin{table}[htbp]
+\renewcommand{\arraystretch}{1.3}
+\footnotesize
+  \centering
+  \caption{Kodierung der AnonCreds-Objekte auf HCS nach der Hiero AnonCreds Method}
+  \label{tab:anoncreds-kodierung-hcs}
+  \begin{tabular}{p{0.20\textwidth} p{0.20\textwidth} p{0.50\textwidth}}
+    \toprule
+    \textbf{Objekt} & \textbf{Kodierung} & \textbf{Begründung} \\
+    \midrule
+    Schema & HCS-1-Datei & Statisches, einmalig publiziertes Objekt; eigenes Topic je Objekt~\cite{hieroanoncreds} \\
+    CredDef & HCS-1-Datei & Statisches, einmalig publiziertes Objekt; überschreitet die 1024-Byte-Grenze einer einzelnen Nachricht deutlich, im Beispiel der Spezifikation auf sechs Chunks aufgeteilt~\cite{hieroanoncreds} \\
+    RevRegDef & HCS-1-Datei & Statisches, einmalig publiziertes Objekt; enthält zusätzlich den Verweis auf das Entries-Topic (\texttt{hcsMetadata.entriesTopicId}); im Beispiel der Spezifikation auf zwei Chunks aufgeteilt~\cite{hieroanoncreds} \\
+    RevRegEntry & Einzelne HCS-Nachricht & Wiederkehrende, inkrementelle Aktualisierung; enthält nur das komprimierte Delta (geänderte Indizes und Akkumulator) seit dem letzten Eintrag, veröffentlicht im der RevRegDef zugeordneten Entries-Topic~\cite{hieroanoncreds} \\
+    Öffentliche DID (\texttt{did:hedera}) & Einzelne HCS-Nachricht je Änderung & Wiederkehrende, inkrementelle Aktualisierung; DID-Dokument wird aus dem Nachrichtenstrom des DID-eigenen Topics rekonstruiert~\cite{hasheddidmethod} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+\normalsize
 
 \subsection{E5 - Leseweg und Materialisierung des Zustands}
 \label{subsec:e5-leseweg}
@@ -386,24 +406,32 @@ Die Evaluation vergleicht die im Abschnitt~\ref{sec:konzipierung-zielarchitektur
 \subsection{Messgrößen und Messpunkte}
 \label{subsec:eval-messgroessen}
 
+Die Messgrößen werden nicht frei gewählt, sondern aus der im Kapitel~\ref{cha:state_of_the_art} ausgewerteten Literatur abgeleitet. Dabei sind zwei Ebenen zu unterscheiden. Welche Größen gemessen werden, folgt aus den Evaluationsansätzen der untersuchten Architekturen (Abschnitt~\ref{sec:literatur_architectures}) sowie aus den Metriken der Vergleichs- und Methodikliteratur (Abschnitt~\ref{sec:literatur_vergleichsmethodik}). Wo sie gemessen werden, kann aus der Literatur nicht entnommen: die untersuchten Evaluationen verwenden unterschiedliche Systemgrenzen und sind gerade deshalb untereinander nicht vergleichbar (dritte Schlussfolgerung im Abschnitt~\ref{sec:literatur_schlussfolgerungen}). Die Messpunkte ergeben sich daher aus der Zielarchitektur des Abschnitts~\ref{sec:konzipierung-zielarchitektur} und werden im Anschluss an die Tabelle festgelegt. Die Herleitungsspalte der Tabelle~\ref{tab:messgroessen} ist dabei feiner aufgelöst als die der Tabelle~\ref{tab:synthese_vergleichskriterien}: Dort wird das Kriterium als solches belegt, hier seine konkrete Operationalisierung als Messgröße.
+
+\paragraph{Performanz.} Durchsatz und Latenz sind die in der Methodikliteratur ausgewiesenen Standardmetriken der Performanzevaluation, verbunden mit der Forderung nach expliziter statt rein konzeptioneller Evaluation~\cite{sehimibendaoud2023}; sie werden in den benchmarkbasierten Evaluationen des Korpus durchgängig verwendet~\cite{tawfik2025, joshimahajan2025, chainarong2025}. Dass die Latenz nach Operationstyp differenziert wird, folgt aus Arbeiten, die Latenz je Workflow bzw. je Lebenszyklusoperation messen: Ausstellung und Verifikation~\cite{manoj2022}, Registrierung, Einwilligung und Widerruf~\cite{mamoru2026} sowie einzelne DID-Operationen~\cite{satybaldy2026}. Der Ressourcenverbrauch als dritte Performanzgröße stammt aus Arbeiten, die CPU- und Speicherauslastung bzw. Berechnungs- und Kommunikationskosten neben Durchsatz und Latenz messen~\cite{minango2025, amanat2022}.
+
+\paragraph{Skalierbarkeit.} Die Trennung in Lastskalierung und Datenwachstum folgt der Skalierbarkeitstaxonomie von Mazlan et al., die Transaktionsaufkommen und Knotenanzahl einerseits und Datenvolumen und Blockgröße andererseits als eigenständige Ursachen von Skalierbarkeitsgrenzen unterscheidet~\cite{mazlan2020}. Die Lastskalierung wird entsprechend als Verlauf von Durchsatz und Latenz über steigende Last gemessen, wie es Arbeiten mit variierender Netzwerkgröße und Knotenzahl vorgeben~\cite{joshimahajan2025, hashim2021}; die Forderung, Skalierbarkeit überhaupt explizit zu evaluieren statt sie zu behaupten, stammt aus der Methodikliteratur~\cite{sehimibendaoud2023}. Das Datenwachstum wird als Speicherbedarf in Abhängigkeit vom verwalteten Objektbestand betrachtet, entsprechend Arbeiten, die den On-Chain-Fußabdruck des Speichermodells~\cite{giao2026, mamoru2026} bzw. Lese- und Schreibzeiten bei steigendem Datenvolumen~\cite{farin2025} quantifizieren.
+
+\paragraph{Sicherheit.} Dass der Konsensmechanismus ein eigenständiger, knotenzahlabhängiger Evaluationsgegenstand ist und nicht nur eine Architektureigenschaft, zeigt die vergleichende Konsensstudie von Hashim et al.~\cite{hashim2021}; Fehlertoleranzgrenze und Finalitätsverhalten werden in den betrachteten Architekturen als Vergleichsmerkmal ausgewiesen~\cite{farin2025, verma2024}. Der Widerruf wird als quantitative und nicht nur qualitative Größe erhoben, weil Mamoru et al. ihn mit Latenz und Durchsetzungsquote als eigenständiges, messbares Evaluationskriterium etablieren~\cite{mamoru2026}; die Prüfung nicht autorisierter Zugriffe über simulierte Angriffe folgt der Evaluationspraxis von Tawfik et al.~\cite{tawfik2025} und ergänzt die Widerrufsbetrachtung von Torongo und Toorani~\cite{torongo2023}. Die Bedrohungsresistenz bleibt qualitativ und wird als STRIDE-Differenz gegenüber der Referenzarchitektur geführt, da sowohl die Referenzarchitektur selbst als auch vergleichbare SSI-Architekturen dieses Verfahren verwenden~\cite{erler2023, torongo2023} und Sicherheitseigenschaften in der Methodikliteratur als qualitative Vergleichsdimension eingeordnet werden~\cite{ferreira2024}.
+
 \begin{table}[htbp]
 \renewcommand{\arraystretch}{1.3}
 \footnotesize
   \centering
-  \caption{Messgrößen und Messpunkte je nicht-funktionaler Anforderung}
+  \caption{Messgrößen, Messpunkte und ihre Herleitung aus der Literatur}
   \label{tab:messgroessen}
-  \begin{tabular}{p{0.20\textwidth} p{0.45\textwidth} p{0.24\textwidth}}
+  \begin{tabular}{p{0.14\textwidth} p{0.33\textwidth} p{0.19\textwidth} p{0.16\textwidth}}
     \toprule
-    \textbf{Anforderung} & \textbf{Messgröße} & \textbf{Messpunkt} \\
+    \textbf{Anforderung} & \textbf{Messgröße} & \textbf{Messpunkt} & \textbf{Herleitung} \\
     \midrule
-    NFA1 - Durchsatz & Erfolgreich abgeschlossene Schreiboperationen je Sekunde sowie Ablehnungsquote, getrennt nach Operationstyp & Registry-Adapter \\
-    NFA2 - Latenz & Dauer von der Einreichung bis zur Finalität (Schreiben) bzw. von der Anfrage bis zur Antwort (Lesen), berichtet als Median und 95. Perzentil & Registry-Adapter, Zustandskomponente \\
-    NFA3 - Ressourcenverbrauch & CPU- und Speicherauslastung je Komponente über die Messdauer & Alle Komponenten innerhalb der Messgrenze \\
-    NFA4 - Lastskalierung & Verlauf von Durchsatz und Latenz über steigende Nebenläufigkeit; Sättigungspunkt und auslastungsbegrenzende Komponente & Registry-Adapter, Komponentenmetriken \\
-    NFA5 - Datenwachstum & Speicherbedarf je Konsensknoten, je Mirror Node und je materialisiertem Zustand in Abhängigkeit von der Anzahl verwalteter Identitätsobjekte & Konsensknoten, Mirror Node, Zustandskomponente \\
-    NFA6 - Konsens-Fehlertoleranz & Verfügbarkeit und Latenz bei Ausfall von $f$ Knoten sowie Dauer bis zur Wiederaufnahme des Normalbetriebs & Konsensnetzwerk \\
-    NFA7 - Zugriffskontrolle und Widerruf & Ergebnis nicht autorisierter Schreibversuche; Verifikationsergebnis vor und nach dem Widerruf; Zeit bis zur Wirksamkeit des Widerrufs & Zustandskomponente, Agent \\
-    NFA8 - Bedrohungsresistenz & Qualitativ: Differenz der STRIDE-Bedrohungen gegenüber der Referenzarchitektur; über die Mirror Node öffentlich sichtbare Metadaten & Entwurfsdokumentation, Mirror-Node-Historie \\
+    NFA1 - Durchsatz & Erfolgreich abgeschlossene Schreiboperationen je Sekunde sowie Ablehnungsquote, getrennt nach Operationstyp & VDR-Schnittstelle & \cite{sehimibendaoud2023, tawfik2025, joshimahajan2025, hashim2021} \\
+    NFA2 - Latenz & Dauer von der Einreichung bis zur Finalität (Schreiben) bzw. von der Anfrage bis zur Antwort (Lesen), berichtet als Median und 95. Perzentil & VDR-Schnittstelle, Zustandskomponente & \cite{manoj2022, torongo2023, mamoru2026, satybaldy2026} \\
+    NFA3 - Ressourcenverbrauch & CPU- und Speicherauslastung je Komponente über die Messdauer & Alle Komponenten innerhalb der Messgrenze & \cite{minango2025, amanat2022} \\
+    NFA4 - Lastskalierung & Verlauf von Durchsatz und Latenz über steigende Nebenläufigkeit; Sättigungspunkt und auslastungsbegrenzende Komponente & VDR-Schnittstelle, Komponentenmetriken & \cite{mazlan2020, sehimibendaoud2023, joshimahajan2025, hashim2021} \\
+    NFA5 - Datenwachstum & Speicherbedarf je Konsensknoten, je Mirror Node und je materialisiertem Zustand in Abhängigkeit von der Anzahl verwalteter Identitätsobjekte & Konsensknoten, Mirror Node, Zustandskomponente & \cite{mazlan2020, giao2026, mamoru2026, farin2025} \\
+    NFA6 - Konsens-Fehlertoleranz & Verfügbarkeit und Latenz bei Ausfall von $f$ Knoten sowie Dauer bis zur Wiederaufnahme des Normalbetriebs & Konsensnetzwerk & \cite{hashim2021, verma2024, farin2025} \\
+    NFA7 - Zugriffskontrolle und Widerruf & Ergebnis nicht autorisierter Schreibversuche; Verifikationsergebnis vor und nach dem Widerruf; Zeit bis zur Wirksamkeit des Widerrufs & Zustandskomponente, Agent & \cite{mamoru2026, torongo2023, tawfik2025} \\
+    NFA8 - Bedrohungsresistenz & Qualitativ: Differenz der STRIDE-Bedrohungen gegenüber der Referenzarchitektur; über die Mirror Node öffentlich sichtbare Metadaten & Entwurfsdokumentation, Mirror-Node-Historie & \cite{erler2023, torongo2023, satybaldy2026, ferreira2024} \\
     \bottomrule
   \end{tabular}
 \end{table}
