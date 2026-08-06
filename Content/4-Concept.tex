@@ -439,7 +439,7 @@ Die Evaluation vergleicht die im Abschnitt~\ref{sec:konzipierung-zielarchitektur
 \subsection{Messgrößen und Messpunkte}
 \label{subsec:eval-messgroessen}
 
-Die Messgrößen werden nicht frei gewählt, sondern aus der im Kapitel~\ref{cha:state_of_the_art} ausgewerteten Literatur abgeleitet. Dabei sind zwei Ebenen zu unterscheiden. Welche Größen gemessen werden, folgt aus den Evaluationsansätzen der untersuchten Architekturen (Abschnitt~\ref{sec:literatur_architectures}) sowie aus den Metriken der Vergleichs- und Methodikliteratur (Abschnitt~\ref{sec:literatur_vergleichsmethodik}). Wo sie gemessen werden, kann aus der Literatur nicht entnommen: die untersuchten Evaluationen verwenden unterschiedliche Systemgrenzen und sind gerade deshalb untereinander nicht vergleichbar (dritte Schlussfolgerung im Abschnitt~\ref{sec:literatur_schlussfolgerungen}). Die Messpunkte ergeben sich daher aus der Zielarchitektur des Abschnitts~\ref{sec:konzipierung-zielarchitektur} und werden im Anschluss an die Tabelle festgelegt. Die Herleitungsspalte der Tabelle~\ref{tab:messgroessen} ist dabei feiner aufgelöst als die der Tabelle~\ref{tab:synthese_vergleichskriterien}: Dort wird das Kriterium als solches belegt, hier seine konkrete Operationalisierung als Messgröße.
+Die Messgrößen werden nicht frei gewählt, sondern aus der im Kapitel~\ref{cha:state_of_the_art} ausgewerteten Literatur abgeleitet. Dabei sind zwei Ebenen zu unterscheiden. Welche Größen gemessen werden, folgt aus den Evaluationsansätzen der untersuchten Architekturen (Abschnitt~\ref{sec:literatur_architectures}) sowie aus den Metriken der Vergleichs- und Methodikliteratur (Abschnitt~\ref{sec:literatur_vergleichsmethodik}). Wo sie gemessen werden, kann aus der Literatur nicht entnommen werden: die untersuchten Evaluationen verwenden unterschiedliche Systemgrenzen und sind gerade deshalb untereinander nicht vergleichbar (dritte Schlussfolgerung im Abschnitt~\ref{sec:literatur_schlussfolgerungen}). Die Messpunkte ergeben sich daher aus der Zielarchitektur des Abschnitts~\ref{sec:konzipierung-zielarchitektur} und werden im Anschluss an die Tabelle festgelegt. Die Herleitungsspalte der Tabelle~\ref{tab:messgroessen} ist dabei feiner aufgelöst als die der Tabelle~\ref{tab:synthese_vergleichskriterien}: Dort wird das Kriterium als solches belegt, hier seine konkrete Operationalisierung als Messgröße.
 
 \paragraph{Performanz.} Durchsatz und Latenz sind die in der Methodikliteratur ausgewiesenen Standardmetriken der Performanzevaluation, verbunden mit der Forderung nach expliziter statt rein konzeptioneller Evaluation~\cite{sehimibendaoud2023}; sie werden in den benchmarkbasierten Evaluationen des Korpus durchgängig verwendet~\cite{tawfik2025, joshimahajan2025, chainarong2025}. Dass die Latenz nach Operationstyp differenziert wird, folgt aus Arbeiten, die Latenz je Workflow bzw. je Lebenszyklusoperation messen: Ausstellung und Verifikation~\cite{manoj2022}, Registrierung, Einwilligung und Widerruf~\cite{mamoru2026} sowie einzelne DID-Operationen~\cite{satybaldy2026}. Der Ressourcenverbrauch als dritte Performanzgröße stammt aus Arbeiten, die CPU- und Speicherauslastung bzw. Berechnungs- und Kommunikationskosten neben Durchsatz und Latenz messen~\cite{minango2025, amanat2022}.
 
@@ -469,3 +469,66 @@ Die Messgrößen werden nicht frei gewählt, sondern aus der im Kapitel~\ref{cha
   \end{tabular}
 \end{table}
 \normalsize
+
+\subsection{Versuchsaufbau}
+\label{subsec:eval-aufbau}
+
+\begin{itemize}
+  \item Verglichen werden zwei Varianten: die Indy-basierte Referenzvariante und die HCS-basierte Untersuchungsvariante. Beide werden mit derselben, unveränderten Agentenschicht betrieben (FA6), sodass gemessene Unterschiede der Ledger-Schicht zugeordnet werden können (Abschnitt~\ref{subsec:abgrenzung}).
+  \item Als Messgrenze wird die Verifiable-Data-Registry-Schnittstelle festgelegt. Innerhalb der Grenze liegen in der HCS-Variante der Registry-Adapter, das Konsensnetzwerk und die Mirror Node (Abschnitt~\ref{subsec:zielarchitektur-komponenten}), in der Indy-Variante der Resolver und die Validatorknoten. Die Agentenschicht liegt in beiden Varianten außerhalb. Diese Festlegung folgt aus der Zielarchitektur und nicht aus der Literatur, da die untersuchten Evaluationen uneinheitliche Systemgrenzen verwenden (Abschnitt~\ref{subsec:eval-messgroessen}).
+  \item Beide Varianten werden mit gleicher Knotenanzahl und in gleicher Ausführungsumgebung betrieben, damit nicht Eigenschaften unterschiedlich dimensionierter Netzwerke verglichen werden (NFA6). Die konkrete Festlegung erfolgt im Kapitel~\ref{cha:implementierung}.
+  \item Die Last wird ausschließlich über die Registry-Schnittstelle erzeugt, sodass die DIDComm-Protokolle der Agentenschicht nicht in die Messung eingehen.
+  \item Erhoben werden Zeitstempel an der Registry-Schnittstelle sowie Ressourcenmetriken aller Komponenten innerhalb der Messgrenze.
+\end{itemize}
+% TODO Wiederholungsanzahl und Warmlaufdauer in Kapitel 5 festlegen
+
+\subsection{Lastszenarien}
+\label{subsec:eval-szenarien}
+
+\begin{table}[htbp]
+\renewcommand{\arraystretch}{1.3}
+\footnotesize
+  \centering
+  \caption{Lastszenarien der Evaluation}
+  \label{tab:lastszenarien}
+  \begin{tabular}{p{0.20\textwidth} p{0.52\textwidth} p{0.16\textwidth}}
+    \toprule
+    \textbf{Szenario} & \textbf{Beschreibung} & \textbf{Anforderung} \\
+    \midrule
+    S1 - Basismessung & Sequenzielle Ausführung je einer Operation pro Ledger-Funktion (DID-Registrierung, Schema, Credential Definition, Leseoperationen) ohne Nebenlast & NFA1, NFA2 \\
+    S2 - Laststeigerung & Schrittweise Erhöhung der Nebenläufigkeit bis zum Erreichen der Sättigung, mit anschließender Bestimmung der begrenzenden Komponente & NFA1, NFA2, NFA4 \\
+    S3 - Datenwachstum & Schrittweiser Aufbau eines wachsenden Bestands an Identitätsobjekten mit Erfassung des Speicherbedarfs sowie der Leselatenz je Objekttyp an definierten Zwischenständen & NFA5, NFA2 \\
+    S4 - Knotenausfall & Gezielter Ausfall einzelner Konsensknoten unter laufender Grundlast, mit Beobachtung von Verfügbarkeit, Latenz und Wiederaufnahme & NFA6 \\
+    S5 - Zugriffskontrolle & Nicht autorisierte Schreibversuche gegen das Vertrauens-Topic und gegen die Objekt-Topics, getrennt nach netzwerkseitiger und anwendungsseitiger Prüfung & NFA7 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+\normalsize
+
+Unter diesen Szenarien nimmt S3 eine besondere Stellung ein. Die Entscheidung E5 hält den Zustand nicht vor, sondern leitet ihn bei jedem Lesezugriff aus der Topic-Historie ab; die Lesedauer der HCS-Variante wächst damit mit der Länge dieser Historie, während der Zustandsspeicher von Indy davon unabhängig ist (Abschnitt~\ref{subsec:e5-leseweg}). S3 misst genau diesen Unterschied und ist damit dasjenige Szenario, das den Gegensatz zwischen Zustands-Ledger und reinem Ordnungsdienst quantifiziert. Der zu untersuchende Effekt wird nur sichtbar, wenn die Bestände hinreichend groß gewählt werden; die Bestandsgrößen sind deshalb ein bewusst gesetzter Versuchsparameter und kein Nebeneffekt der übrigen Szenarien.
+
+Der Ressourcenverbrauch nach NFA3 wird nicht in einem eigenen Szenario, sondern begleitend in allen Szenarien erhoben. Die Bedrohungsresistenz nach NFA8 wird nicht experimentell, sondern analytisch bewertet.
+% TODO Bestandsgrößen und Laststufen in Kapitel 5 festlegen
+
+\subsection{Sicherheitsevaluation}
+\label{subsec:eval-sicherheit}
+
+Die Sicherheitsdimension wird zweigeteilt bewertet. Experimentell prüfen die Szenarien S4 und S5 die Wirksamkeit der Konsens-Fehlertoleranz und der Schreibautorisierung. Analytisch wird die HCS-basierte Ledger-Schicht mit derselben STRIDE-Methodik untersucht, mit der Erler et al. die Referenzarchitektur entworfen haben~\cite{erler2023}; bewertet wird dabei nicht das Gesamtsystem, sondern ausschließlich die Differenz: welche Bedrohungen durch den Austausch der Ledger-Schicht entfallen, welche unverändert bestehen und welche neu hinzukommen. Ein besonderes Augenmerk liegt auf den durch die vollständige Kodierung der Identitätsobjekte (E2) über die Mirror Node öffentlich sichtbaren Metadaten~\cite{satybaldy2026}. Die zweistufige Berechtigungsprüfung nach E6 wird dabei gesondert betrachtet, da die Wurzelstufe netzwerkseitig über den \texttt{submitKey} durchgesetzt wird, die Delegationsstufe dagegen anwendungsseitig im Registry-Adapter und damit außerhalb der Garantien des Konsensnetzwerks liegt.
+% TODO Ausformulierung
+
+\subsection{Gültigkeitsgrenzen}
+\label{subsec:eval-validitaet}
+
+\begin{itemize}
+  \item Gemessen wird ein selbst betriebenes Netzwerk gemäß E1; die Ergebnisse gelten für diese Betriebsform und sind nicht unmittelbar auf den Betrieb im öffentlichen Hedera-Netzwerk übertragbar.
+  \item Absolute Werte sind von der eingesetzten Ausführungsumgebung abhängig; die Aussagekraft der Evaluation liegt im Verhältnis der beiden unter identischen Bedingungen gemessenen Varianten.
+  \item Die Lesewerte der HCS-Variante bilden den Standardleseweg nach E5 ab und nicht eine optimierte Umsetzung. Das als Alternative verworfene Appnet-Muster bleibt unimplementiert; sein Optimierungspotenzial wird im Kapitel~\ref{sec:discussion} anhand der gemessenen Werte beziffert, aber nicht gemessen.
+  \item Der Widerruf nach FA4 ist entworfen, wird im Proof-of-Concept jedoch nicht ausgeführt. Die Referenzimplementierung setzt den AnonCreds-Widerruf auf keiner Variante um, sodass für einen differenziellen Vergleich keine gemeinsame Grundlage besteht. Die Evaluation nach NFA7 beschränkt sich daher auf die Zugriffskontrolle; die Widerrufsfähigkeit wird auf Entwurfsebene und nicht empirisch bewertet.
+  \item Nicht Gegenstand der Messung sind Transaktionsgebühren, da beide Varianten in einem selbst betriebenen Netzwerk ohne Gebührenmodell evaluiert werden.
+\end{itemize}
+% TODO ggf. weitere Grenzen nach Abschluss der Implementierung ergänzen
+
+\section{Zusammenfassung}
+\label{sec:konzipierung-zusammenfassung}
+
+Das Kapitel hat die Ledger-Schicht der Referenzarchitektur auf fünf Kernfunktionen zurückgeführt, daraus die Anforderungen FA1 bis FA6 und NFA1 bis NFA8 abgeleitet und die Differenz zwischen einem Zustands-Ledger und einem reinen Ordnungsdienst in den sieben Entwurfsentscheidungen E1 bis E7 aufgelöst. Die daraus entstandene Zielarchitektur erbringt alle fünf Funktionen über HCS-Mechanismen, verlagert dabei jedoch die Zustandsableitung vollständig auf den Lesezeitpunkt. Das Evaluationskonzept macht diese Verlagerung messbar: Die Messgrenze liegt in beiden Varianten an der Registry-Schnittstelle, und die Szenarien S1 bis S5 decken die drei Dimensionen Performanz, Skalierbarkeit und Sicherheit entlang der nicht-funktionalen Anforderungen ab. Die technische Umsetzung dieses Aufbaus ist Gegenstand des folgenden Kapitels.
