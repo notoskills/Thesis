@@ -5,7 +5,7 @@
 
 Das Ziel dieses Kapitels ist es, eine HCS-basierte Alternative zur Ledger-Schicht der Referenzarchitektur von Erler et al.~\cite{erler2023} zu konzipieren, die deren Funktionen erfüllt, ohne die darüber liegende Agenten- und Kommunikationsschicht zu ändern. Damit wird die im Kapitel~\ref{cha:state_of_the_art} identifizierte Forschungslücke in einen konkreten Entwurf überführt, dessen Implementierung und Evaluation der Gegenstand der folgenden Kapitel sind.
 
-Das Kapitel gliedert sich wie folgt: der Abschnitt~\ref{sec:konzipierung-referenzarchitektur} analysiert die Ausgangssituation, indem der Schnitt zwischen Agenten- und Ledger-Schicht klar definiert, die Funktionen der Ledger-Schicht systematisch identifiziert und ihren Hyperledger-Indy-spezifischen Mechanismen zugeordnet sowie der Umfang des geplanten Austauschs abgegrenzt wird. Der Abschnitt~\ref{sec:konzipierung-anforderungen} leitet daraus die funktionalen Anforderungen sowie die nicht-funktionalen Anforderungen ab. Der Abschnitt~\ref{sec:konzipierung-entwurf} trifft auf dieser Grundlage die Entwurfsentscheidungen für die HCS-basierte Ledger-Schicht. 
+Das Kapitel gliedert sich wie folgt: der Abschnitt~\ref{sec:konzipierung-referenzarchitektur} analysiert die Ausgangssituation, indem der Schnitt zwischen Agenten- und Ledger-Schicht klar definiert, die Funktionen der Ledger-Schicht systematisch identifiziert und ihren Hyperledger-Indy-spezifischen Mechanismen zugeordnet sowie der Umfang des geplanten Austauschs abgegrenzt wird. Der Abschnitt~\ref{sec:konzipierung-anforderungen} leitet daraus die funktionalen Anforderungen sowie die nicht-funktionalen Anforderungen ab. Der Abschnitt~\ref{sec:konzipierung-entwurf} trifft auf dieser Grundlage die Entwurfsentscheidungen für die HCS-basierte Ledger-Schicht. Der Abschnitt~\ref{sec:konzipierung-zielarchitektur} führt diese Entscheidungen zur Zielarchitektur zusammen, der Abschnitt~\ref{sec:konzipierung-evaluationskonzept} legt das Evaluationskonzept fest, und der Abschnitt~\ref{sec:konzipierung-zusammenfassung} fasst die Ergebnisse des Kapitels zusammen.
 
 \section{Ausgangssituation und Analyse der Referenzarchitektur}
 \label{sec:konzipierung-referenzarchitektur}
@@ -101,7 +101,7 @@ Die nicht-funktionalen Anforderungen ergeben sich direkt aus den im Kapitel~\ref
   \item[NFA4 - Lastskalierung:] Die Ledger-Schicht darf keine strukturellen Obergrenzen für die Anzahl der Teilnehmer, der verwalteten Identitätsobjekte oder der parallel eingereichten Operationen enthalten, die den Messbereich vor Erreichen der technologiebedingten Grenze beschränken. Zusätzlich muss der Entwurf die Komponenten benennen, an denen ein Engpass auftreten kann, sodass beobachtete Veränderungen von Durchsatz und Latenz einer konkreten Komponente zugeordnet werden können.
   \item[NFA5 - Datenwachstum:] Die Ledger-Schicht muss den mit wachsendem Datenbestand verbundenen Speicherbedarf auf Ledger- und Knoten-Ebene nachvollziehbar und quantifizierbar machen, sodass das Datenwachstum der gewählten Zustandsrekonstruktionsstrategie mit dem nativen Zustandsspeicher von Indy verglichen werden kann.
   \item[NFA6 - Konsens-Fehlertoleranz:] Die Ledger-Schicht muss so betrieben werden können, dass Anzahl, Verteilung und Konfiguration der konsensbildenden Knoten kontrollierbar sind und einzelne Knoten gezielt ausgefallen oder fehlerhaft betrieben werden können. Nur unter dieser Bedingung lassen sich das aBFT-Modell des Hedera-Hashgraph-Konsens und das RBFT-Modell von Indy-Plenum unter vergleichbaren Knotenkonfigurationen entlang byzantinischer Fehlertoleranz und Finalitätsgarantien verglichen werden, statt Eigenschaften zweier unterschiedlich dimensionierter Netzwerke zu vergleichen.
-  \item[NFA7 - Zugriffskontrolle und Widerruf:] Die Ledger-Schicht muss die Wirksamkeit der in FA1 geforderten Autorisierung und des in FA4 geforderten Widerrufsmechanismus überprüfbar machen: der Versuch einer nicht autorisierten Schreiboperation und die Präsentation eines widerrufenen Credentials müssen ein beobachtbares, eindeutiges Ergebnis liefern, sodass die Umsetzung beider Mechanismen experimentell nachgewiesen und nicht nur konzeptionell behauptet werden kann.
+  \item[NFA7 - Zugriffskontrolle und Widerruf:] Die Ledger-Schicht muss die Wirksamkeit der in FA1 geforderten Autorisierung und des in FA4 geforderten Widerrufsmechanismus auswertbar machen: Der Versuch einer nicht autorisierten Schreiboperation muss ein beobachtbares, eindeutiges Ergebnis liefern, und der Widerrufsstatus eines Credentials muss so veröffentlicht werden, dass ein Verifier ihn eindeutig gegen den aktuellen Akkumulatorzustand auswerten kann. Nur unter dieser Bedingung lassen sich beide Mechanismen überhaupt gegen die Referenzarchitektur vergleichen, statt sie nur konzeptionell zu behaupten.
   \item[NFA8 - Bedrohungsresistenz:] Die Ledger-Schicht muss auf derselben Granularität dokumentiert sein, die der Bedrohungsmodellierung der Referenzarchitektur zugrunde liegt (Assets, Vertrauensgrenzen und Datenflüsse~\cite{erler2023}), sodass eine STRIDE-Analyse differenziell gegen die Referenzarchitektur geführt werden kann und sich feststellen lässt, ob der Austausch der Ledger-Schicht neue Bedrohungen einführt oder bestehende mindert. Das schließt unter anderem ein, welche Metadaten durch die auf der Ledger-Schicht abgelegten Objekte öffentlich sichtbar werden~\cite{satybaldy2026}.
 \end{description}
 
@@ -177,7 +177,7 @@ Die HCS-basierte Ledger-Schicht wird auf einem selbst betriebenen Hashgraph-Netz
 \label{subsec:e2-speicherform}
 
 \paragraph{Problem.}
-Da HCS keinen Zustand speichert, muss definiert werden, was überhaupt als Nachricht auf den Ledger geschrieben wird. Dabei sind zwei Ebenen zu unterscheiden. Für die Gesundheitsdaten selbst ist die Frage durch die Referenzarchitektur bereits entschieden: Sie bleiben off-chain in den internen Systemen der erzeugenden Einrichtungen~\cite{erler2023} und sind nach dem Abschnitt~\ref{subsec:abgrenzung} nicht Gegenstand des Austauschs. Offen ist die Frage für die zweite Ebene, nämlich die vier Objektgruppen, die die Ledger-Schicht selbst führt: öffentliche DIDs, Schemas, Credential Definitions und Widerrufsinformationen. Für sie stellt sich die Frage bei Indy nicht, da der Domain Ledger sie als native Objekttypen hält (Abschnitt~\ref{subsec:grundlagen-speicher-indy}). Auf HCS entsteht sie, weil eine einzelne Nachricht auf 1024 Byte begrenzt ist (Abschnitt~\ref{subsec:grundlagen-speicher-hcs}), während insbesondere Credential Definitions und Revocation Registry Definitions diese Grenze deutlich überschreiten - die Hiero AnonCreds Method dokumentiert dies an einem Beispiel, in dem eine CredDef auf sechs und eine RevRegDef auf zwei HCS-1-Nachrichten aufgeteilt werden~\cite{hieroanoncreds}. Die vollständige Ablage eines Identitätsobjekts auf dem Ledger ist damit nicht mehr ein einzelner Schreibvorgang, sondern erfordert eine Aufteilung auf mehrere Nachrichten. Damit ist die Frage, ob die Objekte überhaupt auf dem Ledger liegen oder nur referenziert werden sollen, tatsächlich offen. Diese Entscheidung geht den Entscheidungen über die einzelnen Objekttypen voraus, da sie bestimmt, welche Methoden für diese Objekttypen in Frage kommen.
+Da HCS keinen Zustand speichert, muss definiert werden, was überhaupt als Nachricht auf den Ledger geschrieben wird. Dabei sind zwei Ebenen zu unterscheiden. Für die Gesundheitsdaten selbst ist die Frage durch die Referenzarchitektur bereits entschieden: Sie bleiben off-chain in den internen Systemen der erzeugenden Einrichtungen~\cite{erler2023} und sind nach dem Abschnitt~\ref{subsec:abgrenzung} nicht Gegenstand des Austauschs. Offen ist die Frage für die zweite Ebene, nämlich die vier Objektgruppen, die die Ledger-Schicht selbst führt: öffentliche DIDs, Schemas, Credential Definitions und Widerrufsinformationen. Für sie stellt sich die Frage bei Indy nicht, da der Domain Ledger sie als native Objekttypen hält (Abschnitt~\ref{subsec:grundlagen-speicher-indy}). Auf HCS entsteht sie, weil eine einzelne Nachricht auf 1024 Byte begrenzt ist (Abschnitt~\ref{subsec:grundlagen-speicher-hcs}), während insbesondere Credential Definitions und Revocation Registry Definitions diese Grenze deutlich überschreiten - die Hiero AnonCreds Method dokumentiert dies an einem Beispiel, in dem eine CredDef auf sechs und eine RevRegDef auf zwei HCS-1-Nachrichten aufgeteilt werden~\cite{hieroanoncreds}; die Zahl der Nachrichten ist dabei keine feste Eigenschaft des Objekttyps, sondern wächst mit der Attributenzahl des zugrunde liegenden Schemas. Die vollständige Ablage eines Identitätsobjekts auf dem Ledger ist damit nicht mehr ein einzelner Schreibvorgang, sondern erfordert eine Aufteilung auf mehrere Nachrichten. Damit ist die Frage, ob die Objekte überhaupt auf dem Ledger liegen oder nur referenziert werden sollen, tatsächlich offen. Diese Entscheidung geht den Entscheidungen über die einzelnen Objekttypen voraus, da sie bestimmt, welche Methoden für diese Objekttypen in Frage kommen.
 
 \paragraph{Optionen.}
 Der Optionsraum ergibt sich aus drei Speichermustern, die in der betrachteten Literatur und in den HCS-Spezifikationen beschrieben sind.
@@ -238,7 +238,7 @@ Beide Optionen erfüllen FA3 und FA4 grundsätzlich, unterscheiden sich jedoch i
 Dazu kommt ein methodisches Argument. Das Ziel dieser Arbeit ist der Vergleich zweier Ledger-Technologien, nicht der Vergleich einer etablierten Implementierung mit einem Eigenentwurf. Eine selbst definierte Abbildung würde in die Messung Eigenschaften der eigenen Implementierung einbringen, die sich nicht von den Eigenschaften des Ledgers trennen lassen, und damit der im Abschnitt~\ref{subsec:abgrenzung} formulierten Zuordenbarkeit widersprechen. Eine spezifizierte Methode verschiebt diesen Anteil auf eine dokumentierte, von Dritten geprüfte Grundlage.
 
 \paragraph{Entscheidung.}
-Die AnonCreds-Objekte werden nach der Hiero AnonCreds Method abgebildet~\cite{hieroanoncreds}; ein eigener Abbildungsentwurf wird verworfen. Für die Kodierungsfrage aus E2 folgt daraus, dass Schema, Credential Definition und Revocation-Registry-Definition als HCS-1-Dateien und die Revocation-Registry-Einträge als Nachrichten eines zugeordneten Topics gespeichert werden. Der Widerrufsmechanismus von AnonCreds (der kryptografische Akkumulator) bleibt unverändert; ausgetauscht wird ausschließlich der Ort, an dem sein Zustand veröffentlicht wird.
+Die AnonCreds-Objekte werden nach der Hiero AnonCreds Method abgebildet~\cite{hieroanoncreds}; ein eigener Abbildungsentwurf wird verworfen. Für die Kodierungsfrage aus E2 folgt daraus, dass Schema, Credential Definition und Revocation-Registry-Definition als HCS-1-Dateien und die Revocation-Registry-Einträge als Nachrichten eines zugeordneten Topics gespeichert werden. Der Widerrufsmechanismus von AnonCreds (der kryptografische Akkumulator) bleibt unverändert; ausgetauscht wird ausschließlich der Ort, an dem sein Zustand veröffentlicht wird. Die Tabelle~\ref{tab:anoncreds-kodierung-hcs} fasst die Kodierung je Objekttyp zusammen und nimmt die in E3 getroffene Festlegung für die öffentlichen DIDs mit auf.
 
 
 \begin{table}[htbp]
@@ -252,7 +252,7 @@ Die AnonCreds-Objekte werden nach der Hiero AnonCreds Method abgebildet~\cite{hi
     \textbf{Objekt} & \textbf{Kodierung} & \textbf{Begründung} \\
     \midrule
     Schema & HCS-1-Datei & Statisches, einmalig publiziertes Objekt; eigenes Topic je Objekt~\cite{hieroanoncreds} \\
-    CredDef & HCS-1-Datei & Statisches, einmalig publiziertes Objekt; überschreitet die 1024-Byte-Grenze einer einzelnen Nachricht deutlich, im Beispiel der Spezifikation auf sechs Chunks aufgeteilt~\cite{hieroanoncreds} \\
+    CredDef & HCS-1-Datei & Statisches, einmalig publiziertes Objekt; überschreitet die 1024-Byte-Grenze einer einzelnen Nachricht deutlich, wobei die Zahl der benötigten Nachrichten mit der Attributzahl des zugrunde liegenden Schemas wächst - im Beispiel der Spezifikation sechs Chunks~\cite{hieroanoncreds} \\
     RevRegDef & HCS-1-Datei & Statisches, einmalig publiziertes Objekt; enthält zusätzlich den Verweis auf das Entries-Topic (\texttt{hcsMetadata.entriesTopicId}); im Beispiel der Spezifikation auf zwei Chunks aufgeteilt~\cite{hieroanoncreds} \\
     RevRegEntry & Einzelne HCS-Nachricht & Wiederkehrende, inkrementelle Aktualisierung; enthält nur das komprimierte Delta (geänderte Indizes und Akkumulator) seit dem letzten Eintrag, veröffentlicht im der RevRegDef zugeordneten Entries-Topic~\cite{hieroanoncreds} \\
     Öffentliche DID (\texttt{did:hedera}) & Einzelne HCS-Nachricht je Änderung & Wiederkehrende, inkrementelle Aktualisierung; DID-Dokument wird aus dem Nachrichtenstrom des DID-eigenen Topics rekonstruiert~\cite{hasheddidmethod} \\
@@ -366,8 +366,7 @@ Die Tabelle~\ref{tab:entwurfsentscheidungen} fasst die sieben Entwurfsentscheidu
     signierte Delegationsnachrichten mit anwendungsseitiger Prüfung &
     FA1, FA5; NFA7 \\
     E7 - Anbindung an die Agentenschicht &
-    Bestehende Hedera-Erweiterung des Aries-Agentenframeworks über die
-    Verifiable-Data-Registry-Schnittstelle von AnonCreds &
+    Bestehende Hedera-Plugin des Aries-Agentenframeworks über die Verifiable-Data-Registry-Schnittstelle von AnonCreds &
     FA6; NFA3 \\
     \bottomrule
   \end{tabular}
@@ -379,18 +378,20 @@ Die getroffenen Entscheidungen betreffen jeweils einen Teilaspekt der Ledger-Sch
 \section{Zielarchitektur}
 \label{sec:konzipierung-zielarchitektur}
 
-Die Entscheidungen E1 bis E7 ergeben zusammen die Zielarchitektur der HCS-basierten Ledger-Schicht. Dieser Abschnitt fasst sie zusammen: zuerst die beteiligten Komponenten, anschließend die Abbildung der fünf Ledger-Funktionen aus Abschnitt~\ref{subsec:ledger-funktionen} auf HCS-Mechanismen und zuletzt der Schreib- und der Lesepfad.
+Die Entscheidungen E1 bis E7 ergeben zusammen die Zielarchitektur der HCS-basierten Ledger-Schicht. Dieser Abschnitt fasst sie zusammen: zuerst die beteiligten Komponenten und anschließend die Abbildung der fünf Ledger-Funktionen aus Abschnitt~\ref{subsec:ledger-funktionen} auf HCS-Mechanismen.
 
 \subsection{Komponenten}
 \label{subsec:zielarchitektur-komponenten}
 
 \begin{description}
-  \item[Konsensnetzwerk:] Mehrknotiges, selbst betriebenes Hashgraph-Netzwerk; erbringt Ordnung, Konsens-Zeitstempel und Finalität (E1). Die konkrete Ausbringung wird im Kapitel~\ref{cha:implementierung} festgelegt.
+  \item[Konsensnetzwerk:] Mehrknotiges, selbst betriebenes Hashgraph-Netzwerk; erbringt Ordnung, Konsens-Zeitstempel und Finalität (E1). Die konkrete Umsetzung wird im Kapitel~\ref{cha:implementierung} festgelegt.
   \item[Mirror Node:] Selbst betrieben; hält die Nachrichtenhistorie dauerhaft vor und stellt Abfrage- und Abonnementschnittstelle bereit~\cite{hederamirrornodes} (E1, E5).
   \item[Topics:] Ein Vertrauens-Topic für Registrierungs- und Delegationsnachrichten (E6), je ein Topic pro öffentlicher DID~\cite{hasheddidmethod} (E3) sowie die Topics der AnonCreds-Objekte nach der Hiero AnonCreds Method~\cite{hieroanoncreds} (E4).
-  \item[Registry-Adapter:] Bildet die Lese- und Schreiboperationen der Verifiable-Data-Registry-Schnittstelle von AnonCreds auf Topic-Operationen ab und leitet den Zustand eines Objekts bei jedem Lesezugriff aus der über die Mirror Node abgerufenen Historie ab~\cite{acapyhedera} (E5, E7); dabei prüft er die Delegationskette gegen das Vertrauens-Topic (E6).
+  \item[Registry-Adapter:] Bildet die Lese- und Schreiboperationen der Verifiable-Data-Registry-Schnittstelle von AnonCreds auf Topic-Operationen ab und leitet den Zustand eines Objekts bei jedem Lesezugriff aus der über die Mirror Node abgerufenen Historie ab (E5, E7); dabei prüft er die Delegationskette gegen das Vertrauens-Topic (E6).
   \item[Agentenschicht:] Unverändert übernommen (Abschnitt~\ref{subsec:abgrenzung}); nicht Teil der Ledger-Schicht.
 \end{description}
+
+Für das Zusammenspiel dieser Komponenten ist eine Eigenschaft festzuhalten, die die HCS-basierte Variante von der Referenzvariante unterscheidet: Auf dem Schreibweg ist keine zustandsführende Komponente beteiligt. Das Netzwerk prüft ausschließlich die Berechtigung über den \texttt{submitKey} (E6), ordnet die Nachricht und stellt sie über die Mirror Node bereit; die gesamte inhaltliche Auswertung einschließlich der Prüfung der Delegationskette fällt auf den Lesezeitpunkt (E5). Der Aufwand des Lesewegs wächst deshalb mit der Länge der Topic-Historie - genau der Zusammenhang, den die Evaluation nach NFA2 und NFA5 quantifiziert.
 
 % TODO Abbildung: Komponenten + Datenflüsse (Schreib-/Lesepfad), Messgrenze gestrichelt eingezeichnet
 
@@ -419,17 +420,6 @@ Die Tabelle~\ref{tab:ledger-funktionen-hcs} ist das Gegenstück zur Tabelle~\ref
   \end{tabular}
 \end{table}
 \normalsize
-
-\subsection{Schreib- und Lesepfad}
-\label{subsec:zielarchitektur-pfade}
-
-\paragraph{Schreibpfad.}
-(1) Die schreibende Komponente signiert die Nachricht und reicht sie über \texttt{ConsensusSubmitMessage} ein~\cite{hederasubmitmessage}. (2) Der Konsens vergibt Reihenfolge und Zeitstempel; damit ist die Operation final. (3) Die Mirror Node übernimmt die Nachricht in ihre Historie und macht sie über ihre Abfrageschnittstelle abrufbar. (4) Schreibseitig ist keine zustandsführende Komponente beteiligt: Die Berechtigung wird netzwerkseitig über den \texttt{submitKey} des Topics geprüft (E6), die inhaltliche Auswertung der Nachricht erfolgt erst beim Lesezugriff (E5).
-
-
-\paragraph{Lesepfad.}
-(1) Der Agent fordert ein Objekt über die Registry-Schnittstelle an. (2) Der Registry-Adapter löst die Kennung auf das zugehörige Topic bzw.\ die zugehörige HCS-1-Datei auf. (3) Der Adapter ruft die Nachrichtenhistorie dieses Topics über die Mirror Node ab und leitet daraus den aktuellen Stand des Objekts ab; ein Zustand wird nicht vorgehalten (E5). (4) Das Objekt wird im AnonCreds-Format zurückgegeben, sodass die Agentenschicht unverändert bleibt (FA6). Der Aufwand von Schritt (3) wächst mit der Länge der Topic-Historie; dieser Zusammenhang ist Gegenstand der Messung nach NFA2 und NFA5.
-
 
 \section{Evaluationskonzept}
 \label{sec:konzipierung-evaluationskonzept}
@@ -463,12 +453,14 @@ Die Messgrößen werden nicht frei gewählt, sondern aus der im Kapitel~\ref{cha
     NFA4 - Lastskalierung & Verlauf von Durchsatz und Latenz über steigende Nebenläufigkeit; Sättigungspunkt und auslastungsbegrenzende Komponente & VDR-Schnittstelle, Komponentenmetriken & \cite{mazlan2020, sehimibendaoud2023, joshimahajan2025, hashim2021} \\
     NFA5 - Datenwachstum & Speicherbedarf je Konsensknoten und je Mirror Node sowie Lesedauer je Objekttyp, jeweils in Abhängigkeit von der Anzahl verwalteter Identitätsobjekte bzw. der Länge der zugehörigen Topic-Historie & Konsensknoten, Mirror Node, VDR-Schnittstelle & \cite{mazlan2020, giao2026, mamoru2026, farin2025} \\
     NFA6 - Konsens-Fehlertoleranz & Verfügbarkeit und Latenz bei Ausfall von $f$ Knoten sowie Dauer bis zur Wiederaufnahme des Normalbetriebs & Konsensnetzwerk & \cite{hashim2021, verma2024, farin2025} \\
-    NFA7 - Zugriffskontrolle und Widerruf & Ergebnis nicht autorisierter Schreibversuche; Verifikationsergebnis vor und nach dem Widerruf; Zeit bis zur Wirksamkeit des Widerrufs & VDR-Schnittstelle, Agent & \cite{mamoru2026, torongo2023, tawfik2025} \\
+    NFA7 - Zugriffskontrolle & Ergebnis nicht autorisierter Schreibversuche, getrennt nach netzwerkseitiger und anwendungsseitiger Prüfung; der Widerruf wird auf Entwurfsebene statt messend bewertet (Abschnitt~\ref{subsec:eval-validitaet}) & VDR-Schnittstelle & \cite{mamoru2026, torongo2023, tawfik2025} \\
     NFA8 - Bedrohungsresistenz & Qualitativ: Differenz der STRIDE-Bedrohungen gegenüber der Referenzarchitektur; über die Mirror Node öffentlich sichtbare Metadaten & Entwurfsdokumentation, Mirror-Node-Historie & \cite{erler2023, torongo2023, satybaldy2026, ferreira2024} \\
     \bottomrule
   \end{tabular}
 \end{table}
 \normalsize
+
+Eine Größe wird ausschließlich auf der HCS-Variante erhoben. Das Intervall zwischen dem Konsens-Zeitstempel einer Nachricht und dem Zeitpunkt, ab dem sie über die Mirror Node abrufbar ist, hat auf der Indy-Variante kein Gegenstück, da Schreibabschluss und Lesbarkeit dort zusammenfallen. Es wird deshalb nicht als Vergleichsgröße, sondern als eigenständige Eigenschaft der HCS-basierten Ledger-Schicht gemessen und berichtet. Für die Einordnung der nach NFA2 gemessenen Lesewerte ist es dennoch erforderlich, da es die untere Schranke dafür bestimmt, ab wann eine soeben geschriebene Änderung überhaupt sichtbar werden kann.
 
 \subsection{Versuchsaufbau}
 \label{subsec:eval-aufbau}
@@ -485,6 +477,8 @@ Die Messgrößen werden nicht frei gewählt, sondern aus der im Kapitel~\ref{cha
 \subsection{Lastszenarien}
 \label{subsec:eval-szenarien}
 
+Die Messgrößen werden in fünf Szenarien erhoben, die die drei Evaluationsdimensionen entlang der nicht-funktionalen Anforderungen abdecken. Die Tabelle~\ref{tab:lastszenarien} ordnet jedem Szenario seinen Untersuchungsgegenstand und die adressierten Anforderungen zu.
+
 \begin{table}[htbp]
 \renewcommand{\arraystretch}{1.3}
 \footnotesize
@@ -495,7 +489,7 @@ Die Messgrößen werden nicht frei gewählt, sondern aus der im Kapitel~\ref{cha
     \toprule
     \textbf{Szenario} & \textbf{Beschreibung} & \textbf{Anforderung} \\
     \midrule
-    S1 - Basismessung & Sequenzielle Ausführung je einer Operation pro Ledger-Funktion (DID-Registrierung, Schema, Credential Definition, Leseoperationen) ohne Nebenlast & NFA1, NFA2 \\
+    S1 - Basismessung & Sequenzielle Ausführung je einer Operation pro Ledger-Funktion (DID-Registrierung, Schema, Credential Definition, Leseoperationen) unter definierter Grundlast & NFA1, NFA2 \\
     S2 - Laststeigerung & Schrittweise Erhöhung der Nebenläufigkeit bis zum Erreichen der Sättigung, mit anschließender Bestimmung der begrenzenden Komponente & NFA1, NFA2, NFA4 \\
     S3 - Datenwachstum & Schrittweiser Aufbau eines wachsenden Bestands an Identitätsobjekten mit Erfassung des Speicherbedarfs sowie der Leselatenz je Objekttyp an definierten Zwischenständen & NFA5, NFA2 \\
     S4 - Knotenausfall & Gezielter Ausfall einzelner Konsensknoten unter laufender Grundlast, mit Beobachtung von Verfügbarkeit, Latenz und Wiederaufnahme & NFA6 \\
@@ -524,6 +518,7 @@ Die Sicherheitsdimension wird zweigeteilt bewertet. Experimentell prüfen die Sz
   \item Absolute Werte sind von der eingesetzten Ausführungsumgebung abhängig; die Aussagekraft der Evaluation liegt im Verhältnis der beiden unter identischen Bedingungen gemessenen Varianten.
   \item Die Lesewerte der HCS-Variante bilden den Standardleseweg nach E5 ab und nicht eine optimierte Umsetzung. Das als Alternative verworfene Appnet-Muster bleibt unimplementiert; sein Optimierungspotenzial wird im Kapitel~\ref{sec:discussion} anhand der gemessenen Werte beziffert, aber nicht gemessen.
   \item Der Widerruf nach FA4 ist entworfen, wird im Proof-of-Concept jedoch nicht ausgeführt. Die Referenzimplementierung setzt den AnonCreds-Widerruf auf keiner Variante um, sodass für einen differenziellen Vergleich keine gemeinsame Grundlage besteht. Die Evaluation nach NFA7 beschränkt sich daher auf die Zugriffskontrolle; die Widerrufsfähigkeit wird auf Entwurfsebene und nicht empirisch bewertet.
+  \item Die berichteten Werte gelten für den Betrieb unter der im Kapitel~\ref{cha:implementierung} festgelegten Grundlast. Auf einem vollständig leerlaufenden Netzwerk weicht die HCS-Variante beim Lesen direkt nach einem Schreibvorgang davon ab; dieser Fall wird gesondert erhoben und geht nicht in den Vergleich ein.
   \item Nicht Gegenstand der Messung sind Transaktionsgebühren, da beide Varianten in einem selbst betriebenen Netzwerk ohne Gebührenmodell evaluiert werden.
 \end{itemize}
 % TODO ggf. weitere Grenzen nach Abschluss der Implementierung ergänzen
