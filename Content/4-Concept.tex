@@ -19,7 +19,14 @@ Die Referenzarchitektur kann anhand der Taxonomie von Erler et al. ~\cite{erler2
 \label{subsec:schichtenstruktur}
 Für die Analyse wird die im Abschnitt~\ref{sec:sota_referenzarchitektur} beschriebene Architektur in zwei Schichten untergeteilt. Entscheidend für diesen Schnitt ist die Frage, welche Komponenten von einem Austausch der Ledger-Technologie überhaupt betroffen werden. Die Agenten-Schicht umfasst die DIDComm-basierte Peer-to-Peer-Kommunikation zwischen den Aries-Agenten der Patientenanwendung und der Netzwerk-Konnektoren einschließlich der Mediator-Infrastruktur; sie basiert auf paarweisen Peer-DIDs, die nicht auf dem Ledger registriert werden~\cite{erler2023}. Die Ledger-Schicht ergänzt diese Kommunikation um einen öffentlichen Vertrauensanker, der in der Referenzarchitektur durch eine public permissioned Hyperledger-Indy-Blockchain implementiert ist~\cite{erler2023}.
 
-Für die eigentliche Arbeit ist die Zusammensetzung der beiden Schichten nicht so wichtig, sondern die Schnittstelle zwischen ihnen, denn sie bestimmt, welche Operationen eine alternative Ledger-Implementierung bereitstellen muss. Aus der Aufgabenzuweisung der Referenzarchitektur~\cite{erler2023} ergeben sich drei Berührungspunkte: diese lassen sich direkt aus dem Lebenszyklus eines Credentials ablesen (Tabelle~\ref{tab:beispiel-ledgerzugriffe}). Diese drei Berührungspunkte bilden den operativen Kern der Schnittstelle, die eine alternative Ledger-Implementierung bereitstellen muss; sie werden im folgenden Abschnitt um den übergreifenden Zweck der Ledger-Schicht ergänzt und zu deren Kernfunktionen ausdifferenziert, und sie begründen gleichzeitig die Abgrenzung des Austauschumfangs im Abschnitt~\ref{subsec:abgrenzung}.
+Für die eigentliche Arbeit ist die Zusammensetzung der beiden Schichten nicht so wichtig, sondern die Schnittstelle zwischen ihnen, denn sie bestimmt, welche Operationen eine alternative Ledger-Implementierung bereitstellen muss. Aus der Aufgabenzuweisung der Referenzarchitektur~\cite{erler2023} ergeben sich drei Berührungspunkte, die sich direkt aus dem Lebenszyklus eines Credentials ablesen lassen (Tabelle~\ref{tab:beispiel-ledgerzugriffe}): das Veröffentlichen der öffentlichen Identitätsobjekte in der Vorbereitungsphase, das Auflösen dieser Objekte bei Ausstellung und Präsentation und das Veröffentlichen des Widerrufsstatus. Der erste und der dritte Berührungspunkt sind schreibend, der zweite lesend; die Verbindungsphase kommt ohne Ledger-Zugriff aus, da Peer-DIDs nicht öffentlich registriert werden. Das Verhältnis von zwei lesenden zu einem schreibenden Zugriffszeitpunkt begründet, warum der Leseweg im weiteren Verlauf des Kapitels die zentrale Rolle einnimmt. Diese drei Berührungspunkte bilden den operativen Kern der Schnittstelle, die eine alternative Ledger-Implementierung bereitstellen muss; sie werden im folgenden Abschnitt um den übergreifenden Zweck der Ledger-Schicht ergänzt und zu deren Kernfunktionen ausdifferenziert, und sie begründen gleichzeitig die Abgrenzung des Austauschumfangs im Abschnitt~\ref{subsec:abgrenzung}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{Figures/schichtenschnitt}
+    \caption{Schnitt zwischen Agenten- und Ledger-Schicht mit den drei Berührungspunkten der Schnittstelle. Die Phasenangaben beziehen sich auf den Credential-Lebenszyklus aus Tabelle~\ref{tab:beispiel-ledgerzugriffe}; Phase 1 (Verbindung) kommt ohne Ledger-Zugriff aus und erscheint deshalb nicht.}
+    \label{fig:schichtenschnitt}
+\end{figure}
 
 \subsection{Funktionen der Ledger-Schicht}
 \label{subsec:ledger-funktionen}
@@ -302,7 +309,7 @@ Gemessen an diesem Muster bildet ein Threshold Key als \texttt{submitKey} die Wu
 Für die Topic-Struktur ist zunächst die Vorgabe der gewählten Methoden festzuhalten: \texttt{did:hedera} legt je öffentlicher DID ein Topic an~\cite{hasheddidmethod}, und die Hiero AnonCreds Method verteilt die AnonCreds-Objekte ebenfalls auf mehrere Topics~\cite{hieroanoncreds}. Die Ledger-Schicht besteht damit aus einer wachsenden Zahl kleiner, voneinander unabhängiger Topics. Daraus folgt eine für FA5 wesentliche Einschränkung: HCS garantiert eine Totalordnung ausschließlich innerhalb eines einzelnen Topics~\cite{bairdgross2019}, sodass eine übergreifende Historie nicht direkt vorliegt, sondern nachträglich aus den Konsens-Zeitstempeln der beteiligten Topics rekonstruiert werden muss. Für die Vertrauenshierarchie selbst ist eine weitere Aufteilung deshalb nicht sinnvoll: Die Reihenfolge, in der Rechte vergeben und entzogen werden, ist für die Gültigkeitsprüfung entscheidend und wird nur innerhalb eines gemeinsamen Topics ohne Zusatzannahmen garantiert. Dazu kommt der von Satybaldy et al. gemessene Zusatzaufwand der Topic-Erstellung, der die Autoren dazu veranlasst, in ihrem Aufbau ein Topic anzulegen und für mehrere DIDs wiederzuverwenden~\cite{satybaldy2026}. Beide Beobachtungen sprechen dafür, die Vertrauenshierarchie auf einem einzelnen, klar abgegrenzten Topic zu führen.
 
 \paragraph{Entscheidung.}
-Die Vertrauenshierarchie wird auf einem einzelnen Topic geführt, dessen \texttt{submitKey} als Threshold Key von den Steward-Instanzen gemeinsam kontrolliert wird und die Registrierung neuer Steward-Akteure netzwerkseitig absichert. Endorser-Rechte werden über signierte Delegationsnachrichten auf demselben Topic vergeben; ihre Gültigkeit prüft die auswertende Komponente des in E5 festgelegten Lesewegs zum Zeitpunkt des Zugriffs, bevor sie nachfolgende Registrierungsnachrichten des betreffenden Akteurs als gültig akzeptiert. Die in FA5 geforderte topicübergreifende Historie wird aus den Konsens-Zeitstempeln der beteiligten Topics rekonstruiert; der dafür nötige Aufwand geht in die Messung nach NFA2 und NFA3 ein.
+Die Vertrauenshierarchie wird auf einem einzelnen Topic geführt, dessen \texttt{submitKey} als Threshold Key von den Steward-Instanzen gemeinsam kontrolliert wird und die Registrierung neuer Steward-Akteure netzwerkseitig absichert. Endorser-Rechte werden über signierte Delegationsnachrichten auf demselben Topic vergeben; ihre Gültigkeit prüft der Registry-Adapter als auswertende Komponente des in E5 festgelegten Lesewegs, indem er die Historie des Vertrauens-Topics bei jeder Prüfung erneut ausliest, bevor er nachfolgende Registrierungsnachrichten des betreffenden Akteurs als gültig akzeptiert. Falls der Delegationszustand nicht lesbar ist, wird die Nachricht als ungültig behandelt. Die in FA5 geforderte topicübergreifende Historie wird aus den Konsens-Zeitstempeln der beteiligten Topics rekonstruiert; der dafür nötige Aufwand geht in die Messung nach NFA2 und NFA3 ein.
 
 
 \subsection{E7 - Anbindung an die Agentenschicht}
@@ -393,7 +400,21 @@ Die Entscheidungen E1 bis E7 ergeben zusammen die Zielarchitektur der HCS-basier
 
 Für das Zusammenspiel dieser Komponenten ist eine Eigenschaft festzuhalten, die die HCS-basierte Variante von der Referenzvariante unterscheidet: Auf dem Schreibweg ist keine zustandsführende Komponente beteiligt. Das Netzwerk prüft ausschließlich die Berechtigung über den \texttt{submitKey} (E6), ordnet die Nachricht und stellt sie über die Mirror Node bereit; die gesamte inhaltliche Auswertung einschließlich der Prüfung der Delegationskette fällt auf den Lesezeitpunkt (E5). Der Aufwand des Lesewegs wächst deshalb mit der Länge der Topic-Historie - genau der Zusammenhang, den die Evaluation nach NFA2 und NFA5 quantifiziert.
 
-% TODO Abbildung: Komponenten + Datenflüsse (Schreib-/Lesepfad), Messgrenze gestrichelt eingezeichnet
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{Figures/zielarchitektur}
+    \caption{Zielarchitektur der HCS-basierten Ledger-Schicht mit Schreib- und Lesepfad. Die gestrichelte Linie markiert die Messgrenze an der Verifiable-Data-Registry-Schnittstelle.}
+    \label{fig:zielarchitektur}
+\end{figure}
+
+Die Abbildung~\ref{fig:zielarchitektur} fasst die Topics zu einer Komponente zusammen, obwohl sie durch die Entscheidungen E3, E4 und E6 unterschiedlich strukturiert sind. Die Abbildung~\ref{fig:topic-struktur} differenziert sie nach ihrem Inhalt und ihrer Anzahl aus. Von den sechs Topic-Typen wachsen nur zwei über die Zeit: das Vertrauens-Topic mit jeder Änderung der Delegationsrechte und das Topic des Widerrufsstatus mit jedem Widerruf. Die übrigen vier bleiben nach ihrer Veröffentlichung unverändert. Für die Evaluation nach NFA5 ist diese Unterscheidung wesentlich, da der in E5 festgelegte Leseweg nur bei den wachsenden Topics mit dem Bestand teurer wird.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{Figures/topic-struktur}
+    \caption{Topic-Struktur der HCS-basierten Ledger-Schicht nach den Entwurfsentscheidungen E3, E4 und E6. Das Vertrauens-Topic ist das einzige Topic mit netzwerkseitig durchgesetzter Schreibberechtigung; alle übrigen Topics sind offen beschreibbar, die Auswertung der Berechtigung erfolgt beim Lesen.}
+    \label{fig:topic-struktur}
+\end{figure}
 
 
 \subsection{Abbildung der Ledger-Funktionen}
@@ -467,7 +488,7 @@ Eine Größe wird ausschließlich auf der HCS-Variante erhoben. Das Intervall zw
 
 \begin{itemize}
   \item Verglichen werden zwei Varianten: die Indy-basierte Referenzvariante und die HCS-basierte Untersuchungsvariante. Beide werden mit derselben, unveränderten Agentenschicht betrieben (FA6), sodass gemessene Unterschiede der Ledger-Schicht zugeordnet werden können (Abschnitt~\ref{subsec:abgrenzung}).
-  \item Als Messgrenze wird die Verifiable-Data-Registry-Schnittstelle festgelegt. Innerhalb der Grenze liegen in der HCS-Variante der Registry-Adapter, das Konsensnetzwerk und die Mirror Node (Abschnitt~\ref{subsec:zielarchitektur-komponenten}), in der Indy-Variante der Resolver und die Validatorknoten. Die Agentenschicht liegt in beiden Varianten außerhalb. Diese Festlegung folgt aus der Zielarchitektur und nicht aus der Literatur, da die untersuchten Evaluationen uneinheitliche Systemgrenzen verwenden (Abschnitt~\ref{subsec:eval-messgroessen}).
+  \item Als Messgrenze wird die Verifiable-Data-Registry-Schnittstelle festgelegt. Innerhalb der Grenze liegen in der HCS-Variante der Registry-Adapter, das Konsensnetzwerk und die Mirror Node (Abbildung~\ref{fig:zielarchitektur}), in der Indy-Variante der Resolver und die Validatorknoten. Die Agentenschicht liegt in beiden Varianten außerhalb. Diese Festlegung folgt aus der Zielarchitektur und nicht aus der Literatur, da die untersuchten Evaluationen uneinheitliche Systemgrenzen verwenden (Abschnitt~\ref{subsec:eval-messgroessen}).
   \item Beide Varianten werden mit gleicher Knotenanzahl und in gleicher Ausführungsumgebung betrieben, damit nicht Eigenschaften unterschiedlich dimensionierter Netzwerke verglichen werden (NFA6). Die konkrete Festlegung erfolgt im Kapitel~\ref{cha:implementierung}.
   \item Die Last wird ausschließlich über die Registry-Schnittstelle erzeugt, sodass die DIDComm-Protokolle der Agentenschicht nicht in die Messung eingehen.
   \item Erhoben werden Zeitstempel an der Registry-Schnittstelle sowie Ressourcenmetriken aller Komponenten innerhalb der Messgrenze.
@@ -501,6 +522,8 @@ Die Messgrößen werden in fünf Szenarien erhoben, die die drei Evaluationsdime
 
 Unter diesen Szenarien nimmt S3 eine besondere Stellung ein. Die Entscheidung E5 hält den Zustand nicht vor, sondern leitet ihn bei jedem Lesezugriff aus der Topic-Historie ab; die Lesedauer der HCS-Variante wächst damit mit der Länge dieser Historie, während der Zustandsspeicher von Indy davon unabhängig ist (Abschnitt~\ref{subsec:e5-leseweg}). S3 misst genau diesen Unterschied und ist damit dasjenige Szenario, das den Gegensatz zwischen Zustands-Ledger und reinem Ordnungsdienst quantifiziert. Der zu untersuchende Effekt wird nur sichtbar, wenn die Bestände hinreichend groß gewählt werden; die Bestandsgrößen sind deshalb ein bewusst gesetzter Versuchsparameter und kein Nebeneffekt der übrigen Szenarien.
 
+Eine Randbedingung betrifft alle Szenarien gleichermaßen und wird deshalb hier und nicht bei einem einzelnen Szenario festgehalten. Die Abrufbarkeit einer Nachricht über die Mirror Node setzt bei HCS nicht allein den erreichten Konsens voraus (Abschnitt~\ref{subsec:grundlagen-mirrornodes}); eine Nachricht kann bereits konsentiert, aber noch nicht lesbar sein. Das betrifft nicht nur die nach NFA2 gemessene Lesedauer, sondern auch sequenzielle Zweischrittoperationen, bei denen unmittelbar nach einem Schreibvorgang lesend auf dasselbe Objekt zugegriffen wird, etwa bei der Auflösung einer soeben registrierten DID. Bei Indy tritt dieser Fall nicht auf, da Schreibabschluss und Lesbarkeit dort zusammenfallen (Abschnitt~\ref{subsec:grundlagen-speicher-indy}). Damit die gemessenen Werte nicht von diesem Effekt bestimmt werden, wird auch S1 auf beiden Varianten unter einer definierten und protokollierten Grundlast statt auf einem leerlaufenden Netzwerk ausgeführt. Der Effekt selbst wird nicht ausgeblendet, sondern auf der HCS-Variante gesondert erhoben und ohne Gegenstück auf der Indy-Variante berichtet.
+
 Der Ressourcenverbrauch nach NFA3 wird nicht in einem eigenen Szenario, sondern begleitend in allen Szenarien erhoben. Die Bedrohungsresistenz nach NFA8 wird nicht experimentell, sondern analytisch bewertet.
 % TODO Bestandsgrößen und Laststufen in Kapitel 5 festlegen
 
@@ -510,18 +533,6 @@ Der Ressourcenverbrauch nach NFA3 wird nicht in einem eigenen Szenario, sondern 
 Die Sicherheitsdimension wird zweigeteilt bewertet. Experimentell prüfen die Szenarien S4 und S5 die Wirksamkeit der Konsens-Fehlertoleranz und der Schreibautorisierung. Analytisch wird die HCS-basierte Ledger-Schicht mit derselben STRIDE-Methodik untersucht, mit der Erler et al. die Referenzarchitektur entworfen haben~\cite{erler2023}; bewertet wird dabei nicht das Gesamtsystem, sondern ausschließlich die Differenz: welche Bedrohungen durch den Austausch der Ledger-Schicht entfallen, welche unverändert bestehen und welche neu hinzukommen. Ein besonderes Augenmerk liegt auf den durch die vollständige Kodierung der Identitätsobjekte (E2) über die Mirror Node öffentlich sichtbaren Metadaten~\cite{satybaldy2026}. Die zweistufige Berechtigungsprüfung nach E6 wird dabei gesondert betrachtet, da die Wurzelstufe netzwerkseitig über den \texttt{submitKey} durchgesetzt wird, die Delegationsstufe dagegen anwendungsseitig im Registry-Adapter und damit außerhalb der Garantien des Konsensnetzwerks liegt.
 % TODO Ausformulierung
 
-\subsection{Gültigkeitsgrenzen}
-\label{subsec:eval-validitaet}
-
-\begin{itemize}
-  \item Gemessen wird ein selbst betriebenes Netzwerk gemäß E1; die Ergebnisse gelten für diese Betriebsform und sind nicht unmittelbar auf den Betrieb im öffentlichen Hedera-Netzwerk übertragbar.
-  \item Absolute Werte sind von der eingesetzten Ausführungsumgebung abhängig; die Aussagekraft der Evaluation liegt im Verhältnis der beiden unter identischen Bedingungen gemessenen Varianten.
-  \item Die Lesewerte der HCS-Variante bilden den Standardleseweg nach E5 ab und nicht eine optimierte Umsetzung. Das als Alternative verworfene Appnet-Muster bleibt unimplementiert; sein Optimierungspotenzial wird im Kapitel~\ref{sec:discussion} anhand der gemessenen Werte beziffert, aber nicht gemessen.
-  \item Der Widerruf nach FA4 ist entworfen, wird im Proof-of-Concept jedoch nicht ausgeführt. Die Referenzimplementierung setzt den AnonCreds-Widerruf auf keiner Variante um, sodass für einen differenziellen Vergleich keine gemeinsame Grundlage besteht. Die Evaluation nach NFA7 beschränkt sich daher auf die Zugriffskontrolle; die Widerrufsfähigkeit wird auf Entwurfsebene und nicht empirisch bewertet.
-  \item Die berichteten Werte gelten für den Betrieb unter der im Kapitel~\ref{cha:implementierung} festgelegten Grundlast. Auf einem vollständig leerlaufenden Netzwerk weicht die HCS-Variante beim Lesen direkt nach einem Schreibvorgang davon ab; dieser Fall wird gesondert erhoben und geht nicht in den Vergleich ein.
-  \item Nicht Gegenstand der Messung sind Transaktionsgebühren, da beide Varianten in einem selbst betriebenen Netzwerk ohne Gebührenmodell evaluiert werden.
-\end{itemize}
-% TODO ggf. weitere Grenzen nach Abschluss der Implementierung ergänzen
 
 \section{Zusammenfassung}
 \label{sec:konzipierung-zusammenfassung}
