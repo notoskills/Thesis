@@ -331,7 +331,7 @@ Zweitens in der Zuordenbarkeit der Messergebnisse nach Abschnitt~\ref{subsec:abg
 Zu prüfen bleibt die Widerspruchsfreiheit gegenüber E3 bis E5. Die bestehende Erweiterung setzt \texttt{did:hedera} und die Hiero AnonCreds Method um~\cite{acapyhedera,hasheddidmethod,hieroanoncreds} und ist damit mit E3 und E4 konsistent. Für E5 besteht die Konsistenz darin, dass die Erweiterung selbst keinen Zustand vorhält, sondern den Stand eines Objekts bei jedem Lesezugriff aus der über die Mirror Node abgerufenen Topic-Historie ableitet und damit genau den in E5 gewählten Leseweg realisiert. Da dies eine Eigenschaft der Erweiterung und keine Festlegung der Spezifikation ist, wird sie im Rahmen der Implementierung überprüft und dokumentiert; von ihr hängt die Interpretation der nach NFA2 und NFA5 gemessenen Lesevorgänge ab.
 
 \paragraph{Entscheidung.}
-Die Anbindung erfolgt über die bestehende Hedera-Erweiterung des Agentenframeworks~\cite{acapyhedera}; eine eigene Registry-Implementierung wird verworfen. Die Agentenschicht bleibt damit unverändert, und der Austausch beschränkt sich auf die Registry-Schnittstelle unterhalb der Aries-Protokolle. Der von der Erweiterung realisierte Leseweg wird im Kapitel~\ref{cha:implementierung} gegen die Festlegung aus E5 geprüft; eine Abweichung wäre kein Widerspruch zum Entwurf, muss aber bei der Auswertung nach NFA2 und NFA3 offengelegt werden.
+Die Anbindung erfolgt über die bestehende Hedera-Erweiterung des Agentenframeworks~\cite{acapyhedera}; eine eigene Registry-Implementierung wird verworfen. Die Agentenschicht bleibt damit unverändert, und der Austausch beschränkt sich auf die Registry-Schnittstelle unterhalb der Aries-Protokolle. Der von der Erweiterung realisierte Leseweg wird im Kapitel~\ref{cha:implementierung} gegen die Festlegung aus E5 geprüft; eine Abweichung wäre kein Widerspruch zum Entwurf, muss aber bei der Auswertung nach NFA2 und NFA5 offengelegt werden.
 
 
 \subsection{Überblick}
@@ -373,8 +373,8 @@ Die Tabelle~\ref{tab:entwurfsentscheidungen} fasst die sieben Entwurfsentscheidu
     signierte Delegationsnachrichten mit anwendungsseitiger Prüfung &
     FA1, FA5; NFA7 \\
     E7 - Anbindung an die Agentenschicht &
-    Bestehende Hedera-Plugin des Aries-Agentenframeworks über die Verifiable-Data-Registry-Schnittstelle von AnonCreds &
-    FA6; NFA3 \\
+    Bestehendes Hedera-Plugin des Aries-Agentenframeworks über die Verifiable-Data-Registry-Schnittstelle von AnonCreds &
+    FA6; NFA2, NFA3, NFA5 \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -398,7 +398,7 @@ Die Entscheidungen E1 bis E7 ergeben zusammen die Zielarchitektur der HCS-basier
   \item[Agentenschicht:] Unverändert übernommen (Abschnitt~\ref{subsec:abgrenzung}); nicht Teil der Ledger-Schicht.
 \end{description}
 
-Für das Zusammenspiel dieser Komponenten ist eine Eigenschaft festzuhalten, die die HCS-basierte Variante von der Referenzvariante unterscheidet: Auf dem Schreibweg ist keine zustandsführende Komponente beteiligt. Das Netzwerk prüft ausschließlich die Berechtigung über den \texttt{submitKey} (E6), ordnet die Nachricht und stellt sie über die Mirror Node bereit; die gesamte inhaltliche Auswertung einschließlich der Prüfung der Delegationskette fällt auf den Lesezeitpunkt (E5). Der Aufwand des Lesewegs wächst deshalb mit der Länge der Topic-Historie - genau der Zusammenhang, den die Evaluation nach NFA2 und NFA5 quantifiziert.
+Für das Zusammenspiel dieser Komponenten ist eine Eigenschaft festzuhalten, die die HCS-basierte Variante von der Referenzvariante unterscheidet: Auf dem Schreibweg ist keine zustandsführende Komponente beteiligt. Das Netzwerk ordnet die Nachricht, versieht sie mit einem Konsens-Zeitstempel und stellt sie über die Mirror Node bereit. Eine Berechtigungsprüfung findet netzwerkseitig ausschließlich auf dem Vertrauens-Topic statt, dessen Schreibberechtigung nach E6 gesetzt ist; die Topics der öffentlichen DIDs und der AnonCreds-Objekte sind dagegen offen beschreibbar. Ob ein schreibender Akteur zum Zeitpunkt des Schreibens delegiert war, wird deshalb erst beim Lesen ausgewertet (E5). Der Aufwand des Lesewegs wächst dadurch mit der Länge der Topic-Historie - genau der Zusammenhang, den die Evaluation nach NFA2 und NFA5 quantifiziert; zugleich entsteht die Asymmetrie gegenüber Indy, das den unberechtigten Schreibvorgang bereits abweist, die das Szenario S5 untersucht.
 
 \begin{figure}[H]
     \centering
@@ -407,7 +407,7 @@ Für das Zusammenspiel dieser Komponenten ist eine Eigenschaft festzuhalten, die
     \label{fig:zielarchitektur}
 \end{figure}
 
-Die Abbildung~\ref{fig:zielarchitektur} fasst die Topics zu einer Komponente zusammen, obwohl sie durch die Entscheidungen E3, E4 und E6 unterschiedlich strukturiert sind. Die Abbildung~\ref{fig:topic-struktur} differenziert sie nach ihrem Inhalt und ihrer Anzahl aus. Von den sechs Topic-Typen wachsen nur zwei über die Zeit: das Vertrauens-Topic mit jeder Änderung der Delegationsrechte und das Topic des Widerrufsstatus mit jedem Widerruf. Die übrigen vier bleiben nach ihrer Veröffentlichung unverändert. Für die Evaluation nach NFA5 ist diese Unterscheidung wesentlich, da der in E5 festgelegte Leseweg nur bei den wachsenden Topics mit dem Bestand teurer wird.
+Die Abbildung~\ref{fig:zielarchitektur} fasst die Topics zu einer Komponente zusammen, obwohl sie durch die Entscheidungen E3, E4 und E6 unterschiedlich strukturiert sind. Die Abbildung~\ref{fig:topic-struktur} differenziert sie nach ihrem Inhalt und ihrer Anzahl aus. Für die Evaluation ist daran eine Unterscheidung wesentlich: Von den sechs Topic-Typen wachsen drei über die Zeit - das Vertrauens-Topic mit jeder Änderung der Delegationsrechte (E6), die Topics der öffentlichen DIDs mit jeder Aktualisierung des DID-Dokuments, etwa bei einer Schlüsselrotation oder einer Deaktivierung nach FA2 (E3), und das Topic des Widerrufsstatus mit jedem Widerruf (E4). Die drei Topics der HCS-1-kodierten Objekte - Schema, Credential Definition und Widerrufsregister-Definition - bleiben nach ihrer Veröffentlichung unverändert. Da der in E5 festgelegte Leseweg nur bei den wachsenden Topics mit dem Bestand teurer wird, ist die Lesedauer nach NFA5 nicht für alle Objekttypen bestandsabhängig; das Szenario S3 muss die drei wachsenden Typen deshalb getrennt erfassen.
 
 \begin{figure}[H]
     \centering
@@ -445,7 +445,7 @@ Die Tabelle~\ref{tab:ledger-funktionen-hcs} ist das Gegenstück zur Tabelle~\ref
 \section{Evaluationskonzept}
 \label{sec:konzipierung-evaluationskonzept}
 
-Die Evaluation vergleicht die im Abschnitt~\ref{sec:konzipierung-zielarchitektur} entworfene HCS-basierte Ledger-Schicht differenziell mit der Indy-basierten Ledger-Schicht der Referenzarchitektur. Der Vergleich ist entlang der nicht-funktionalen Anforderungen NFA1 bis NFA8 organisiert, die ihrerseits eins zu eins den Vergleichskriterien aus Tabelle~\ref{tab:synthese_vergleichskriterien} entsprechen. Dieser Abschnitt legt fest, welche Größen gemessen werden, an welchen Punkten sie erhoben werden, unter welchen Szenarien gemessen wird und wie die Sicherheitsdimension bewertet wird. Die technische Umsetzung des Messaufbaus ist Gegenstand des Kapitels~\ref{cha:implementierung}, die Ergebnisdarstellung des Kapitels~\ref{sec:results}.
+Die Evaluation vergleicht die im Abschnitt~\ref{sec:konzipierung-zielarchitektur} entworfene HCS-basierte Ledger-Schicht differenziell mit der Indy-basierten Ledger-Schicht der Referenzarchitektur. Der Vergleich ist entlang der nicht-funktionalen Anforderungen NFA1 bis NFA8 organisiert, die ihrerseits eins zu eins den Vergleichskriterien aus Tabelle~\ref{tab:synthese_vergleichskriterien} entsprechen. Dieser Abschnitt legt fest, welche Größen gemessen werden, an welchen Punkten sie erhoben werden, unter welchen Szenarien gemessen wird, wie die Sicherheitsdimension bewertet wird und welche Grenzen für die Gültigkeit der Ergebnisse gelten. Die technische Umsetzung des Messaufbaus ist Gegenstand des Kapitels~\ref{cha:implementierung}, die Ergebnisdarstellung des Kapitels~\ref{sec:results}.
 
 \subsection{Messgrößen und Messpunkte}
 \label{subsec:eval-messgroessen}
@@ -474,7 +474,7 @@ Die Messgrößen werden nicht frei gewählt, sondern aus der im Kapitel~\ref{cha
     NFA4 - Lastskalierung & Verlauf von Durchsatz und Latenz über steigende Nebenläufigkeit; Sättigungspunkt und auslastungsbegrenzende Komponente & VDR-Schnittstelle, Komponentenmetriken & \cite{mazlan2020, sehimibendaoud2023, joshimahajan2025, hashim2021} \\
     NFA5 - Datenwachstum & Speicherbedarf je Konsensknoten und je Mirror Node sowie Lesedauer je Objekttyp, jeweils in Abhängigkeit von der Anzahl verwalteter Identitätsobjekte bzw. der Länge der zugehörigen Topic-Historie & Konsensknoten, Mirror Node, VDR-Schnittstelle & \cite{mazlan2020, giao2026, mamoru2026, farin2025} \\
     NFA6 - Konsens-Fehlertoleranz & Verfügbarkeit und Latenz bei Ausfall von $f$ Knoten sowie Dauer bis zur Wiederaufnahme des Normalbetriebs & Konsensnetzwerk & \cite{hashim2021, verma2024, farin2025} \\
-    NFA7 - Zugriffskontrolle & Ergebnis nicht autorisierter Schreibversuche, getrennt nach netzwerkseitiger und anwendungsseitiger Prüfung; der Widerruf wird auf Entwurfsebene statt messend bewertet (Abschnitt~\ref{subsec:eval-validitaet}) & VDR-Schnittstelle & \cite{mamoru2026, torongo2023, tawfik2025} \\
+    NFA7 - Zugriffskontrolle & Ergebnis nicht autorisierter Schreibversuche, getrennt nach netzwerkseitiger und anwendungsseitiger Prüfung; für den Widerruf zusätzlich Verifikationsergebnis vor und nach dem Widerruf sowie Zeit bis zur Wirksamkeit, sofern die Symmetriebedingung nach Abschnitt~\ref{subsec:eval-validitaet} erfüllt ist & VDR-Schnittstelle & \cite{mamoru2026, torongo2023, tawfik2025} \\
     NFA8 - Bedrohungsresistenz & Qualitativ: Differenz der STRIDE-Bedrohungen gegenüber der Referenzarchitektur; über die Mirror Node öffentlich sichtbare Metadaten & Entwurfsdokumentation, Mirror-Node-Historie & \cite{erler2023, torongo2023, satybaldy2026, ferreira2024} \\
     \bottomrule
   \end{tabular}
@@ -531,7 +531,20 @@ Der Ressourcenverbrauch nach NFA3 wird nicht in einem eigenen Szenario, sondern 
 \label{subsec:eval-sicherheit}
 
 Die Sicherheitsdimension wird zweigeteilt bewertet. Experimentell prüfen die Szenarien S4 und S5 die Wirksamkeit der Konsens-Fehlertoleranz und der Schreibautorisierung. Analytisch wird die HCS-basierte Ledger-Schicht mit derselben STRIDE-Methodik untersucht, mit der Erler et al. die Referenzarchitektur entworfen haben~\cite{erler2023}; bewertet wird dabei nicht das Gesamtsystem, sondern ausschließlich die Differenz: welche Bedrohungen durch den Austausch der Ledger-Schicht entfallen, welche unverändert bestehen und welche neu hinzukommen. Ein besonderes Augenmerk liegt auf den durch die vollständige Kodierung der Identitätsobjekte (E2) über die Mirror Node öffentlich sichtbaren Metadaten~\cite{satybaldy2026}. Die zweistufige Berechtigungsprüfung nach E6 wird dabei gesondert betrachtet, da die Wurzelstufe netzwerkseitig über den \texttt{submitKey} durchgesetzt wird, die Delegationsstufe dagegen anwendungsseitig im Registry-Adapter und damit außerhalb der Garantien des Konsensnetzwerks liegt.
-% TODO Ausformulierung
+
+
+\subsection{Validität und Gültigkeitsgrenzen}
+\label{subsec:eval-validitaet}
+
+Das Evaluationskonzept ist an mehreren Stellen enger gefasst als der Entwurf. Die folgenden Grenzen werden vorab festgehalten, damit die im Kapitel~\ref{sec:results} berichteten Werte im richtigen Rahmen gelesen werden.
+
+\begin{itemize}
+  \item Ob der in E4 festgelegte Widerrufsmechanismus messend oder ausschließlich auf Entwurfsebene bewertet wird, hängt von einer Symmetriebedingung ab: Ein allein auf der HCS-Variante erhobener Wert wäre kein Vergleich, sondern eine Einzelmessung. Der AnonCreds-Widerruf ist an die v2-Protokolle zur Ausstellung und Präsentation gebunden und steht deshalb nur zur Verfügung, wenn beide Varianten auf demselben Protokollstand betrieben werden. Ob diese Bedingung erfüllt ist, wird im Kapitel~\ref{cha:implementierung} festgestellt. Unabhängig davon bleibt FA4 Bestandteil des Entwurfs, und NFA7 wird zweigeteilt eingelöst: die Zugriffskontrolle experimentell über S5, der Widerruf mindestens über die Prüfung, ob der Akkumulatorzustand nach E4 eindeutig auswertbar veröffentlicht wird.
+  \item Die berichteten Werte gelten für den Betrieb unter der im Kapitel~\ref{cha:implementierung} festgelegten Grundlast. Auf einem vollständig leerlaufenden Netzwerk weicht die HCS-Variante beim Lesen unmittelbar nach einem Schreibvorgang davon ab (Abschnitt~\ref{subsec:eval-szenarien}); dieser Fall wird gesondert erhoben und geht nicht in den Vergleich ein.
+  \item Alle Werte gelten für das nach E1 selbst betriebene Netzwerk. Sie sind nicht auf das öffentliche Hedera-Netzwerk übertragbar, das sich in Knotenmenge, geografischer Verteilung, Fremdlast und Gebührenmodell unterscheidet; insbesondere ist die erreichbare Last dort nicht allein von der Technologie bestimmt.
+  \item Der Speicherbedarf je Konsensknoten nach NFA5 wird in beiden Varianten erhoben, ist jedoch keine symmetrische Größe. Die Konsensknoten von HCS verwerfen den Nachrichteninhalt nach der Ordnung (E5), sodass dort kein bestandsabhängiges Wachstum zu erwarten ist, während die Validatorknoten von Indy den abgeleiteten Zustand replizieren. Der Unterschied ist ein Ergebnis des Entwurfs und kein Messartefakt und wird entsprechend berichtet.
+  \item Die gemessenen Lesewerte gelten für den in E5 gewählten Leseweg. Ein lokal fortgeschriebener Zustand nach dem Appnet-Muster würde die Abhängigkeit von der Historienlänge beseitigen; das damit nicht ausgeschöpfte Optimierungspotenzial wird im Kapitel~\ref{sec:discussion} anhand der gemessenen Werte beziffert.
+\end{itemize}
 
 
 \section{Zusammenfassung}
