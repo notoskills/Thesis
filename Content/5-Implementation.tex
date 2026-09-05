@@ -3,4 +3,351 @@
 \label{cha:implementierung}
 %% ==============================
 
+Das vorangegangene Kapitel hat die HCS-basierte Ledger-Schicht entworfen und ein Evaluationskonzept festgelegt, das an mehreren Stellen ausdrücklich auf dieses Kapitel verweist: die Knotenanzahl und die Ausführungsumgebung (Abschnitt~\ref{subsec:eval-aufbau}), die Grundlast (Abschnitt~\ref{subsec:eval-szenarien}) sowie die Symmetriebedingung für den Widerruf (Abschnitt~\ref{subsec:eval-validitaet}). Dieses Kapitel löst diese Festlegungen ein und beschreibt den Aufbau, mit dem die Evaluation durchgeführt wird.
 
+Für die Abgrenzung gegenüber Kapitel~\ref{sec:results} gilt dabei ein durchgehendes Kriterium: In diesem Kapitel werden Messwerte nur dort berichtet, wo sie eine Konstruktions- oder Betriebsentscheidung des Aufbaus begründen, etwa den Nachweis der symmetrischen Messgrenze oder die Begründung der Ein-Arm-Regel. Alle Werte, die Gegenstand der Evaluation selbst sind, einschließlich der Vorabmessungen zur Messmethodik, werden in Kapitel~\ref{sec:results} berichtet. Die hier beschriebenen Verfahren verweisen deshalb an mehreren Stellen auf dieses Kapitel vorwärts.
+
+
+\section{Überblick und Abgrenzung des Messaufbaus}
+\label{sec:impl-ueberblick}
+
+Der Messaufbau realisiert nicht die vollständige Referenzarchitektur, sondern genau denjenigen Ausschnitt, der innerhalb der in Abschnitt~\ref{subsec:eval-aufbau} festgelegten Messgrenze liegt. Betrieben werden je Variante ein einzelner Aries-Agent und die zugehörige Ledger-Infrastruktur; die Anwendungskomponenten der Referenzarchitektur, insbesondere der Konnektor und die Halter-Anwendungen, sind nicht Bestandteil des Aufbaus. Diese Reduktion folgt unmittelbar aus dem Evaluationskonzept: Die Last wird ausschließlich über die Verifiable-Data-Registry-Schnittstelle erzeugt, sodass die DIDComm-Protokolle der Agentenschicht nicht in die Messung eingehen. Ein vollständiger Anwendungsstapel würde diese Protokolle einbeziehen und damit genau die Zuordenbarkeit gemessener Unterschiede zur Ledger-Schicht aufheben, die Abschnitt~\ref{subsec:abgrenzung} als Begründung der Abgrenzung anführt.
+
+Der Agent wird in beiden Varianten aus demselben Basisabbild und mit derselben Konfiguration betrieben; unterschiedlich ist ausschließlich die geladene Registry-Implementierung und die dahinterliegende Ledger-Infrastruktur. Die Schreib- und Leseoperationen werden über die \texttt{/anoncreds/*}-Endpunkte des Agenten ausgelöst, die in beiden Varianten identisch sind. Damit liegt die Messgrenze nicht an einer nachträglich gezogenen Linie, sondern an einer im Agenten tatsächlich vorhandenen Abstraktionsschicht, deren Symmetrie in Abschnitt~\ref{sec:impl-symmetrie} nachgewiesen wird.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{Figures/messaufbau}
+    \caption{Messaufbau beider Varianten. Innerhalb der gestrichelten Messgrenze liegen der Registry-Adapter und die Ledger-Infrastruktur; der Agent und der Lastgenerator liegen außerhalb.}
+    \label{fig:messaufbau}
+\end{figure}
+% TODO Abbildung erstellen: zwei nebeneinanderliegende Saeulen (Indy-Arm, HCS-Arm), gemeinsamer Lastgenerator oben, Messgrenze als gestrichelte Linie unterhalb der /anoncreds/*-Schnittstelle, ausgegraut die nicht realisierten BloG3-Komponenten
+
+Die Tabelle~\ref{tab:impl-komponenten} ordnet den in Abschnitt~\ref{subsec:zielarchitektur-komponenten} beschriebenen Komponenten der Zielarchitektur ihre konkrete Umsetzung zu und weist aus, welche Komponenten im Messaufbau bewusst nicht realisiert sind.
+
+\begin{table}[htbp]
+\renewcommand{\arraystretch}{1.3}
+\footnotesize
+  \centering
+  \caption{Umsetzung der Komponenten der Zielarchitektur im Messaufbau}
+  \label{tab:impl-komponenten}
+  \begin{tabular}{p{0.22\textwidth} p{0.48\textwidth} p{0.20\textwidth}}
+    \toprule
+    \textbf{Komponente} & \textbf{Umsetzung im Messaufbau} & \textbf{Lage zur Messgrenze} \\
+    \midrule
+    Konsensnetzwerk & Vier Konsensknoten, lokal betrieben (Abschnitt~\ref{subsec:impl-hcs-netzwerk}) & innerhalb \\
+    Mirror Node & Selbst betriebene Mirror Node mit Importer, REST- und gRPC-Schnittstelle & innerhalb \\
+    Topics & Zur Laufzeit angelegt; Vertrauens-Topic mit gesetztem \texttt{submitKey}, übrige Topics offen & innerhalb \\
+    Registry-Adapter & ACA-Py-Erweiterung für Hedera, geladen über die Erweiterungsschnittstelle (E7) & innerhalb \\
+    Agentenschicht & Ein einzelner ACA-Py-Agent, unverändert, in beiden Varianten identisch konfiguriert & außerhalb \\
+    Konnektor und Halter-Anwendungen & Nicht realisiert; Last wird direkt über die Registry-Schnittstelle erzeugt & außerhalb \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+\normalsize
+
+
+\section{Umsetzung der HCS-basierten Variante}
+\label{sec:impl-hcs}
+
+\subsection{Komponenten und Versionsstand}
+\label{subsec:impl-hcs-komponenten}
+
+Die Anbindung der Ledger-Schicht erfolgt nach Entscheidung E7 über die bestehende Hedera-Erweiterung für ACA-Py~\cite{acapyhedera}, die sich in die \texttt{AnonCredsRegistry}-Schnittstelle des Agenten einhängt. Der Versionsstand ist dabei nicht frei wählbar, sondern durch eine Verträglichkeitsbedingung bestimmt: Die Erweiterung ist jeweils gegen einen bestimmten Stand des Agenten entwickelt, und die von ihr benötigten \texttt{/anoncreds/*}-Endpunkte stehen nur bei einem bestimmten Wallet-Typ zur Verfügung. Festgelegt wurde daher die Kombination aus ACA-Py in der Version 1.3.0, der auf denselben Stand ausgelegten Erweiterung und dem Wallet-Typ \texttt{askar-anoncreds}. Diese Kombination wurde vor Beginn der Messungen als funktionsfähig nachgewiesen und über den gesamten Messzeitraum unverändert gehalten.
+
+Diese Festlegung hat eine methodische Konsequenz, die hier festzuhalten ist: Der Messaufbau ist damit von der parallel laufenden Modernisierung der Referenzimplementierung entkoppelt. Die Evaluation misst einen fixierten, vollständig dokumentierten Softwarestand und nicht einen sich während der Messreihe verändernden Entwicklungsstand. Der Preis dieser Entkopplung ist, dass der gemessene Stand nicht notwendigerweise der jeweils aktuellste ist; dies wird in Abschnitt~\ref{sec:impl-grenzen} als Gültigkeitsgrenze geführt.
+
+Die Kopplung zwischen Wallet-Typ und verfügbaren Schnittstellen ist dabei kein Konfigurationsdetail, sondern eine strukturelle Eigenschaft des Agenten mit unmittelbarer Auswirkung auf die Messgrenze. Sie wird in Abschnitt~\ref{sec:impl-befunde} als eigenständiger Implementierungsbefund berichtet, da sie beim Aufbau zu einem stillen Fehlzustand führen kann.
+
+\begin{table}[htbp]
+\renewcommand{\arraystretch}{1.3}
+\footnotesize
+  \centering
+  \caption{Fixierter Versionsstand beider Varianten}
+  \label{tab:impl-versionsstand}
+  \begin{tabular}{p{0.26\textwidth} p{0.34\textwidth} p{0.30\textwidth}}
+    \toprule
+    \textbf{Bestandteil} & \textbf{HCS-Variante} & \textbf{Indy-Variante} \\
+    \midrule
+    Basisabbild des Agenten & \texttt{acapy-agent:py3.12-1.3.0} & identisch \\
+    ACA-Py & 1.3.0 & 1.3.0 \\
+    Wallet-Typ & \texttt{askar-anoncreds} & \texttt{askar-anoncreds} \\
+    Registry-Implementierung & Hedera-Erweiterung, Stand 1.3.0, auf Commit festgelegt~\cite{acapyhedera} & \texttt{LegacyIndyRegistry} (Bestandteil von ACA-Py) \\
+    Ledger-Bibliothek & \texttt{hiero-did-sdk-python} 0.1.0 (angepasst, Abschnitt~\ref{subsec:impl-hcs-patch}), \texttt{hiero\_sdk\_python} 0.1.1 & \texttt{indy-vdr} 0.4.2 \\
+    Netzwerk & Vier Konsensknoten, selbst betrieben, mit Mirror Node & Vier Validatorknoten, selbst betrieben \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+\normalsize
+% TODO Versionsangaben der Indy-Spalte gegen die tatsaechliche Konfiguration pruefen und ggf. Genesis-Bereitstellung ergaenzen
+
+
+\subsection{Konsensnetzwerk und Mirror Node}
+\label{subsec:impl-hcs-netzwerk}
+
+Entscheidung E1 verlangt ein selbst betriebenes, mehrknotiges Hashgraph-Netzwerk. Umgesetzt wird dies mit dem containerisierten, Kubernetes-basierten Bereitstellungswerkzeug des Hedera-Ökosystems, das ein vollständiges Netzwerk aus Konsensknoten und Mirror Node lokal erzeugt~\cite{hierosolo}. Die Knotenanzahl wird auf vier festgelegt, womit nach dem aBFT-Modell des Hashgraph-Konsens eine Fehlertoleranz von einem byzantinischen Knoten erreicht wird~\cite{bairdgross2019}; diese Festlegung löst die in Abschnitt~\ref{subsec:eval-aufbau} offen gelassene Dimensionierung ein und ist Voraussetzung für das Szenario S4.
+
+Der Aufbau des Netzwerks erfolgt nicht über den vom Werkzeug angebotenen Einschrittbefehl, sondern über den vollständigen, aus Einzelschritten bestehenden Ablauf. Der Grund ist ein Verhalten des Werkzeugs in der eingesetzten Version, das während des Aufbaus festgestellt wurde: Der Einschrittbefehl nimmt die gewünschte Knotenanzahl als Parameter entgegen, gibt sie im eigenen Protokoll zurück und meldet einen erfolgreichen Abschluss, stellt jedoch tatsächlich nur einen einzigen Konsensknoten bereit. Der Parameter wird also ohne Fehlermeldung verworfen. Da eine falsche Knotenanzahl die Vergleichbarkeit mit der Indy-Variante nach NFA6 unmittelbar aufheben würde und der Fehlzustand aus dem Protokoll des Werkzeugs nicht erkennbar ist, wird der mehrschrittige Ablauf verwendet und die tatsächliche Knotenanzahl nach jedem Aufbau eigenständig verifiziert.
+
+\begin{lstlisting}[basicstyle=\ttfamily\footnotesize, frame=single, caption={Ablauf des Netzwerkaufbaus mit vier Konsensknoten}, label={lst:solo-flow}]
+1. Kubernetes-Cluster erzeugen
+2. Werkzeug initialisieren, Cluster-Referenz verbinden und einrichten
+3. Deployment anlegen
+4. Cluster mit Knotenanzahl 4 an das Deployment binden
+5. Gossip- und TLS-Schluessel fuer alle Knoten erzeugen
+6. Konsensnetzwerk ausrollen
+7. Knoten einrichten und starten
+8. Mirror Node mit angepasster Wertedatei hinzufuegen
+\end{lstlisting}
+
+Schritt 5 ist dabei derjenige Schritt, dessen Auslassung am ehesten unbemerkt bleibt: Ohne erzeugte Schlüssel scheitert erst das Ausrollen in Schritt 6, und zwar mit einer Meldung, die nicht auf die fehlenden Schlüssel verweist. Die Verifikation des erreichten Zustands erfolgt nicht über die Bereitschaftsanzeige der Container, da diese bereits vor der Betriebsbereitschaft der Konsensplattform gesetzt wird, sondern über den im Protokoll der Plattform ausgewiesenen Zustand sowie über die Übereinstimmung aller vier Knoten auf derselben Konsensrunde.
+
+Für die Mirror Node sind zwei Eigenschaften für die spätere Messung wesentlich. Erstens ist ihre Abfrageschnittstelle in der eingesetzten Version auf zwei getrennte Dienste aufgeteilt, die unterschiedliche Ressourcenpfade bedienen und unter unterschiedlichen Ports erreichbar sind. Der Lesepfad des Registry-Adapters und ein direkter Abruf über die REST-Schnittstelle laufen deshalb über zwei verschiedene Dienste; die zugehörigen Messgrößen dürfen aus diesem Grund nicht zu einer einzigen Größe zusammengefasst werden (Abschnitt~\ref{subsec:impl-messpunkte}). Zweitens reicht die vom Bereitstellungswerkzeug vorgegebene Speicherobergrenze des Abonnementdienstes für dessen Laufzeitumgebung nicht aus, was zu einem Abbruch des Dienstes unter Last führt. Die Obergrenze wird deshalb deklarativ über eine eigene Wertedatei angehoben, sodass sie Bestandteil der reproduzierbaren Konfiguration und nicht eines manuellen Eingriffs ist.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{Figures/messaufbau-deployment}
+    \caption{Verteilung der Komponenten der HCS-Variante auf Container und Ports, mit den beiden getrennten Lesepfaden über die Abonnement- und die REST-Schnittstelle der Mirror Node.}
+    \label{fig:impl-deployment}
+\end{figure}
+% TODO Abbildung erstellen: Deployment-Diagramm mit Host, Container-Grenzen, vier Konsensknoten, Mirror Node mit Importer/REST/gRPC, Agent, Lastgenerator auf dem Host
+
+
+\subsection{Anpassung des DID-SDK}
+\label{subsec:impl-hcs-patch}
+
+Die von der Erweiterung verwendete Bibliothek zur Auflösung und Registrierung von \texttt{did:hedera}-Bezeichnern~\cite{hierodidsdk} prüft die im Bezeichner enthaltene Netzwerkkennung gegen eine feste Liste zulässiger Werte. Diese Liste enthält die öffentlichen Hedera-Netzwerke, nicht jedoch die Kennung des lokal betriebenen Netzwerks. Da Entscheidung E1 ein selbst betriebenes Netzwerk vorschreibt, ist die Bibliothek in unveränderter Form für den Messaufbau nicht verwendbar.
+
+Die vorgenommene Anpassung umfasst netto drei Zeilen an einer einzigen Stelle, nämlich der Validierungsfunktion, an der die Kennung geprüft wird; die Kennung des lokalen Netzwerks wird dort ergänzt. Die Semantik der Bibliothek wird dabei nicht verändert: Weder das Format des Bezeichners noch die Reihenfolge oder der Inhalt der abgesetzten Topic-Operationen sind berührt. Die Anpassung liegt damit vollständig auf der Validierungsebene und nicht auf dem gemessenen Pfad, was für die Aussagekraft der Messung wesentlich ist.
+
+Bemerkenswert ist das Verhalten der unveränderten Bibliothek an dieser Stelle: Die Validierung erfolgt erst, nachdem die Registrierungsfunktion bereits ein Topic auf dem Netzwerk angelegt hat. Ein Registrierungsversuch mit einer nicht anerkannten Netzwerkkennung scheitert also nicht wirkungslos, sondern hinterlässt ein verwaistes Topic, das keiner DID zugeordnet ist und nicht mehr entfernt werden kann. Für den Aufbau bedeutet dies, dass fehlgeschlagene Registrierungsversuche vor Anwendung der Anpassung den Zustand des Netzwerks verändert haben; die Messungen wurden deshalb ausschließlich auf danach neu aufgebauten Netzwerken durchgeführt.
+
+\begin{lstlisting}[basicstyle=\ttfamily\footnotesize, frame=single, caption={Fundstelle und Umfang der Anpassung}, label={lst:sdk-patch}]
+Datei:   did/utils.py, Validierungsfunktion der Netzwerkkennung
+Umfang:  netto 3 Zeilen, eine einzige Fundstelle
+Wirkung: Kennung des lokalen Netzwerks wird als zulaessig anerkannt
+Nicht beruehrt: Bezeichnerformat, Topic-Operationen, Nachrichtenformat
+\end{lstlisting}
+% TODO exakte Zeilennummern und Diff aus dem Repository einsetzen
+
+
+\section{Umsetzung der Indy-basierten Referenzvariante}
+\label{sec:impl-indy}
+
+Die Referenzvariante bildet die Ledger-Schicht der Referenzarchitektur nach~\cite{erler2023} und erfordert deutlich weniger Eigenleistung, da sie den in ACA-Py bereits enthaltenen Registry-Pfad verwendet. Betrieben wird ein lokales Indy-Netzwerk mit vier Validatorknoten, das über eine Genesis-Datei angebunden wird; die Knotenanzahl entspricht damit derjenigen der HCS-Variante, wie es NFA6 verlangt.
+
+Eine Eigenschaft des Aufbaus ist für den späteren Vergleich zentral und wird deshalb hier und nicht erst in der Auswertung festgehalten. Bevor auf der Indy-Variante eine einzige Schema-Operation ausgeführt werden kann, muss die schreibende DID über eine NYM-Transaktion mit hinreichender Rolle auf dem Ledger registriert werden~\cite{torongo2023}. Ohne diesen Schritt wird der Schreibvorgang vom Ledger abgewiesen. Auf der HCS-Variante existiert zu diesem Schritt kein Gegenstück: Die schreibende DID entsteht zur Laufzeit, und die Topics der Identitätsobjekte sind nach E6 offen beschreibbar. Der Aufbau der beiden Varianten unterscheidet sich damit nicht nur in der verwendeten Technologie, sondern in der Frage, ob überhaupt ein Berechtigungszustand hergestellt werden muss. Diese Asymmetrie ist kein Artefakt der Umsetzung, sondern der in Abschnitt~\ref{subsec:grundproblem-state-vs-ordering} beschriebene Unterschied zwischen einem zustandsführenden Ledger und einem reinen Ordnungsdienst in seiner unmittelbarsten Form; sie ist zugleich der Gegenstand des Szenarios S5 und wird in Abschnitt~\ref{sec:impl-befunde} als Befund geführt.
+
+% TODO Konkrete Angaben ergaenzen: verwendete Netzwerkdistribution, Bereitstellung der Genesis-Datei, Ableitung der Trustee-DID, Startparameter des Agenten
+
+
+\section{Symmetrie und Abweichungen zwischen den Varianten}
+\label{sec:impl-symmetrie}
+
+Die zentrale methodische Voraussetzung des gesamten Vergleichs ist, dass die Messgrenze in beiden Varianten an derselben Stelle liegt (Abschnitt~\ref{subsec:eval-aufbau}). Diese Voraussetzung wird nicht behauptet, sondern am laufenden System geprüft. Als Prüfgröße dient die Menge der vom Agenten registrierten HTTP-Routen, da sie unmittelbar abbildet, welche Operationen über die Schnittstelle überhaupt erreichbar sind. Verglichen werden die Routenmengen beider Messvarianten sowie, als Kontrollfall, diejenige eines Agenten mit dem älteren Wallet-Typ.
+
+\begin{table}[htbp]
+\renewcommand{\arraystretch}{1.3}
+\footnotesize
+  \centering
+  \caption{Vergleich der registrierten Routen beider Varianten und des Kontrollfalls}
+  \label{tab:impl-routen}
+  \begin{tabular}{p{0.30\textwidth} p{0.14\textwidth} p{0.42\textwidth}}
+    \toprule
+    \textbf{Konfiguration} & \textbf{Routen} & \textbf{Befund} \\
+    \midrule
+    HCS-Variante, \texttt{askar-anoncreds} & 169 & 23 Arbeitsrouten unter \texttt{/anoncreds/*} vorhanden \\
+    Indy-Variante, \texttt{askar-anoncreds} & 168 & dieselben 23 Arbeitsrouten, identisch \\
+    Kontrollfall, \texttt{askar} & 172 & keine \texttt{/anoncreds/*}-Arbeitsrouten; stattdessen 26 abweichende Routen \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+\normalsize
+
+Der Vergleich der beiden Messvarianten ergibt eine Differenz von genau einer Route, nämlich dem von der Hedera-Erweiterung zusätzlich bereitgestellten Registrierungsendpunkt für DIDs. Alle 23 Arbeitsrouten unter \texttt{/anoncreds/*}, über die die Evaluation ihre Last erzeugt, sind in beiden Varianten identisch vorhanden. Damit ist die symmetrische Lage der Messgrenze nicht nur konzeptionell begründet, sondern am laufenden System belegt. Der Kontrollfall zeigt zugleich, dass diese Symmetrie an den Wallet-Typ gebunden ist und nicht unabhängig davon besteht.
+
+Neben dieser Übereinstimmung besteht eine Abweichung, die hier offen benannt wird. Die Installation der Hedera-Erweiterung stuft eine kryptografische Basisbibliothek gegenüber dem Basisabbild und der Indy-Variante um eine Patch-Version zurück; die Gesamtzahl installierter Pakete unterscheidet sich entsprechend zwischen den beiden Varianten. Die Rückstufung ist eine Folge der von der Erweiterung deklarierten Abhängigkeiten und lässt sich nicht auflösen, ohne die in Abschnitt~\ref{subsec:impl-hcs-komponenten} begründete Versionsfestlegung aufzugeben. Ein Einfluss auf die gemessenen Größen ist nicht zu erwarten, da die Bibliothek auf beiden Varianten nicht auf dem gemessenen Pfad liegt; ausgeschlossen werden kann er jedoch nicht, weshalb die Abweichung in Abschnitt~\ref{sec:impl-grenzen} als Gültigkeitsgrenze geführt wird.
+
+\paragraph{Symmetriebedingung für den Widerruf.} Abschnitt~\ref{subsec:eval-validitaet} macht die messende Bewertung des Widerrufs davon abhängig, dass beide Varianten auf demselben Protokollstand für Ausstellung und Präsentation betrieben werden, da ein allein auf der HCS-Variante erhobener Wert kein Vergleich wäre. Diese Bedingung wird hier festgestellt.
+% TODO Feststellung eintragen, sobald der Protokollstand beider Arme geprueft ist; bei Nichterfuellung greift die in 4.5.5 vorgesehene zweigeteilte Einloesung von NFA7 (Zugriffskontrolle experimentell ueber S5, Widerruf ueber die Pruefung der eindeutigen Auswertbarkeit des Akkumulatorzustands)
+
+
+\section{Messmethodik}
+\label{sec:impl-messmethodik}
+
+\subsection{Messpunkte und Zeitnahme}
+\label{subsec:impl-messpunkte}
+
+Erhoben werden Zeitstempel an der Registry-Schnittstelle sowie Ressourcenmetriken aller Komponenten innerhalb der Messgrenze (Abschnitt~\ref{subsec:eval-aufbau}). Für die Latenzmessung nach NFA2 sind dabei drei Messpunkte zu unterscheiden, die auf der HCS-Variante nicht zusammenfallen.
+
+\begin{table}[htbp]
+\renewcommand{\arraystretch}{1.3}
+\footnotesize
+  \centering
+  \caption{Messpunkte der Latenzmessung}
+  \label{tab:impl-messpunkte}
+  \begin{tabular}{p{0.20\textwidth} p{0.44\textwidth} p{0.22\textwidth}}
+    \toprule
+    \textbf{Messpunkt} & \textbf{Definition} & \textbf{Uhr} \\
+    \midrule
+    Schreibabschluss & Rückkehr des Aufrufs an der Registry-Schnittstelle & lokal \\
+    Konsens & Konsens-Zeitstempel der Nachricht & Netzwerk \\
+    Abrufbarkeit & Erster erfolgreicher Abruf des Objekts über die Mirror Node & lokal \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+\normalsize
+
+Auf der Indy-Variante fallen Schreibabschluss und Abrufbarkeit zusammen, da der Ledger den abgeleiteten Zustand unmittelbar mit dem Schreibvorgang fortschreibt (Abschnitt~\ref{subsec:grundlagen-speicher-indy}). Auf der HCS-Variante liegen sie auseinander; der Abstand zwischen ihnen ist keine eigenständige Vergleichsgröße, sondern eine Korrekturgröße, ohne deren Erfassung jeder HCS-Lesewert diesen Abstand unerkannt enthält und das Szenario S3 ungleiche Sachverhalte vergleichen würde.
+
+Für den lesenden Zugriff ist zusätzlich zwischen zwei Pfaden zu unterscheiden, die in Abschnitt~\ref{subsec:impl-hcs-netzwerk} bereits als getrennte Dienste ausgewiesen wurden: dem Lesepfad des Registry-Adapters über die Abonnementschnittstelle und dem direkten Abruf über die REST-Schnittstelle. Beide werden getrennt erhoben und getrennt berichtet. Ihre Zusammenfassung zu einer einzigen Lesedauer wäre unzulässig, da sie unterschiedliche Dienste mit unterschiedlichem Verhalten messen; der Unterschied zwischen ihnen ist selbst ein Ergebnis und wird in Kapitel~\ref{sec:results} berichtet.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{Figures/messpunkte}
+    \caption{Messpunkte einer Schreib-Lese-Folge auf beiden Varianten. Auf der Indy-Variante fallen Schreibabschluss und Abrufbarkeit zusammen, auf der HCS-Variante nicht.}
+    \label{fig:impl-messpunkte}
+\end{figure}
+% TODO Abbildung erstellen: Sequenzdiagramm mit beiden Armen untereinander, Messpunkten als Marken auf der Zeitachse
+
+
+\subsection{Zwei-Uhren-Problem und Zeitklammer}
+\label{subsec:impl-zeitklammer}
+
+Der Abstand zwischen Konsens und Abrufbarkeit lässt sich nicht durch direkte Differenzbildung bestimmen. Der Konsens-Zeitstempel stammt von der Uhr des Netzwerks, der Zeitpunkt des ersten erfolgreichen Abrufs von der lokalen Uhr des Messrechners; die Differenz beider Werte vermischt die gesuchte Verzögerung mit einem unbekannten Uhrenversatz. Eine Synchronisation beider Uhren würde diesen Versatz nicht beseitigen, sondern nur verkleinern, und ihre Güte wäre selbst nicht überprüfbar.
+
+Verwendet wird deshalb ein Verfahren, das ohne Vergleich zweier Uhren auskommt. Der Schreibaufruf wird auf der lokalen Uhr geklammert, indem unmittelbar vor und unmittelbar nach dem Aufruf ein Zeitstempel genommen wird. Der Konsens fällt notwendigerweise zwischen diese beiden Marken, da die Antwort des Aufrufs erst nach abgeschlossenem Schreibvorgang zurückkehrt. Aus der Klammer ergeben sich damit eine obere und eine untere Schranke des gesuchten Abstands, beide aus Differenzen derselben lokalen Uhr gebildet. Berichtet wird nicht ein Punktwert, sondern das Intervall.
+
+Zwei Bedingungen sind für die Gültigkeit dieses Verfahrens einzuhalten. Erstens muss die Prämisse, dass der Konsens innerhalb der Klammer liegt, geprüft und nicht nur angenommen werden; sie wurde im Verlauf der Messungen mehrfach bestätigt. Zweitens muss die Abfrage auf Abrufbarkeit bereits im schreibenden Ablauf beginnen und nicht erst in einem nachgelagerten Schritt. Beginnt sie später, so ist das Objekt beim ersten Abfrageversuch bereits sichtbar, der Übergang von Nichtsichtbarkeit zu Sichtbarkeit wird nicht beobachtet, und es entsteht keine Klammer, sondern lediglich eine Obergrenze. Dieser Fall wird nicht stillschweigend als gültige Messung geführt, sondern durch eine im Messergebnis mitgeführte Markierung ausdrücklich als Obergrenze gekennzeichnet.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{Figures/zeitklammer}
+    \caption{Zeitklammer um den Schreibaufruf. Obere und untere Schranke des Abstands zwischen Konsens und Abrufbarkeit werden ausschließlich aus Differenzen der lokalen Uhr gebildet.}
+    \label{fig:impl-zeitklammer}
+\end{figure}
+% TODO Abbildung erstellen: Zeitstrahl mit lokaler Uhr oben und Netzuhr unten, Klammer um den Schreibaufruf, schraffierter Bereich als Unsicherheitsintervall
+
+
+\subsection{Quantisierung der Sichtbarkeit und Phasenzerlegung}
+\label{subsec:impl-phasenzerlegung}
+
+Der so bestimmte Abstand ist keine kontinuierliche Größe. Die Mirror Node übernimmt Nachrichten nicht einzeln, sondern in geschlossenen Aufzeichnungsdateien; die Sichtbarkeit eines Objekts springt daher erst mit dem Abschluss der Datei, in der es enthalten ist. Ein Einzelwert setzt sich damit aus zwei Anteilen zusammen: der verbleibenden Laufzeit der Aufzeichnungsdatei bis zu ihrem Abschluss, im Folgenden als Phasenanteil bezeichnet, und der eigentlichen Verarbeitungszeit der abgeschlossenen Datei. Nur der zweite Anteil ist eine Eigenschaft der Verarbeitungskette; der erste hängt allein davon ab, an welcher Stelle des laufenden Aufzeichnungsintervalls der Schreibvorgang einfällt, und ist damit eine Eigenschaft des Messzeitpunkts, nicht des Systems.
+
+Der Phasenanteil ist rückwirkend bestimmbar, weil der Dateiname einer Aufzeichnungsdatei den Konsens-Zeitstempel ihrer ersten Transaktion trägt. Aus dem Protokoll des Importers lässt sich damit für jedes gemessene Objekt der Beginn der zugehörigen Datei rekonstruieren und der Phasenanteil aus dem Einzelwert herausrechnen. Jede Ingest-Messung wird deshalb in Phasenanteil und Verarbeitungsanteil zerlegt; berichtet und in den Vergleich eingesetzt wird der Verarbeitungsanteil, während der Phasenanteil als Eigenschaft des Betriebszustands getrennt ausgewiesen wird. Die Wirksamkeit dieser Zerlegung wurde an einer eigenen Messreihe geprüft; die Werte werden in Kapitel~\ref{sec:results} berichtet.
+
+Für die Deutung des Phasenanteils ist eine Beobachtung wesentlich, die den zunächst naheliegenden Modellansatz korrigiert. Man würde erwarten, dass ein Schreibvorgang zu einem zufälligen Zeitpunkt in ein bereits laufendes Aufzeichnungsintervall fällt und der Phasenanteil entsprechend gleichverteilt zwischen null und der Intervalldauer liegt. Tatsächlich lag der Konsens-Zeitstempel bei nahezu allen gemessenen Objekten exakt am Beginn der zugehörigen Datei: Der Schreibvorgang eröffnet die Datei selbst. Der Phasenanteil entspricht damit der vollen Dauer des Intervalls und nicht einem zufälligen Anteil davon. Die aus der Zerlegung gezogenen Schlussfolgerungen bleiben davon unberührt, ihre Begründung ist jedoch eine andere.
+
+Die Dauer des Aufzeichnungsintervalls ist ihrerseits keine Konstante, sondern hängt vom anliegenden Verkehr ab; sie ist auf einem stärker belasteten Netzwerk deutlich kürzer als auf einem leerlaufenden. Sie wird deshalb je Messpaar erfasst und nicht als globaler Parameter angenommen. Genau diese Verkehrsabhängigkeit ist zugleich die Begründung der im folgenden Abschnitt beschriebenen Grundlast.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{Figures/phasenzerlegung}
+    \caption{Zerlegung des Abstands zwischen Konsens und Abrufbarkeit in Phasenanteil und Verarbeitungsanteil. Der Schreibvorgang eröffnet die Aufzeichnungsdatei, der Phasenanteil entspricht deren voller Laufzeit.}
+    \label{fig:impl-phasenzerlegung}
+\end{figure}
+% TODO Abbildung erstellen: Zeitstrahl mit Aufzeichnungsintervallen als Bloecke, Schreibvorgang am Blockbeginn, Sichtbarkeitssprung am Blockende, zwei Anteile farblich getrennt
+
+
+\subsection{Grundlast}
+\label{subsec:impl-grundlast}
+
+Abschnitt~\ref{subsec:eval-szenarien} legt fest, dass alle Szenarien einschließlich der Basismessung S1 unter einer definierten und protokollierten Grundlast statt auf einem leerlaufenden Netzwerk ausgeführt werden. Dieser Abschnitt legt die Grundlast fest und begründet ihre Ausgestaltung.
+
+Die Notwendigkeit ergibt sich aus dem im vorigen Abschnitt beschriebenen Mechanismus. Auf einem vollständig leerlaufenden Netzwerk bleibt die Aufzeichnungsdatei mangels weiteren Verkehrs offen und unsigniert; die Sichtbarkeit ist damit nicht zeitgetrieben, sondern verkehrsgetrieben. Ohne Grundlast würde die gemessene Lesedauer nicht die Verarbeitungskette abbilden, sondern den Umstand, dass nach dem Messobjekt keine weitere Nachricht mehr eintraf. Gemessen würde also eine Eigenschaft des Messaufbaus und nicht eine Eigenschaft der Technologie.
+
+Umgesetzt wird die Grundlast als gleichmäßig getakteter Nachrichtenstrom auf einem eigenen, von den Messobjekten getrennten Topic. Das Taktintervall beträgt drei Sekunden und wird über die gesamte Dauer jeder Messung aufrechterhalten. Die Gebühren dieses Stroms werden bewusst nicht aus dem Konto beglichen, das die Messoperationen ausführt, sondern aus einem separaten Konto. Der Grund ist, dass die Kontostandsänderung des ausführenden Kontos selbst als Beleg für die Anzahl tatsächlich abgesetzter Nachrichten verwendet wird; eine Vermischung mit dem Grundlaststrom würde diesen Beleg unbrauchbar machen.
+
+Der Betrieb der Grundlast wird während jeder Messung überwacht. Ein stillschweigender Abriss des Stroms führt nicht zu einem Fehler, sondern zu unauffällig zu hohen Messwerten und ist damit die gefährlichere Fehlerart; die Überwachung ist in Abschnitt~\ref{sec:impl-betrieb} beschrieben.
+
+
+\subsection{Zwischenspeicher, Wiederholungen und Lasterzeugung}
+\label{subsec:impl-wiederholungen}
+
+Der Registry-Adapter hält aufgelöste Objekte in einem Zwischenspeicher mit einer Gültigkeitsdauer von einer Stunde vor. Für die Latenzmessung nach NFA2 ist dabei zweierlei festzuhalten. Erstens wird nur ein erfolgreicher Auflösungsvorgang abgelegt; ein fehlgeschlagener Versuch wird nicht abgelegt, da die Ablage im Programmablauf hinter der Rückkehr des Fehlerfalls liegt. Ein wiederholter Abruf eines noch nicht sichtbaren Objekts wird also tatsächlich erneut ausgeführt und nicht aus dem Zwischenspeicher beantwortet. Zweitens wird derselbe Zwischenspeicher von mehreren Objekttypen gemeinsam genutzt. Eine Messung des ungepufferten Lesewegs erfordert deshalb einen jeweils frisch angelegten Zwischenspeicher; andernfalls misst die zweite Leseoperation einer Messreihe nicht mehr den Ledger, sondern den Zwischenspeicher. Gemessen und berichtet werden beide Fälle getrennt, da der gepufferte Fall dem realen Betriebsverhalten und der ungepufferte dem Verhalten der Ledger-Schicht entspricht.
+
+Die Lasterzeugung für die Szenarien S2 und S4 erfolgt über ein eigenständiges Lastwerkzeug~\cite{locust}, das außerhalb der Container auf dem Wirtssystem betrieben wird. Diese Anordnung stellt sicher, dass der Ressourcenverbrauch des Lastgenerators nicht in die nach NFA3 erhobenen Ressourcenmetriken der Komponenten innerhalb der Messgrenze eingeht.
+
+% TODO Wiederholungsanzahl je Messpunkt und Warmlaufdauer festlegen (offener Punkt aus Abschnitt 4.5.2); Kennzahl fuer die Auswertung ist der Median mit robuster Streuung, Signifikanzpruefung gepaarter Groessen ueber den Wilcoxon-Vorzeichen-Rang-Test, da die beobachteten Verteilungen schwere Raender aufweisen und einzelne Ausreisser die Standardabweichung dominieren
+% TODO Bestandsgroessen fuer S3 festlegen (offener Punkt aus Abschnitt 4.5.3)
+
+
+\section{Betriebliche Randbedingungen und Reproduzierbarkeit}
+\label{sec:impl-betrieb}
+
+Der Messaufbau wird auf einem einzelnen Arbeitsplatzrechner betrieben. Die Tabelle~\ref{tab:impl-umgebung} weist die Ausführungsumgebung aus und löst damit die in Abschnitt~\ref{subsec:eval-aufbau} offen gelassene Festlegung ein.
+
+\begin{table}[htbp]
+\renewcommand{\arraystretch}{1.3}
+\footnotesize
+  \centering
+  \caption{Ausführungsumgebung des Messaufbaus}
+  \label{tab:impl-umgebung}
+  \begin{tabular}{p{0.34\textwidth} p{0.56\textwidth}}
+    \toprule
+    \textbf{Merkmal} & \textbf{Wert} \\
+    \midrule
+    Prozessorarchitektur & x86-64 \\
+    Arbeitsspeicher des Wirtssystems & 27,7 GB nutzbar \\
+    Der Containerlaufzeit zugewiesen & 14 Prozessorkerne, 19,53 GiB Arbeitsspeicher \\
+    Betriebssystem und Laufzeitumgebung & Windows mit Linux-Subsystem, containerisierte Ausführung \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+\normalsize
+% TODO Genaue Prozessorbezeichnung, Taktfrequenz, Betriebssystemversion und Version der Containerlaufzeit ergaenzen
+
+Aus dieser Umgebung ergibt sich die wichtigste betriebliche Regel des Aufbaus: Es wird immer nur eine der beiden Varianten betrieben, niemals beide gleichzeitig. Die Regel ist nicht vorsorglich gesetzt, sondern gemessen begründet. Der gleichzeitige Betrieb beider Varianten erschöpft den verfügbaren Arbeitsspeicher; der Abbau einer Variante gab 17,4 GB frei und hob den verfügbaren Speicher von 1,1 GB auf 17,4 GB, wobei die Systemlast um mehr als eine Größenordnung fiel und das anschließende Hochfahren der zweiten Variante innerhalb von 20 Sekunden statt in wiederholten Neustartversuchen abgeschlossen war. Unter Speicherdruck gemessene Werte wären keine Eigenschaften der Ledger-Technologien, sondern Eigenschaften der Konkurrenz beider Varianten um dieselben Ressourcen. Die Regel wird nicht durch Disziplin, sondern durch das Umschaltwerkzeug und durch eine Vorbedingungsprüfung in den Messskripten durchgesetzt, die bei Verletzung abbrechen.
+
+Drei weitere Regeln betreffen die Unversehrtheit des Aufbaus über mehrere Messsitzungen hinweg. Erstens wird die Containerlaufzeit vor jedem Herunterfahren des Rechners geordnet beendet; ein abruptes Beenden zerreißt die Kontinuität der Aufzeichnungsdateien der Mirror Node irreparabel, was im Verlauf der Arbeit mehrfach eintrat und jeweils einen vollständigen Neuaufbau erforderte. Zweitens werden die Konsensknoten ausschließlich über die Verwaltungsschnittstelle des Bereitstellungswerkzeugs angehalten und gestartet, nie durch Herunterskalieren ihrer Container, da die Plattforminstallation nicht auf einem dauerhaften Datenträger liegt und beim Herunterskalieren verloren geht. Drittens wird beim Abbau die Reihenfolge eingehalten, dass die Konsensknoten vor der Mirror Node angehalten werden; die umgekehrte Reihenfolge führte dazu, dass das Werkzeug seine Konfiguration nicht mehr auflösen konnte, mit einem Fehler abbrach, dabei jedoch einen erfolgreichen Rückgabewert lieferte und die Laufzeitprozesse der Konsensknoten weiterliefen. Dieser Fall ist die zweite Fehlerart, die still bleibt, und wurde durch eine Nachkontrolle auf verbliebene Prozesse abgesichert.
+
+Zwei Maßnahmen sichern die Nachvollziehbarkeit der erhobenen Belege. Zum einen trägt jede Belegdatei einen Aufbaustempel, da Konto- und Topic-Kennungen bei jedem Neuaufbau des Netzwerks von vorn vergeben werden und dieselbe Kennung damit in mehreren Netzwerkaufbauten unterschiedliche Objekte bezeichnet; ohne den Stempel wäre eine Belegdatei keinem Netzwerkzustand mehr eindeutig zuzuordnen. Zum anderen werden verworfene Läufe dokumentiert statt entfernt. Ein Beispiel ist ein Lauf, dessen gemessener Abstand zwischen Konsens und Abrufbarkeit um ein Vielfaches über allen übrigen Werten lag; die Ursache war ein abgerissener Weiterleitungstunnel, der den Grundlaststrom stillschweigend beendet hatte, woraufhin der Importer über zwei Minuten zurückfiel. Der Lauf wird als Messfehler ausgewiesen und geht nicht in die Auswertung ein, die Ursache und die daraus abgeleitete Überwachung werden jedoch berichtet.
+
+
+\section{Implementierungsbefunde}
+\label{sec:impl-befunde}
+
+Beim Aufbau der beiden Varianten sind Eigenschaften zutage getreten, die nicht Messwerte, sondern strukturelle Feststellungen über die verwendeten Bausteine sind. Sie werden hier berichtet, weil sie teils die Konstruktion des Aufbaus bestimmt haben und teils in Kapitel~\ref{sec:discussion} weitergeführt werden.
+
+\paragraph{B1 - Kopplung zwischen Wallet-Typ und verfügbaren Schnittstellen.} Wie in Tabelle~\ref{tab:impl-routen} ausgewiesen, entscheidet der gewählte Wallet-Typ darüber, ob die \texttt{/anoncreds/*}-Arbeitsrouten überhaupt registriert werden. Der von der Hedera-Erweiterung bereitgestellte Registrierungsendpunkt für DIDs wird dagegen unabhängig vom Wallet-Typ registriert. Beides zusammen ergibt einen Fehlzustand, der ohne Warnung bleibt: Ein falsch konfigurierter Agent startet fehlerfrei, kann eine Hedera-DID anlegen und verfügt anschließend über keine Schnittstelle, um mit ihr Identitätsobjekte zu verwalten. Für den Messaufbau folgt daraus, dass der Wallet-Typ nicht nur konfiguriert, sondern über die Routenmenge verifiziert wird.
+
+\paragraph{B2 - Auswahl der Ledger-Variante allein anhand des DID-Präfixes.} Ein Agent, der sowohl über den Indy- als auch über den Hedera-Registry-Pfad verfügt, wählt das Ziel einer Schreiboperation ausschließlich anhand des Präfixes der Aussteller-DID. Die Zuordnung erfolgt in der Registry-Abstraktion über eine Menge disjunkter Musterausdrücke, von denen jeder auf genau eine Registry-Implementierung verweist. Weder die Anfrage noch die Antwort noch eine Protokollzeile benennt dabei die gewählte Ledger-Variante; das Ziel ist ausschließlich am Format der zurückgegebenen Objektkennung und an Nebeneffekten wie der Kontostandsänderung erkennbar. Diese Nichtbeobachtbarkeit ist selbst der Befund. Sie hat zwei Konsequenzen: Für den Messaufbau bedeutet sie, dass jede Messung die tatsächlich angesprochene Variante über die Objektkennung nachweisen muss und nicht über die Konfiguration annehmen darf. Für die Bewertung der in E7 getroffenen Entscheidung bedeutet sie, dass die Registry-Abstraktion zwar die Austauschbarkeit der Ledger-Schicht trägt, nicht aber deren Zuordnung: Sie kennt keinen Begriff dafür, welcher Ledger einem Agenten zugewiesen ist, und bei zwei erreichbaren Zielen entscheidet allein die Eingabe. Dieser Punkt wird in Kapitel~\ref{sec:discussion} aufgegriffen.
+
+\paragraph{B3 - Fehlermeldungen bei unpassender Zuordnung.} Wird auf der HCS-Variante eine Aussteller-DID mit Indy-Präfix verwendet, so lautet die Fehlermeldung, dass kein Ledger verfügbar sei. Sie liest sich damit als Verfügbarkeitsproblem der Infrastruktur und nicht als Zuordnungsfehler, was die Fehlersuche in die falsche Richtung lenkt. Der umgekehrte Fall auf der Indy-Variante liefert dagegen eine Meldung, die den nicht auflösbaren Bezeichner ausdrücklich benennt und damit brauchbar ist. Der Befund ist für die vorliegende Arbeit ein Betriebsdetail, für den produktiven Einsatz jedoch relevant, da die erste Meldung eine Fehlkonfiguration als Ausfall erscheinen lässt.
+
+\paragraph{B4 - Schreibkontrolle gegenüber Akzeptanzkontrolle.} Wie in Abschnitt~\ref{sec:impl-indy} beschrieben, verlangt die Indy-Variante die vorherige Registrierung der schreibenden DID mit hinreichender Rolle, während die HCS-Variante keine entsprechende Stufe kennt. Der Unterschied ist nicht graduell, sondern kategorial: Indy setzt eine Schreibkontrolle durch und weist unberechtigte Schreibvorgänge ab, während bei HCS auf den offenen Topics jeder Betreiber schreiben kann und erst die auswertende Anwendung entscheidet, welche Nachricht sie anerkennt. Dieser Gegensatz ist der Gegenstand des Szenarios S5 und wird dort quantitativ eingelöst; er wird hier festgehalten, weil er sich bereits beim Aufbau und nicht erst unter Last zeigt.
+
+\paragraph{B5 - Begrenzungen durch die Klientbibliothek.} An zwei Stellen begrenzt nicht die Ledger-Technologie, sondern die verwendete Klientbibliothek das beobachtete Verhalten. Zum einen wartet der Lesepfad über die Abonnementschnittstelle ein fest gesetztes Zeitfenster aus, unabhängig davon, ob das gesuchte Objekt bereits verfügbar ist. Zum anderen spricht die Bibliothek auch bei vier vorhandenen Konsensknoten stets denselben einzelnen Knoten an, weil die vorgesehene Abfrage der Knotenliste bei der Mirror Node fehlschlägt und die verbleibende Auswahl über einer einelementigen Ersatzliste erfolgt. Beide Punkte sind für die Deutung der Messwerte wesentlich, da sie beobachtete Grenzen erklären, die andernfalls der Technologie zugeschrieben würden. Die zugehörigen Messwerte werden in Kapitel~\ref{sec:results} berichtet, die Einordnung erfolgt in Kapitel~\ref{sec:discussion}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{Figures/dispatch}
+    \caption{Auswahl der Registry-Implementierung anhand des Präfixes der Aussteller-DID. Die gewählte Ledger-Variante geht aus keiner Protokollausgabe hervor.}
+    \label{fig:impl-dispatch}
+\end{figure}
+% TODO Abbildung erstellen: Entscheidungsdiagramm mit Aussteller-DID als Eingang, vier Musterausdruecken, zwei erreichbaren Registry-Implementierungen, Hinweis auf fehlende Protokollausgabe
+
+
+\section{Gültigkeitsgrenzen der Umsetzung}
+\label{sec:impl-grenzen}
+
+Die folgenden Grenzen ergeben sich aus der Umsetzung selbst und ergänzen die bereits im Evaluationskonzept festgehaltenen Grenzen (Abschnitt~\ref{subsec:eval-validitaet}).
+
+\begin{itemize}
+  \item Beide Varianten werden auf einem einzelnen Rechner betrieben. Die Konsens- und Validatorknoten teilen sich damit Prozessor, Arbeitsspeicher und Datenträger; Netzwerklaufzeiten zwischen den Knoten treten praktisch nicht auf. Absolute Latenzwerte sind deshalb nicht auf verteilt betriebene Netzwerke übertragbar. Da diese Bedingung für beide Varianten gleichermaßen gilt, bleibt der Vergleich zwischen ihnen davon unberührt.
+  \item Das eingesetzte Bereitstellungswerkzeug erzeugt eine Entwicklungskonfiguration und keine Produktivkonfiguration. Sie eignet sich für den kontrollierten Vergleich, nicht jedoch für Aussagen über die im Produktivbetrieb erreichbare Leistung.
+  \item Der Messaufbau enthält die Anwendungskomponenten der Referenzarchitektur nicht. Die gemessenen Werte beschreiben die Ledger-Schicht, nicht die von einem Endanwender wahrgenommene Antwortzeit des Gesamtsystems.
+  \item Die in Abschnitt~\ref{sec:impl-symmetrie} beschriebene Rückstufung einer kryptografischen Basisbibliothek ist die einzige verbliebene, nicht auflösbare Abweichung zwischen den beiden Varianten.
+  \item Die Indy-Variante wurde im Verlauf der Arbeit deutlich weniger häufig aufgebaut und betrieben als die HCS-Variante. Beobachtungen zu Betriebsverhalten und Fehlerarten sind daher für die Indy-Variante weniger breit abgesichert; für die eigentlichen Messwerte ist dies ohne Bedeutung, da beide Varianten unter demselben Messprotokoll erhoben werden.
+  \item Die genaue Leseregel der eingesetzten Indy-Klientbibliothek, insbesondere die Anzahl der für eine Leseantwort herangezogenen Knoten, ließ sich aus der verfügbaren Dokumentation nicht abschließend bestimmen. Aussagen über das Leseverhalten der Indy-Variante bei Knotenausfall werden deshalb ausschließlich auf beobachtetes Verhalten und nicht auf eine dokumentierte Regel gestützt.
+\end{itemize}
+
+
+\section{Zusammenfassung}
+\label{sec:impl-zusammenfassung}
+
+Dieses Kapitel hat den Aufbau beschrieben, mit dem die im Evaluationskonzept festgelegten Szenarien durchgeführt werden. Umgesetzt sind zwei Varianten mit identisch konfigurierter Agentenschicht und je vier Ledger-Knoten, deren Messgrenze durch den Vergleich der registrierten Schnittstellen am laufenden System als symmetrisch nachgewiesen wurde. Die HCS-Variante erforderte dabei drei über die reine Konfiguration hinausgehende Eingriffe: den mehrschrittigen Netzwerkaufbau anstelle des fehlerhaften Einschrittbefehls, die Anhebung einer zu niedrig gesetzten Speicherobergrenze und eine auf die Validierungsebene beschränkte Anpassung der DID-Bibliothek.
+
+Der methodisch aufwendigste Teil betrifft nicht den Aufbau, sondern die Zeitnahme. Da der Konsens-Zeitstempel und die lokale Messuhr nicht vergleichbar sind, wird der Abstand zwischen Konsens und Abrufbarkeit als Intervall aus einer Zeitklammer bestimmt statt als Punktwert. Da die Sichtbarkeit zudem an den Abschluss von Aufzeichnungsdateien gebunden und damit quantisiert ist, wird jeder Einzelwert in einen Phasen- und einen Verarbeitungsanteil zerlegt und nur der Verarbeitungsanteil in den Vergleich eingesetzt. Beides zusammen macht aus einer stark streuenden Rohgröße eine belastbare Vergleichsgröße; die zugehörigen Werte werden in Kapitel~\ref{sec:results} berichtet.
+
+Neben dem Aufbau sind fünf strukturelle Befunde entstanden, die keine Messwerte sind. Zwei von ihnen betreffen die Beobachtbarkeit: Der Wallet-Typ entscheidet ohne Warnung über die Verfügbarkeit der Arbeitsschnittstellen, und die Auswahl der Ledger-Variante erfolgt allein anhand des DID-Präfixes, ohne dass eine Protokollausgabe das gewählte Ziel benennt. Zwei weitere betreffen das Verhältnis von Technologie und Bibliothek, ein fünfter die kategoriale Verschiedenheit von Schreib- und Akzeptanzkontrolle. Diese Befunde bilden zusammen mit den in Kapitel~\ref{sec:results} berichteten Messwerten die Grundlage der Diskussion in Kapitel~\ref{sec:discussion}.
