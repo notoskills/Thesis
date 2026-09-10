@@ -100,6 +100,45 @@ Dieses Kapitel berichtet die Messwerte der fünf in Abschnitt~\ref{subsec:eval-s
 %    \label{tab:results-s5}
 %\end{table}
 
+\section{Sicherheitsevaluation (STRIDE)}
+\label{sec:results-stride}
+
+
+\begin{table}[htbp]
+\renewcommand{\arraystretch}{1.3}
+\footnotesize
+\centering
+\caption{STRIDE-Differenzanalyse der HCS-basierten Zielarchitektur gegenüber der Referenzarchitektur nach Erler et al.~\cite{erler2023}; S = Spoofing, T = Tampering, R = Repudiation, I = Information Disclosure, D = Denial of Service, E = Elevation of Privilege}
+\label{tab:stride-differenz}
+\begin{tabular}{p{0.06\textwidth} p{0.10\textwidth} p{0.16\textwidth} p{0.50\textwidth}}
+\toprule
+\textbf{Kat.} & \textbf{Bedrohung} & \textbf{Verdikt} & \textbf{Begründung / Beleg} \\
+\midrule
+S & TS1--TS3 & unverändert & Agentenschicht (Mobile App, Wallet, Netzwerk-Konnektor), außerhalb der ausgetauschten Ledger-Schicht (Abschnitt~\ref{subsec:abgrenzung}) \\
+\midrule
+T & TT1--TT2 & unverändert & Gesundheitsdaten bleiben off-chain, nicht Teil des Austauschs~\cite{erler2023} \\
+T & TT3 & unverändert & beide Varianten erfüllen FA5; HCS führt mit der Mirror Node jedoch eine zusätzliche, in der Referenzarchitektur nicht vorhandene Komponente im Vertrauenspfad ein (Abschnitt~\ref{subsec:e1-netzwerkmodell}) \\
+\midrule
+R & TR1 & unverändert & Konsens-Zeitstempel stützt Nachweisbarkeit auf beiden Varianten~\cite{torongo2023} \\
+R & TR2 & unverändert (Design), offen (Umsetzung) & E6 sieht Prüfung gegen den Delegationszustand vor; Prüfkomponente in der aktuellen Implementierung nicht realisiert (Befund B4, Abschnitt~\ref{sec:impl-befunde}) \\
+\midrule
+I & TI1, TI4 & unverändert & Agentenschicht, außerhalb Scope \\
+I & TI2, TI6 & unverändert & kein architektonischer Unterschied identifiziert; mögliche neue Seitenkanäle (Registry-Adapter-Fehlermeldungen, Mirror-Node-Polling) nicht geprüft \\
+I & TI3 & unverändert (netzwerkseitig)\footnotemark, neu (anwendungsseitig) & Indy erzwingt die Rollenhierarchie vollständig ledgerseitig (S5); HCS deckt netzwerkseitig nur die Wurzelstufe ab, die anwendungsseitige Delegationsstufe fehlt (Befund B4) \\
+I & TI5 & neu & vollständige Objektkodierung (E2) macht die gesamte Historie dauerhaft im Klartext über die Mirror Node einsehbar, nicht nur den aktuellen Zustand~\cite{satybaldy2026} \\
+I & TI7 & unverändert & TLS-Transportsicherung auf beiden Varianten vorausgesetzt \\
+\midrule
+D & TD1 & neu (Umsetzung) & Client-Bibliothek adressiert strukturell nur einen Konsensknoten; echter Ausfall bedeutet 239\,s statt 4,5\,s Wiederherstellung (S4) \\
+D & TD2 & neu (Umsetzung) & fehlende Retry-Logik bei transientem \texttt{BUSY} führt zu abruptem Kollaps ab 10 Nutzern statt gradueller Sättigung wie bei Indy (S2) \\
+\midrule
+E & TE1 & neu & Delegationsstufe nach E6 nicht implementiert (Befund B4); bei Indy ledgerseitig erzwungen und durch S5 bestätigt (Abschnitt~\ref{subsec:e6-vertrauenshierarchie}) \\
+E & TE2, TE3 & unverändert & beide Netzwerke permissioned unter Konsortialkontrolle (Abschnitt~\ref{subsec:e1-netzwerkmodell}) \\
+E & TE4 & entfällt & PoW-spezifisch, bei keiner der beiden Varianten anwendbar \\
+\bottomrule
+\end{tabular}
+\end{table}
+\footnotetext{Widerspricht der Aussage in Abschnitt~\ref{subsec:e2-speicherform}, Objekt-Topics seien offen beschreibbar; vor Abgabe gegen den S5-Befund abgleichen.}
+
 \section{Ressourcenverbrauch}
 \label{sec:results-ressourcen}
 % TODO NFA3 Daten ergaenzen, sofern vorhanden - im aktuellen Chatverlauf nicht erhoben/besprochen
