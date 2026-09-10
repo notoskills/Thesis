@@ -3,4 +3,107 @@
 \label{sec:results}
 %% ==============================
 
+Dieses Kapitel berichtet die Messwerte der fünf in Abschnitt~\ref{subsec:eval-szenarien} festgelegten Szenarien für beide Varianten. Die Auswertung folgt der in Abschnitt~\ref{subsec:impl-methodik} festgelegten Kennzahl: Median mit robuster Streuung (skalierte mittlere absolute Abweichung), Signifikanzprüfung gepaarter Größen über den Wilcoxon-Vorzeichen-Rang-Test, Trendprüfung über den Spearman-Koeffizienten.
 
+\section{S1 - Basismessung}
+\label{sec:results-s1}
+% TODO Vollständigen Wert- und Formulierungs-Feinschliff nach Freigabe der finalen Zahlen
+
+\begin{itemize}
+  \item Beide Varianten unter definierter, protokollierter Grundlast (Abschnitt~\ref{subsec:impl-grundlast}), nicht im Leerlauf.
+  \item HCS: Median Schema-Schreibpfad 5,091\,s (robuste Streuung 0,018\,s), $n=15$; nahezu deckungsgleich mit dem unabhängig kausal nachgewiesenen Boden der Leseabonnement-Schnittstelle (Abschnitt~\ref{sec:impl-befunde}, Befund B5).
+  \item Indy: CredDef-Schreibpfad zeigt ein zweigipfliges Muster ($\sim$3,0\,s / $\sim$6,0\,s, kein Wert dazwischen); last-unabhängiger Boden bei $\sim$3,0\,s durch Leerlauf-Kontrollmessung bestätigt, last-abhängige Verdopplung nur unter Last beobachtet, Ursache nicht abschließend geklärt.
+  \item Kein statistisch signifikanter Trend über die Laufreihenfolge auf beiden Varianten (Spearman, $p > 0.05$ durchgängig).
+  \item % TODO Tabelle: Median/robSD je Messpunkt (DID-Registrierung, Schema, CredDef, Lesevorgänge) für beide Varianten nebeneinander
+\end{itemize}
+
+% TODO ABBILDUNG s1\_write\_times.pgf einfuegen (Boxplot HCS vs. Indy, Einzelwerte ueberlagert)
+%\begin{figure}[H]
+%    \centering
+%    \input{Figures/s1_write_times.pgf}
+%    \caption{Antwortzeit unter Grundlast, S1, beide Varianten. TODO Bildunterschrift praezisieren.}
+%    \label{fig:results-s1}
+%\end{figure}
+
+\section{S2 - Laststeigerung}
+\label{sec:results-s2}
+
+\begin{itemize}
+  \item Indy: schrittweise Laststeigerung bis Sättigung bei 55 parallelen Nutzern über das Durchsatz-Plateau-Kriterium (Zuwachs 2,61\,\% zwischen Stufe 10 und 11, unter der 5\,\%-Schwelle); p95 springt an diesem Punkt von 3300\,ms auf 6100\,ms.
+  \item HCS: kein gradueller Sättigungsverlauf. Bei 1 und 5 Nutzern fehlerfrei, Antwortzeiten nahe dem bekannten Boden ($\sim$4400\,ms). Bei 10 Nutzern abrupter Einbruch: Fehlerrate 98,09\,\%, Sättigung über das Fehlerraten-Kriterium.
+  \item Fehlerursache auf HCS bis auf Quellcode-Ebene zurückverfolgt: transiente \texttt{BUSY}-Rückmeldung des Konsensknotens wird von der Klientbibliothek nicht wiederholt, sondern als endgültiger Fehler an die Anwendungsschicht durchgereicht (Abschnitt~\ref{sec:impl-befunde}, Befund B6).
+  \item Einordnung: der beobachtete Kollaps ist der Klientbibliothek zuzuschreiben, nicht dem Hedera-Konsensprotokoll; \texttt{BUSY} ist spezifikationsgemäß eine vorübergehende, keine dauerhafte Ablehnung.
+  \item % TODO genaue Schwelle zwischen 5 und 10 Nutzern nicht weiter eingegrenzt (Zeitbudget), als Grenze der Aussage benennen
+\end{itemize}
+
+% TODO ABBILDUNG s2\_saturation.pgf einfuegen (zweigeteiltes Panel: Indy 11-Stufen-Kurve, HCS Fehlerrate als Primaerachse)
+%\begin{figure}[H]
+%    \centering
+%    \input{Figures/s2_saturation.pgf}
+%    \caption{Sättigungsverlauf S2, beide Varianten getrennt dargestellt. TODO Bildunterschrift praezisieren, insbesondere den p95-Abfall bei HCS erklaeren.}
+%    \label{fig:results-s2}
+%\end{figure}
+
+\section{S3 - Datenwachstum}
+\label{sec:results-s3}
+
+\begin{itemize}
+  \item Bestandsgrößen 10/30/100/300 Füllobjekte, Kontrolllesung eines nie zuvor gelesenen Füllobjekts je Zwischenstand zur Unterscheidung von Zwischenspeicher-Effekten.
+  \item HCS: nach Korrektur eines anwendungsseitigen Zwischenspeicher-Artefakts (Abschnitt~\ref{sec:impl-befunde}) liegen die vier echten (nicht zwischengespeicherten) Lesezeiten zwischen 5,087\,s und 5,258\,s - Schwankung $<$200\,ms über eine 30-fache Bestandsvergrößerung.
+  \item Indy: alle Lesezeiten im Millisekundenbereich (0,006\,s - 0,032\,s), kein erkennbarer Anstieg.
+  \item Ergebnis als obere Schranke formuliert, nicht als Nullbefund: ein Bestandsgrößeneffekt, falls vorhanden, ist im getesteten Bereich kleiner als die beobachtete Streuung; das Konzept selbst hält fest, dass der Effekt erst bei hinreichend großen Beständen sichtbar wird (Abschnitt~\ref{subsec:eval-szenarien}).
+  \item % TODO Hinweis auf moegliche groessere Folgeserie als Grenze der Aussage
+\end{itemize}
+
+% TODO ABBILDUNG s3\_bestand.pgf einfuegen (log-log, beide Varianten, Zielobjekt + Kontrolllesung, HCS-Checkpoint-0 als eigener Marker)
+%\begin{figure}[H]
+%    \centering
+%    \input{Figures/s3_bestand.pgf}
+%    \caption{Lesezeit nach Bestandsgröße, S3, beide Varianten, doppelt-logarithmische Skala. TODO Bildunterschrift praezisieren.}
+%    \label{fig:results-s3}
+%\end{figure}
+
+\section{S4 - Knotenausfall}
+\label{sec:results-s4}
+
+\begin{itemize}
+  \item Indy: gezielter Ausfall eines von vier Knoten unter laufender Grundlast, 5 Wiederholungen. Median Wiederherstellungszeit 4,526\,s (robuste Streuung 0,027\,s), Kontinuität während des Ausfalls $\sim$37\,\%, p95-Verhältnis (Ausfallphase gegen Grundlinie) konstant 10,0.
+  \item HCS: gezielte Adressierung eines von vier Knoten als strukturell wirkungslos erkannt - die Klientbibliothek spricht unabhängig von der Konfiguration stets denselben einzelnen Knoten an (Abschnitt~\ref{sec:impl-befunde}, Befund B5). Erst die Adressierung dieses tatsächlich angesprochenen Knotens macht einen echten Ausfall messbar.
+  \item HCS, korrekt adressierter Knoten, 5 Wiederholungen: Median tatsächliche Ausfallzeit 239,0\,s (robuste Streuung 8,9\,s), Erfolgsrate während des Ausfalls Median 2,05\,\% (Spanne 0,15\,\% - 2,26\,\%). p95-Verhältnis $\sim$0,023 - NIEDRIGER als die Grundlinie, da Anfragen sofort mit Fehler beantwortet werden, statt einen vollständigen, langsamen Durchlauf abzuschließen; Gegenrichtung zum Indy-Befund.
+  \item Einordnung: Indys Fehlertoleranz ist protokollseitig nachgewiesen (RBFT, $n=4$/$f=1$); HCS' Ergebnis spiegelt eine Grenze der Klientbibliothek, nicht des zugrundeliegenden Hashgraph-Konsens.
+\end{itemize}
+
+% TODO ABBILDUNG s4\_outcomes.pgf einfuegen (zwei Panels: Kontinuitaet, Ausfall-/Erholdauer je eigener Skala)
+%\begin{figure}[H]
+%    \centering
+%    \input{Figures/s4_outcomes.pgf}
+%    \caption{Verhalten bei Knotenausfall, S4, beide Varianten. TODO Bildunterschrift praezisieren, Definitionsunterschied Ausfallzeit vs. Wiederherstellungszeit erlaeutern.}
+%    \label{fig:results-s4}
+%\end{figure}
+
+\section{S5 - Zugriffskontrolle}
+\label{sec:results-s5}
+
+\begin{itemize}
+  \item Netzwerkseitige Zugriffskontrolle, Objekt-Topics (beide Varianten): unautorisierter Schreibversuch wird von beiden Netzwerken zurückgewiesen; HCS über \texttt{INVALID\_SIGNATURE}, Indy über eine Ablehnung mit vollständigem Regeltext, von allen vier Knoten unabhängig protokolliert.
+  \item Indy-Rollenmodell, ergänzende Messung: Endorser-Rolle kann eigenständig schreiben (Schema), kann jedoch weder die Rolle weitergeben noch sich selbst entziehen - beide Versuche vom Netzwerk mit vollständigem Regeltext abgelehnt (\texttt{TRUSTEE}/\texttt{STEWARD} erforderlich).
+  \item Widerruf (FA4/NFA7), beide Varianten unabhängig: Akkumulatorzustand vor/nach Widerruf eindeutig auswertbar. HCS dreifach bestätigt (lokal berechnet, Registry-Rücklesung, unabhängige Mirror-Node-Historie mit lückenloser Verkettung); Indy über direkte Ledger-Anfragen bestätigt, ohne Vier-Knoten-Gegenprobe (Einschränkung dieser Einzelmessung).
+  \item Widerruf verlangt auf Indy eine strengere Berechtigung als Schema-Schreiben (\texttt{TRUSTEE}/\texttt{STEWARD} statt \texttt{ENDORSER}) - zweiter unabhängiger Beleg für eine abgestufte Autorisierung innerhalb des Rollenmodells.
+  \item Anwendungsseitige Prüfstufe nach E6 nicht umgesetzt (Abschnitt~\ref{sec:impl-befunde}, Befund B4); S5 deckt daher auf HCS die netzwerkseitige Stufe vollständig ab, nicht die anwendungsseitige.
+\end{itemize}
+
+% TODO ABBILDUNG/TABELLE s5\_summary.tex einfuegen (Endorser-Indy, Widerruf-HCS, Widerruf-Indy als kompakte Tabelle)
+%\begin{table}[H]
+%    \centering
+%    \input{Figures/s5_summary.tex}
+%    \caption{Zusammenfassung S5: Zugriffskontrolle und Widerruf, beide Varianten. TODO Tabellenkopf/-format final pruefen.}
+%    \label{tab:results-s5}
+%\end{table}
+
+\section{Ressourcenverbrauch}
+\label{sec:results-ressourcen}
+% TODO NFA3 Daten ergaenzen, sofern vorhanden - im aktuellen Chatverlauf nicht erhoben/besprochen
+
+\section{Zusammenfassung}
+\label{sec:results-zusammenfassung}
+% TODO Kurzer zusammenfassender Absatz nach Fertigstellung der obigen Abschnitte

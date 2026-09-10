@@ -5,3 +5,65 @@
 \label{sec:discussion}
 %% ==============================
 
+\section{Modellasymmetrie als durchgehender Erklärungsrahmen}
+\label{sec:discussion-asymmetrie}
+
+\begin{itemize}
+  \item Ausgangspunkt: HCS objektgebundene, schlüsselbasierte Schreibkontrolle je Topic; Indy netzwerkweite, rollenbasierte Schreibkontrolle (Abschnitt~\ref{sec:impl-befunde}, Befund B4).
+  \item Diese Asymmetrie wurde im Entwurf selbst antizipiert, nicht erst in der Auswertung entdeckt (Abschnitt~\ref{subsec:e6-vertrauenshierarchie}: „...zugleich entsteht die Asymmetrie gegenüber Indy, das den unberechtigten Schreibvorgang bereits abweist, die das Szenario S5 untersucht").
+  \item Durchschlag in allen fünf Szenarien:
+  \begin{itemize}
+    \item S3: Zustandsableitung je Lesezugriff (HCS, E5) gegen natives Zustandsobjekt (Indy) - Ursache der (im getesteten Bereich nicht messbaren) Lesezeit-Bestandsgrößen-Abhängigkeit.
+    \item S4: protokollseitige Fehlertoleranz (Indy, RBFT) gegen fehlende Rollen-/Redundanzebene, die einen Client-Fehler hätte abfedern können (HCS).
+    \item S5: native Rollenhierarchie (Indy) gegen nicht realisierte Vertrauenshierarchie (HCS, E6-Lücke).
+  \end{itemize}
+  \item Einordnung: kein allgemeines Überlegenheitsurteil, sondern eine strukturelle Weichenstellung, die die meisten beobachteten Differenzen erklärt.
+\end{itemize}
+
+\section{Wiederkehrendes Muster: Klientbibliothek begrenzt, was die Technologie nicht begrenzt}
+\label{sec:discussion-bibliotheksgrenzen}
+
+\begin{itemize}
+  \item Vier unabhängige Instanzen desselben Grundmusters, alle in derselben Bibliotheksfamilie (\texttt{hiero\_did\_sdk\_python}/\texttt{hiero\_sdk\_python}):
+  \begin{enumerate}
+    \item Agentenpfad-Boden der Leseabonnement-Schnittstelle (S1, kausal bewiesen über Zeitfenster-Variation, Befund B5).
+    \item Adressierung stets desselben einzelnen Knotens unabhängig von der Konfiguration (S4, Befund B5).
+    \item Keine Wiederholung bei transienter \texttt{BUSY}-Ablehnung im Schreibpfad, obwohl Lesepfad und Quittungsabfragen dieselbe Bibliotheksversion wiederholen (S2, Befund B6).
+    \item (schwächer belegt) zweigipfliges Zeitmuster im Indy-CredDef-Schreibpfad (S1), last-abhängiger Anteil nicht bis zum Quellcode zurückverfolgt.
+  \end{enumerate}
+  \item Gemeinsamkeit: systematisches Reifegradgefälle zwischen Lese- und Schreibpfad in dieser SDK-Generation, kein Einzelfall.
+  \item Zeitlich begrenzt: mindestens drei der vier Fälle sind in neueren Versionen derselben Bibliothek behoben; keiner wurde vor dieser Arbeit gemeldet.
+  \item Konsequenz für die Gesamtinterpretation: die gemessenen HCS-Nachteile sind überwiegend dem zum Messzeitpunkt amtierenden Software-Stack zuzuschreiben, nicht dem Hedera-Konsensprotokoll selbst. Eine Aussage über die Technologie „Hashgraph" und eine Aussage über „diese Implementierung, Stand 2026" müssen getrennt gelesen werden.
+\end{itemize}
+
+\section{Einordnung je nicht-funktionaler Anforderung}
+\label{sec:discussion-nfa}
+
+\begin{itemize}
+  \item \textbf{NFA1/NFA2 (S1, S2):} % TODO kurzer Absatz, Zahlen aus Kapitel 6 aufgreifen
+  \item \textbf{NFA4 (S2):} Anforderung verlangt Sättigungspunkt \emph{und} begrenzende Komponente (Abschnitt~\ref{subsec:eval-messgroessen}) - für HCS beides identifiziert (Fehlerrate ab 10 Nutzern, Ursache im Schreibpfad der Klientbibliothek), für Indy ebenso (Durchsatz-Plateau bei 55 Nutzern).
+  \item \textbf{NFA5 (S3):} Nullergebnis als obere Schranke, nicht als Widerlegung des E5-Arguments; Konzept selbst sagt vorher, dass der Effekt erst bei größeren Beständen sichtbar wird.
+  \item \textbf{NFA6 (S4):} wichtige Differenzierung - gemessen wurde die Unfähigkeit des amtierenden Software-Stacks, HCS' aBFT-Eigenschaften zugänglich zu machen, nicht die Abwesenheit dieser Eigenschaften selbst. Die Frage „ist Hedera-Hashgraph fehlertolerant" bleibt technisch unbeantwortet; beantwortet ist „ist dieser Stack, Stand 2026, fehlertolerant nutzbar" - mit nein.
+  \item \textbf{NFA7 (S5):} zweigeteilt einzulösen (Abschnitt~\ref{subsec:eval-validitaet}). Netzwerkseitige Zugriffskontrolle: auf beiden Varianten vollständig gemessen. Anwendungsseitige Stufe: durch die Nichtrealisierung von E6 (Abschnitt~\ref{sec:impl-befunde}, Befund B4) nicht auf HCS testbar; als Gültigkeitsgrenze zu benennen, nicht zu verschweigen. Widerrufs-Mindestanforderung: unabhängig davon auf beiden Varianten vollständig erfüllt.
+\end{itemize}
+
+\section{Grenzen der Aussagekraft}
+\label{sec:discussion-grenzen}
+
+\begin{itemize}
+  \item Grundlast bewusst synthetisch/definiert, kein beobachtetes Nutzungsverhalten (Rückverweis Abschnitt~\ref{subsec:eval-szenarien}). % TODO Formulierung mit dem noch offenen 4.5-Zusatz abstimmen
+  \item E5-Leseweg bewusst nicht optimiert; berichtete HCS-Lesewerte sind obere Schranke des Aufwands, keine Leistungsgrenze der Technologie (Zitat Konzept, Abschnitt~\ref{sec:konzipierung-zielarchitektur}).
+  \item S3-Bestandsgrößen (bis 300 Objekte) möglicherweise zu klein, um einen tatsächlich vorhandenen Effekt sichtbar zu machen.
+  \item S5-Indy-Widerrufsmessung ohne Vier-Knoten-Gegenprobe (im Unterschied zur Endorser-Messung und zur HCS-Widerrufsmessung) - Einzelmessung, nicht durch unabhängige Knotenprotokolle bestätigt.
+  \item Anwendungsseitige E6-Stufe nicht realisiert (siehe oben) - S5 auf HCS strukturell unvollständig gegenüber der kanonischen Definition.
+\end{itemize}
+
+\section{Ausblick}
+\label{sec:discussion-ausblick}
+
+\begin{itemize}
+  \item Größere S3-Bestandsserie zur Absicherung des Nullergebnisses.
+  \item S2/S4 mit retry-fähiger Klientbibliothek als separat gelabelter Interventions-Arm - Kosten/Nutzen-Abwägung dokumentiert, im Rahmen dieser Arbeit nicht verfolgt.
+  \item Anwendungsseitige E6-Stufe als eigenständige Implementierungsarbeit für eine Folgearbeit.
+  \item % TODO weitere Punkte nach Fertigstellung von Kapitel 6 ergaenzen
+\end{itemize}
