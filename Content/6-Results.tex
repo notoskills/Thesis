@@ -124,7 +124,7 @@ R & TR2 & unverändert (Design), offen (Umsetzung) & E6 sieht Prüfung gegen den
 \midrule
 I & TI1, TI4 & unverändert & Agentenschicht, außerhalb Scope \\
 I & TI2, TI6 & unverändert & kein architektonischer Unterschied identifiziert; mögliche neue Seitenkanäle (Registry-Adapter-Fehlermeldungen, Mirror-Node-Polling) nicht geprüft \\
-I & TI3 & unverändert (netzwerkseitig)\footnotemark, neu (anwendungsseitig) & Indy erzwingt die Rollenhierarchie vollständig ledgerseitig (S5); HCS deckt netzwerkseitig nur die Wurzelstufe ab, die anwendungsseitige Delegationsstufe fehlt (Befund B4) \\
+I & TI3 & unverändert (netzwerkseitig), neu (anwendungsseitig) & Indy erzwingt die Rollenhierarchie vollständig ledgerseitig (S5); HCS deckt netzwerkseitig nur die Wurzelstufe ab, die anwendungsseitige Delegationsstufe fehlt (Befund B4) \\
 I & TI5 & neu & vollständige Objektkodierung (E2) macht die gesamte Historie dauerhaft im Klartext über die Mirror Node einsehbar, nicht nur den aktuellen Zustand~\cite{satybaldy2026} \\
 I & TI7 & unverändert & TLS-Transportsicherung auf beiden Varianten vorausgesetzt \\
 \midrule
@@ -137,7 +137,6 @@ E & TE4 & entfällt & PoW-spezifisch, bei keiner der beiden Varianten anwendbar 
 \bottomrule
 \end{tabular}
 \end{table}
-\footnotetext{Widerspricht der Aussage in Abschnitt~\ref{subsec:e2-speicherform}, Objekt-Topics seien offen beschreibbar; vor Abgabe gegen den S5-Befund abgleichen.}
 
 \section{Ressourcenverbrauch}
 \label{sec:results-ressourcen}
