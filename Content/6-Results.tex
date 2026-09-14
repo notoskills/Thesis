@@ -5,6 +5,18 @@
 
 Dieses Kapitel berichtet die Messwerte der fünf in Abschnitt~\ref{subsec:eval-szenarien} festgelegten Szenarien für beide Varianten. Die Auswertung folgt der in Abschnitt~\ref{subsec:impl-methodik} festgelegten Kennzahl: Median mit robuster Streuung (skalierte mittlere absolute Abweichung), Signifikanzprüfung gepaarter Größen über den Wilcoxon-Vorzeichen-Rang-Test, Trendprüfung über den Spearman-Koeffizienten.
 
+\section{Prüfung der Messmethodik}
+\label{sec:results-methodik}
+
+\begin{itemize}
+  \item Wirksamkeit der Phasenzerlegung (Abschnitt~\ref{subsec:impl-phasenzerlegung}) geprüft an einer eigenen 15-Paar-Messreihe ($n=4$ Konsensknoten): Phasenkorrektur reduziert die robuste Streuung des Ingest-Abstands um Faktor 8,7 (1,824\,s auf 0,211\,s).
+  \item Verarbeitungsanteil (Pipeline) nach Korrektur: Schema 0,753\,s (robuste Streuung 0,086\,s), CredDef 0,846\,s (robuste Streuung 0,162\,s).
+  \item Unterschied zwischen Schema- und CredDef-Pipeline-Anteil: Median-Differenz -0,056\,s, Wilcoxon-Vorzeichen-Rang-Test $p=0{,}63$ - als obere Schranke formuliert (Effekt, falls vorhanden, unter $\sim$0,2\,s), nicht als Nullbefund.
+  \item Mechanismus-Korrektur: bei 29 von 30 Objekten lag der Konsens-Zeitstempel exakt am Beginn der zugehörigen Aufzeichnungsdatei - der Schreibvorgang eröffnet die Datei, der Phasenanteil entspricht damit ihrer vollen Laufzeit und nicht einem zufälligen Anteil davon; die aus der Zerlegung gezogenen Schlussfolgerungen bleiben unberührt, ihre Begründung ändert sich.
+  \item Dauer des Aufzeichnungsintervalls last-abhängig: Median 2,162\,s unter Grundlast, 5,03\,s im Leerlauf - je Messpaar erfasst, nicht als globale Konstante angenommen.
+  \item Einordnung: die Zerlegung reduziert die Streuung deutlich und liefert damit eine belastbare Vergleichsgröße für die in den folgenden Abschnitten berichteten HCS-Lesewerte.
+\end{itemize}
+
 \section{S1 - Basismessung}
 \label{sec:results-s1}
 % TODO Vollständigen Wert- und Formulierungs-Feinschliff nach Freigabe der finalen Zahlen
@@ -13,17 +25,59 @@ Dieses Kapitel berichtet die Messwerte der fünf in Abschnitt~\ref{subsec:eval-s
   \item Beide Varianten unter definierter, protokollierter Grundlast (Abschnitt~\ref{subsec:impl-grundlast}), nicht im Leerlauf.
   \item HCS: Median Schema-Schreibpfad 5,091\,s (robuste Streuung 0,018\,s), $n=15$; nahezu deckungsgleich mit dem unabhängig kausal nachgewiesenen Boden der Leseabonnement-Schnittstelle (Abschnitt~\ref{sec:impl-befunde}, Befund B5).
   \item Indy: CredDef-Schreibpfad zeigt ein zweigipfliges Muster ($\sim$3,0\,s / $\sim$6,0\,s, kein Wert dazwischen); last-unabhängiger Boden bei $\sim$3,0\,s durch Leerlauf-Kontrollmessung bestätigt, last-abhängige Verdopplung nur unter Last beobachtet, Ursache nicht abschließend geklärt.
-  \item Kein statistisch signifikanter Trend über die Laufreihenfolge auf beiden Varianten (Spearman, $p > 0.05$ durchgängig).
-  \item % TODO Tabelle: Median/robSD je Messpunkt (DID-Registrierung, Schema, CredDef, Lesevorgänge) für beide Varianten nebeneinander
+  \item DID-Registrierung: HCS Median 4,317\,s (robuste Streuung 0,016\,s), Indy Median 0,100\,s (robuste Streuung 0,009\,s), $n=15$ je Variante.
+  \item Lesevorgänge, getrennt nach Objekttyp: auf der HCS-Variante liegen DID-Lesen (Median 5,038\,s, robuste Streuung 0,018\,s) und CredDef-Lesen (Median 5,101\,s, robuste Streuung 0,021\,s) im selben Band wie der in Befund B5 nachgewiesene Boden der Abonnementschnittstelle, während Schema-Lesen (Median 0,021\,s, robuste Streuung 0,005\,s) um den Faktor $\sim$245 darunter liegt. Auf der Indy-Variante liegen alle drei Lesewerte in derselben Größenordnung (0,017\,s bis 0,051\,s, robuste Streuung 0,009\,s bis 0,019\,s), ohne vergleichbaren Boden.
+  \item Widerrufs-Registry (drei Schreibphasen -- Anlage, initialer Eintrag, tatsächlicher Widerruf -- sowie Lesen des Akkumulatorzustands, $n=15$ je Phase und Variante, Indy-Lesen $n=14$ wegen eines einzelnen fehlgeschlagenen Lesevorgangs): auf der HCS-Variante liegen alle drei Schreibphasen zwischen 2,0\,s und 8,1\,s, das Lesen bei 10,072\,s (robuste Streuung 0,018\,s) -- etwa das Doppelte des in Befund B5 nachgewiesenen Bodens, ein Hinweis auf zwei sequenzielle, je einzeln den Boden treffende Topic-Lesevorgänge (Registry-Definition und Eintrags-Topic). Auf der Indy-Variante liegen alle drei Schreibphasen nahezu deckungsgleich bei $\sim$3,0\,s (Median 3,003\,s/3,008\,s/3,010\,s) -- eine erste unabhängige Bestätigung, dass der last-unabhängige $\sim$3,0\,s-Boden des CredDef-Schreibpfads nicht CredDef-spezifisch ist, sondern generisch für synchrone Indy-Ledger-Schreibvorgänge dieser Art gilt; das Lesen liegt bei 0,031\,s (robuste Streuung 0,002\,s), ohne vergleichbaren Boden.
+  \item Kein statistisch signifikanter Trend über die Laufreihenfolge auf beiden Varianten, für keinen der genannten Messpunkte (Spearman, $p > 0.06$ durchgängig).
+  \item Der Vertrauensanker (Kernfunktion~1, Abschnitt~\ref{subsec:ledger-funktionen}) ist bewusst nicht Teil dieser Tabelle: auf der Indy-Variante liegt ein Zeitwert aus dem Endorser-Test vor (S5, Abschnitt~\ref{sec:results-s5}), jedoch nicht als S1-Basiswert mit $n=15$; auf der HCS-Variante wurde die anwendungsseitige Vertrauensfunktion nicht umgesetzt (Abschnitt~\ref{subsec:impl-...}, E6-Eingrenzung).
 \end{itemize}
 
-% TODO ABBILDUNG s1\_write\_times.pgf einfuegen (Boxplot HCS vs. Indy, Einzelwerte ueberlagert)
-%\begin{figure}[H]
-%    \centering
-%    \input{Figures/s1_write_times.pgf}
-%    \caption{Antwortzeit unter Grundlast, S1, beide Varianten. TODO Bildunterschrift praezisieren.}
-%    \label{fig:results-s1}
-%\end{figure}
+\begin{table}[htbp]
+\renewcommand{\arraystretch}{1.3}
+\footnotesize
+  \centering
+  \caption{S1 -- Median (robuste Streuung) je Messpunkt, beide Varianten, $n=15$ sofern nicht anders vermerkt}
+  \label{tab:results-s1}
+  \begin{tabular}{p{0.28\textwidth} p{0.30\textwidth} p{0.30\textwidth}}
+    \toprule
+    \textbf{Messpunkt} & \textbf{HCS} & \textbf{Indy} \\
+    \midrule
+    DID-Registrierung (Schreiben) & 4,317\,s (0,016\,s) & 0,100\,s (0,009\,s) \\
+    Schema (Schreiben) & 5,091\,s (0,018\,s) & 1,808\,s \\
+    CredDef (Schreiben) & -- & 3,043\,s (zweigipflig, $\sim$3,0/$\sim$6,0\,s, siehe Text) \\
+    DID (Lesen) & 5,038\,s (0,018\,s) & 0,051\,s (0,019\,s) \\
+    Schema (Lesen) & 0,021\,s (0,005\,s) & 0,017\,s (0,014\,s) \\
+    CredDef (Lesen) & 5,101\,s (0,021\,s) & 0,042\,s (0,009\,s) \\
+    Widerrufs-Registry (Anlage) & 8,112\,s (0,009\,s) & 3,003\,s (0,007\,s) \\
+    Widerrufs-Eintrag (initial) & 2,027\,s (0,003\,s) & 3,008\,s (0,009\,s) \\
+    Widerruf (tatsächlich) & 2,028\,s (0,003\,s) & 3,010\,s (0,006\,s) \\
+    Widerrufs-Registry (Lesen) & 10,072\,s (0,018\,s) & 0,031\,s (0,002\,s), $n=14$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+\normalsize
+% TODO Zwei offene Werte: (1) robSD Indy Schema-Schreiben aus s1_indy_summary.md ergaenzen, (2) HCS-CredDef-Schreibdauer -- klaeren, ob als Punktwert oder Intervall (analog ingest_lower_bound/ingest_upper_bound) auszuweisen, dann Zelle befuellen statt "--"
+
+\begin{figure}[H]
+    \centering
+    \input{Figures/s1_write_times.pgf}
+    \caption{Antwortzeit unter Grundlast, S1, beide Varianten (DID-, Schema-, CredDef-Schreibpfad). TODO Bildunterschrift praezisieren.}
+    \label{fig:results-s1-write}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \input{Figures/s1_read_times.pgf}
+    \caption{Lesedauer je Objekttyp, S1, beide Varianten. TODO Bildunterschrift praezisieren, insbesondere die Objekttyp-Selektivitaet des HCS-Lesebodens (Befund B5) hervorheben.}
+    \label{fig:results-s1-read}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \input{Figures/s1_revocation_times.pgf}
+    \caption{Widerrufs-Registry: Anlage, initialer Eintrag, Widerruf und Lesen, S1, beide Varianten. TODO Bildunterschrift praezisieren.}
+    \label{fig:results-s1-revocation}
+\end{figure}
 
 \section{S2 - Laststeigerung}
 \label{sec:results-s2}
@@ -70,8 +124,10 @@ Dieses Kapitel berichtet die Messwerte der fünf in Abschnitt~\ref{subsec:eval-s
   \item Indy: gezielter Ausfall eines von vier Knoten unter laufender Grundlast, 5 Wiederholungen. Median Wiederherstellungszeit 4,526\,s (robuste Streuung 0,027\,s), Kontinuität während des Ausfalls $\sim$37\,\%, p95-Verhältnis (Ausfallphase gegen Grundlinie) konstant 10,0.
   \item HCS: gezielte Adressierung eines von vier Knoten als strukturell wirkungslos erkannt - die Klientbibliothek spricht unabhängig von der Konfiguration stets denselben einzelnen Knoten an (Abschnitt~\ref{sec:impl-befunde}, Befund B5). Erst die Adressierung dieses tatsächlich angesprochenen Knotens macht einen echten Ausfall messbar.
   \item HCS, korrekt adressierter Knoten, 5 Wiederholungen: Median tatsächliche Ausfallzeit 239,0\,s (robuste Streuung 8,9\,s), Erfolgsrate während des Ausfalls Median 2,05\,\% (Spanne 0,15\,\% - 2,26\,\%). p95-Verhältnis $\sim$0,023 - NIEDRIGER als die Grundlinie, da Anfragen sofort mit Fehler beantwortet werden, statt einen vollständigen, langsamen Durchlauf abzuschließen; Gegenrichtung zum Indy-Befund.
-  \item Einordnung: Indys Fehlertoleranz ist protokollseitig nachgewiesen (RBFT, $n=4$/$f=1$); HCS' Ergebnis spiegelt eine Grenze der Klientbibliothek, nicht des zugrundeliegenden Hashgraph-Konsens.
+  \item Einordnung: Indys primary-basierter Konsens zeigt eine belegte, protokollseitige Selbstheilung nach dem Ausfall des amtierenden Primary, innerhalb von rund einer Minute, ohne clientseitiges Failover-Defizit (durch Rust-Debug-Log widerlegt: der ausgefallene Knoten bleibt Teil der Kandidatenauswahl). Eine frühere Messserie widerspricht dieser Selbstheilung vollständig und bleibt als ungeklärte Ausnahme dokumentiert, nicht als repräsentatives Ergebnis. HCS' Ergebnis spiegelt eine Grenze der Klientbibliothek, nicht des zugrundeliegenden Hashgraph-Konsens.
 \end{itemize}
+
+Der Ausfall eines Nicht-Primary-Knotens hatte in zwei unabhängigen Läufen praktisch keine messbare Auswirkung (100\,\% Erfolg). Der Ausfall des amtierenden Konsens-Primary löste eine reproduzierbare, kurze Störung aus, die sich ohne externen Eingriff durch einen protokollinternen View-Change auflöste -- in zwei unabhängigen Läufen nach ca.\ 55\,s bzw.\ exakt 60\,s. Median Wiederherstellungszeit nach Neustart über alle Läufe konsistent bei 4,5\,s (robuste Streuung 0,027\,s). Eine ältere, unter identischer Konfiguration aufgenommene Serie (5 Läufe) zeigte davon abweichend keine Erholung über die gesamte 170\,s lange Fehlerphase; die Ursache dieser Abweichung ist ungeklärt geblieben (siehe Diskussion).
 
 % TODO ABBILDUNG s4\_outcomes.pgf einfuegen (zwei Panels: Kontinuitaet, Ausfall-/Erholdauer je eigener Skala)
 %\begin{figure}[H]

@@ -14,8 +14,7 @@
   \item Durchschlag in allen fünf Szenarien:
   \begin{itemize}
     \item S3: Zustandsableitung je Lesezugriff (HCS, E5) gegen natives Zustandsobjekt (Indy) - Ursache der (im getesteten Bereich nicht messbaren) Lesezeit-Bestandsgrößen-Abhängigkeit.
-    \item S4: protokollseitige Fehlertoleranz (Indy, RBFT) gegen fehlende Rollen-/Redundanzebene, die einen Client-Fehler hätte abfedern können (HCS).
-    \item S5: native Rollenhierarchie (Indy) gegen nicht realisierte Vertrauenshierarchie (HCS, E6-Lücke).
+    \item S4: Für HCS liegt ein reproduzierter, bis auf Quellcode-Ebene erklärter Befund vor (fehlende Node-Fallback-Logik, sofortiges Scheitern). Für Indy zeigen mehrere unabhängige Nachprüfungsläufe eine reproduzierbare protokollinterne Selbstheilung nach Primary-Ausfall (View-Change, ca.\ eine Minute), belegt unter anderem durch direkte Client-Log-Analyse. Eine ältere Messserie unter identischer Konfiguration weicht davon vollständig ab (keine Erholung über 170\,s) und bleibt trotz gezielter Prüfung mehrerer Erklärungsansätze (Client-Verhalten, Primary-Status, Code-Änderungen, Beobachtungsfenster-Länge) ungeklärt -- ausgewiesen als Grenze der Aussagekraft dieser Messreihe.
   \end{itemize}
   \item Einordnung: kein allgemeines Überlegenheitsurteil, sondern eine strukturelle Weichenstellung, die die meisten beobachteten Differenzen erklärt.
 \end{itemize}
@@ -43,7 +42,7 @@
   \item \textbf{NFA1/NFA2 (S1, S2):} % TODO kurzer Absatz, Zahlen aus Kapitel 6 aufgreifen
   \item \textbf{NFA4 (S2):} Anforderung verlangt Sättigungspunkt \emph{und} begrenzende Komponente (Abschnitt~\ref{subsec:eval-messgroessen}) - für HCS beides identifiziert (Fehlerrate ab 10 Nutzern, Ursache im Schreibpfad der Klientbibliothek), für Indy ebenso (Durchsatz-Plateau bei 55 Nutzern).
   \item \textbf{NFA5 (S3):} Nullergebnis als obere Schranke, nicht als Widerlegung des E5-Arguments; Konzept selbst sagt vorher, dass der Effekt erst bei größeren Beständen sichtbar wird.
-  \item \textbf{NFA6 (S4):} wichtige Differenzierung - gemessen wurde die Unfähigkeit des amtierenden Software-Stacks, HCS' aBFT-Eigenschaften zugänglich zu machen, nicht die Abwesenheit dieser Eigenschaften selbst. Die Frage „ist Hedera-Hashgraph fehlertolerant" bleibt technisch unbeantwortet; beantwortet ist „ist dieser Stack, Stand 2026, fehlertolerant nutzbar" - mit nein.
+  \item \textbf{NFA6 (S4):} wichtige Differenzierung - gemessen wurde die Unfähigkeit des amtierenden Software-Stacks, HCS' aBFT-Eigenschaften zugänglich zu machen, nicht die Abwesenheit dieser Eigenschaften selbst. Die Frage „ist Hedera-Hashgraph fehlertolerant" bleibt technisch unbeantwortet; beantwortet ist „ist dieser Stack, Stand 2026, fehlertolerant nutzbar" - mit nein. Methodische Konsequenz: durch die fest verdrahtete Einzelknoten-Adressierung ergibt das Szenario auf HCS strukturell nur zwei mögliche Ausgänge, kein Kontinuum - entweder der tatsächlich angesprochene Knoten fällt aus (Erfolgsrate nahe null) oder ein anderer (kein messbarer Effekt); ein vierknotiges Netzwerk liefert unter diesem Software-Stand keinen realisierten Mehrwert gegenüber einem einzelnen Knoten, obwohl die Redundanz betrieben und bezahlt wird.
   \item \textbf{NFA7 (S5):} zweigeteilt einzulösen (Abschnitt~\ref{subsec:eval-validitaet}). Netzwerkseitige Zugriffskontrolle: auf beiden Varianten vollständig gemessen. Anwendungsseitige Stufe: durch die Nichtrealisierung von E6 (Abschnitt~\ref{sec:impl-befunde}, Befund B4) nicht auf HCS testbar; als Gültigkeitsgrenze zu benennen, nicht zu verschweigen. Widerrufs-Mindestanforderung: unabhängig davon auf beiden Varianten vollständig erfüllt.
 \end{itemize}
 
@@ -51,11 +50,22 @@
 \label{sec:discussion-grenzen}
 
 \begin{itemize}
-  \item Grundlast bewusst synthetisch/definiert, kein beobachtetes Nutzungsverhalten (Rückverweis Abschnitt~\ref{subsec:eval-szenarien}). % TODO Formulierung mit dem noch offenen 4.5-Zusatz abstimmen
+  \item Grundlast bewusst synthetisch/definiert: Taktrate als gesetzter Versuchsparameter, nicht aus beobachtetem Nutzungsverhalten abgeleitet (Abschnitt~\ref{subsec:eval-szenarien}); ein empirisch fundiertes Lastprofil für die Referenzarchitektur liegt bislang nicht vor.
   \item E5-Leseweg bewusst nicht optimiert; berichtete HCS-Lesewerte sind obere Schranke des Aufwands, keine Leistungsgrenze der Technologie (Zitat Konzept, Abschnitt~\ref{sec:konzipierung-zielarchitektur}).
   \item S3-Bestandsgrößen (bis 300 Objekte) möglicherweise zu klein, um einen tatsächlich vorhandenen Effekt sichtbar zu machen.
   \item S5-Indy-Widerrufsmessung und S5-Indy-Endorser-Messung beide ohne Vier-Knoten-Gegenprobe (im Unterschied zur HCS-Widerrufsmessung, die durch unabhängige Mirror-Node-Historie bestätigt ist) - Einzelmessungen, nicht durch unabhängige Knotenprotokolle bestätigt.
   \item Anwendungsseitige E6-Stufe nicht realisiert (siehe oben) - S5 auf HCS strukturell unvollständig gegenüber der kanonischen Definition.
+\end{itemize}
+
+\section{Gesamtbild}
+\label{sec:discussion-gesamtbild}
+
+\begin{itemize}
+  \item Funktionale Substitution gelungen: alle fünf Ledger-Funktionen (DID-Registrierung, Schema, CredDef, Widerruf, Zugriffskontrolle) mit HCS-Mechanismen nachgebildet und in S1-S5 erfolgreich durchgeführt; die in Kapitel~\ref{cha:konzipierung} entworfene Zielarchitektur ist tragfähig.
+  \item Die gemessenen Nachteile sind überwiegend Eigenschaften der eingesetzten Klientbibliotheken, nicht des Hashgraph-Konsens selbst (Abschnitt~\ref{sec:discussion-bibliotheksgrenzen}); dieses Muster trägt drei der vier Hauptbefunde (S1-Boden, S2-Kollaps, S4-Nichtausfall) und rechtfertigt eine getrennte Lesart von "Technologie Hashgraph" und "amtierender Software-Stand 2026".
+  \item Der architektonische Preis der in E5 gewählten Zustandsableitung beim Lesen ist real, aber im getesteten Rahmen nicht dramatisch: S3 findet bis 300 Füllobjekten keinen messbaren Bestandsgrößeneffekt - eine obere, keine endgültige Schranke (Abschnitt~\ref{sec:discussion-nfa}, NFA5).
+  \item Sicherheitsseitig ist Indys Rollenmodell reicher und beobachtbarer, HCS' Modell deshalb aber nicht schwächer, sondern andersartig: objektgebundene Schlüsselkontrolle statt Netzwerk-Rollenhierarchie (Befund B4); die fehlende anwendungsseitige Delegationsstufe (E6) ist ein unimplementierter, kein protokollseitiger Nachteil.
+  \item Evidenzstärke variiert bewusst über die Befunde und wird durchgehend so ausgewiesen: kausal bewiesen (S1-HCS-Zeitfenster, S2-\texttt{BUSY}-Pfad) versus beobachtet, nicht mechanistisch belegt (S1-Indy-Bimodalität) versus obere Schranke statt Nullbefund (S3); diese Abstufung wird nicht zu einer einheitlichen Sicherheitsstufe verflacht.
 \end{itemize}
 
 \section{Ausblick}
