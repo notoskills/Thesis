@@ -3,7 +3,7 @@
 \label{sec:results}
 %% ==============================
 
-Dieses Kapitel berichtet die Messwerte der fünf in Abschnitt~\ref{subsec:eval-szenarien} festgelegten Szenarien für beide Varianten. Die Auswertung folgt der in Abschnitt~\ref{subsec:impl-methodik} festgelegten Kennzahl: Median mit robuster Streuung (skalierte mittlere absolute Abweichung), Signifikanzprüfung gepaarter Größen über den Wilcoxon-Vorzeichen-Rang-Test, Trendprüfung über den Spearman-Koeffizienten.
+Dieses Kapitel berichtet die Messwerte der fünf in Abschnitt~\ref{subsec:eval-szenarien} festgelegten Szenarien für beide Varianten. Die Auswertung folgt der in Abschnitt~\ref{subsec:impl-wiederholungen} festgelegten Kennzahl: Median mit robuster Streuung (skalierte mittlere absolute Abweichung), Signifikanzprüfung gepaarter Größen über den Wilcoxon-Vorzeichen-Rang-Test, Trendprüfung über den Spearman-Koeffizienten.
 
 \section{Prüfung der Messmethodik}
 \label{sec:results-methodik}
@@ -19,7 +19,6 @@ Dieses Kapitel berichtet die Messwerte der fünf in Abschnitt~\ref{subsec:eval-s
 
 \section{S1 - Basismessung}
 \label{sec:results-s1}
-% TODO Vollständigen Wert- und Formulierungs-Feinschliff nach Freigabe der finalen Zahlen
 
 \begin{itemize}
   \item Beide Varianten unter definierter, protokollierter Grundlast (Abschnitt~\ref{subsec:impl-grundlast}), nicht im Leerlauf.
@@ -29,7 +28,7 @@ Dieses Kapitel berichtet die Messwerte der fünf in Abschnitt~\ref{subsec:eval-s
   \item Lesevorgänge, getrennt nach Objekttyp: auf der HCS-Variante liegen DID-Lesen (Median 5,038\,s, robuste Streuung 0,018\,s) und CredDef-Lesen (Median 5,101\,s, robuste Streuung 0,021\,s) im selben Band wie der in Befund B5 nachgewiesene Boden der Abonnementschnittstelle, während Schema-Lesen (Median 0,021\,s, robuste Streuung 0,005\,s) um den Faktor $\sim$245 darunter liegt. Auf der Indy-Variante liegen alle drei Lesewerte in derselben Größenordnung (0,017\,s bis 0,051\,s, robuste Streuung 0,009\,s bis 0,019\,s), ohne vergleichbaren Boden.
   \item Widerrufs-Registry (drei Schreibphasen -- Anlage, initialer Eintrag, tatsächlicher Widerruf -- sowie Lesen des Akkumulatorzustands, $n=15$ je Phase und Variante, Indy-Lesen $n=14$ wegen eines einzelnen fehlgeschlagenen Lesevorgangs): auf der HCS-Variante liegen alle drei Schreibphasen zwischen 2,0\,s und 8,1\,s, das Lesen bei 10,072\,s (robuste Streuung 0,018\,s) -- etwa das Doppelte des in Befund B5 nachgewiesenen Bodens, ein Hinweis auf zwei sequenzielle, je einzeln den Boden treffende Topic-Lesevorgänge (Registry-Definition und Eintrags-Topic). Auf der Indy-Variante liegen alle drei Schreibphasen nahezu deckungsgleich bei $\sim$3,0\,s (Median 3,003\,s/3,008\,s/3,010\,s) -- eine erste unabhängige Bestätigung, dass der last-unabhängige $\sim$3,0\,s-Boden des CredDef-Schreibpfads nicht CredDef-spezifisch ist, sondern generisch für synchrone Indy-Ledger-Schreibvorgänge dieser Art gilt; das Lesen liegt bei 0,031\,s (robuste Streuung 0,002\,s), ohne vergleichbaren Boden.
   \item Kein statistisch signifikanter Trend über die Laufreihenfolge auf beiden Varianten, für keinen der genannten Messpunkte (Spearman, $p > 0.06$ durchgängig).
-  \item Der Vertrauensanker (Kernfunktion~1, Abschnitt~\ref{subsec:ledger-funktionen}) ist bewusst nicht Teil dieser Tabelle: auf der Indy-Variante liegt ein Zeitwert aus dem Endorser-Test vor (S5, Abschnitt~\ref{sec:results-s5}), jedoch nicht als S1-Basiswert mit $n=15$; auf der HCS-Variante wurde die anwendungsseitige Vertrauensfunktion nicht umgesetzt (Abschnitt~\ref{subsec:impl-...}, E6-Eingrenzung).
+  \item Der Vertrauensanker (Kernfunktion~1, Abschnitt~\ref{subsec:ledger-funktionen}) ist bewusst nicht Teil dieser Tabelle: auf der Indy-Variante liegt ein Zeitwert aus dem Endorser-Test vor (S5, Abschnitt~\ref{sec:results-s5}), jedoch nicht als S1-Basiswert mit $n=15$; auf der HCS-Variante wurde die anwendungsseitige Vertrauensfunktion nicht umgesetzt (Abschnitt~\ref{sec:impl-befunde}, Befund B4, sowie die E6-Eingrenzung in Abschnitt~\ref{subsec:e6-vertrauenshierarchie}).
 \end{itemize}
 
 \begin{table}[htbp]
@@ -44,7 +43,7 @@ Dieses Kapitel berichtet die Messwerte der fünf in Abschnitt~\ref{subsec:eval-s
     \midrule
     DID-Registrierung (Schreiben) & 4,317\,s (0,016\,s) & 0,100\,s (0,009\,s) \\
     Schema (Schreiben) & 5,091\,s (0,018\,s) & 1,808\,s \\
-    CredDef (Schreiben) & -- & 3,043\,s (zweigipflig, $\sim$3,0/$\sim$6,0\,s, siehe Text) \\
+    CredDef (Schreiben) & $\sim$14\,s (Näherungswert) & 3,043\,s (zweigipflig, $\sim$3,0/$\sim$6,0\,s, siehe Text) \\
     DID (Lesen) & 5,038\,s (0,018\,s) & 0,051\,s (0,019\,s) \\
     Schema (Lesen) & 0,021\,s (0,005\,s) & 0,017\,s (0,014\,s) \\
     CredDef (Lesen) & 5,101\,s (0,021\,s) & 0,042\,s (0,009\,s) \\
@@ -54,28 +53,30 @@ Dieses Kapitel berichtet die Messwerte der fünf in Abschnitt~\ref{subsec:eval-s
     Widerrufs-Registry (Lesen) & 10,072\,s (0,018\,s) & 0,031\,s (0,002\,s), $n=14$ \\
     \bottomrule
   \end{tabular}
+  \vspace{0.5em}
+  {\footnotesize Der HCS-Wert für das CredDef-Schreiben ist als Näherungswert aus Abbildung~\ref{fig:results-s1-write} übernommen; exakter Median und robuste Streuung sind noch aus der Messreihe nachzutragen.}
 \end{table}
 \normalsize
-% TODO Zwei offene Werte: (1) robSD Indy Schema-Schreiben aus s1_indy_summary.md ergaenzen, (2) HCS-CredDef-Schreibdauer -- klaeren, ob als Punktwert oder Intervall (analog ingest_lower_bound/ingest_upper_bound) auszuweisen, dann Zelle befuellen statt "--"
+% TODO Zwei verbleibende Zahlenwerte aus den kuratierten Messreihen nachtragen: (1) robuste Streuung Indy Schema-Schreiben aus out/final/s1_indy/s1_indy_summary.md, (2) exakter Median und robuste Streuung HCS CredDef-Schreiben aus out/final/s1_hcs/ -- derzeit als abgelesener Naeherungswert mit Anmerkung unter der Tabelle gefuehrt. Alle uebrigen Werte der Tabelle sind final (INK-20260905, INK-20260909, INK-20260913, INK-20260914).
 
 \begin{figure}[H]
     \centering
-    \input{Figures/s1_write_times-1.png}
-    \caption{Antwortzeit unter Grundlast, S1, beide Varianten (DID-, Schema-, CredDef-Schreibpfad). TODO Bildunterschrift praezisieren.}
+    \includegraphics[width=\textwidth]{Figures/s1_write_times-1}
+    \caption{Schreibdauer je Objekttyp unter definierter Grundlast, S1, beide Varianten ($n=15$ je Variante und Objekttyp), logarithmische Ordinate. Die Kästen umfassen das Interquartil, die Linie darin den Median, die Punkte die Einzelmessungen. Auf der HCS-Variante liegen DID- und Schema-Schreibvorgänge eng beieinander, während die Indy-Variante bei der DID-Registrierung um mehr als eine Größenordnung darunter liegt und beim Schema-Schreiben die mit Abstand größte Streuung aller Messpunkte aufweist.}
     \label{fig:results-s1-write}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \input{Figures/s1_read_times.pgf}
-    \caption{Lesedauer je Objekttyp, S1, beide Varianten. TODO Bildunterschrift praezisieren, insbesondere die Objekttyp-Selektivitaet des HCS-Lesebodens (Befund B5) hervorheben.}
+    \includegraphics[width=\textwidth]{Figures/s1_read_times-1}
+    \caption{Lesedauer je Objekttyp unter definierter Grundlast, S1, beide Varianten ($n=15$ je Variante und Objekttyp), logarithmische Ordinate. Die Darstellung zeigt die Objekttyp-Selektivität des HCS-Lesebodens (Abschnitt~\ref{sec:impl-befunde}, Befund B5): DID- und CredDef-Lesevorgänge liegen bei $\sim$5\,s und damit im Band des fest gesetzten Zeitfensters der Abonnementschnittstelle, während Schema-Lesevorgänge um mehr als zwei Größenordnungen darunter liegen und damit erkennbar einen anderen Pfad durchlaufen. Auf der Indy-Variante liegen alle drei Objekttypen in derselben Größenordnung, ohne vergleichbaren Boden.}
     \label{fig:results-s1-read}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \input{Figures/s1_revocation_times.pgf}
-    \caption{Widerrufs-Registry: Anlage, initialer Eintrag, Widerruf und Lesen, S1, beide Varianten. TODO Bildunterschrift praezisieren.}
+    \includegraphics[width=\textwidth]{Figures/s1_revocation_times-1}
+    \caption{Widerrufs-Registry unter definierter Grundlast, S1, beide Varianten, getrennt nach den drei Schreibphasen (Anlage der Registry-Definition, initialer Eintrag, tatsächlicher Widerruf) und dem Lesen des Akkumulatorzustands; $n=15$ je Phase und Variante, Indy-Lesen $n=14$. Logarithmische Ordinate. Auf der Indy-Variante fallen alle drei Schreibphasen nahezu auf denselben Wert von $\sim$3,0\,s, was den last-unabhängigen Schreibboden als generisch und nicht CredDef-spezifisch ausweist; auf der HCS-Variante liegt das Lesen bei etwa dem Doppelten des in Befund B5 nachgewiesenen Bodens.}
     \label{fig:results-s1-revocation}
 \end{figure}
 
@@ -87,16 +88,25 @@ Dieses Kapitel berichtet die Messwerte der fünf in Abschnitt~\ref{subsec:eval-s
   \item HCS: kein gradueller Sättigungsverlauf. Bei 1 und 5 Nutzern fehlerfrei, Antwortzeiten nahe dem bekannten Boden ($\sim$4400\,ms). Bei 10 Nutzern abrupter Einbruch: Fehlerrate 98,09\,\%, Sättigung über das Fehlerraten-Kriterium.
   \item Fehlerursache auf HCS bis auf Quellcode-Ebene zurückverfolgt: transiente \texttt{BUSY}-Rückmeldung des Konsensknotens wird von der Klientbibliothek nicht wiederholt, sondern als endgültiger Fehler an die Anwendungsschicht durchgereicht (Abschnitt~\ref{sec:impl-befunde}, Befund B6).
   \item Einordnung: der beobachtete Kollaps ist der Klientbibliothek zuzuschreiben, nicht dem Hedera-Konsensprotokoll; \texttt{BUSY} ist spezifikationsgemäß eine vorübergehende, keine dauerhafte Ablehnung.
-  \item % TODO genaue Schwelle zwischen 5 und 10 Nutzern nicht weiter eingegrenzt (Zeitbudget), als Grenze der Aussage benennen
+  \item Grenze der Aussage: das Laststufenraster der HCS-Variante umfasst die Stufen 1, 5 und 10 parallele Nutzer; der Übergang vom fehlerfreien zum vollständig fehlerhaften Betrieb liegt damit innerhalb eines Intervalls, das aus Zeitgründen nicht weiter eingegrenzt wurde. Berichtet wird deshalb die Stufe, auf der die Sättigung erstmals nachgewiesen ist (10 Nutzer), nicht die genaue Schwelle; diese liegt zwischen 5 und 10 parallelen Nutzern. Für die Aussage der Arbeit -- gradueller Sättigungsverlauf gegenüber abruptem Zusammenbruch -- ist die genaue Lage der Schwelle nicht tragend, für eine Kapazitätsplanung wäre sie es sehr wohl.
 \end{itemize}
 
-% TODO ABBILDUNG s2\_saturation.pgf einfuegen (zweigeteiltes Panel: Indy 11-Stufen-Kurve, HCS Fehlerrate als Primaerachse)
-%\begin{figure}[H]
-%    \centering
-%    \input{Figures/s2_saturation.pgf}
-%    \caption{Sättigungsverlauf S2, beide Varianten getrennt dargestellt. TODO Bildunterschrift praezisieren, insbesondere den p95-Abfall bei HCS erklaeren.}
-%    \label{fig:results-s2}
-%\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{Figures/s2_saturation-1}
+    \caption{Sättigungsverlauf S2, beide Varianten getrennt dargestellt, da sich die Sättigung auf unterschiedlichen Kennzahlen zeigt. Links die Indy-Variante über elf Laststufen: der Durchsatz wächst zunächst nahezu linear und läuft zur gestrichelten Marke hin in ein Plateau, die p95-Antwortzeit bleibt bis unmittelbar davor flach und springt erst auf der letzten Stufe. Rechts die HCS-Variante über drei Laststufen: die Fehlerrate steigt von 0\,\% auf 98,09\,\% und ist damit das einzige Kriterium, das die Sättigung anzeigt. Die p95-Antwortzeit fällt an derselben Stelle ab, weil fehlgeschlagene Anfragen sofort mit einem Fehler beantwortet werden und nicht, weil sie schneller abgeschlossen würden -- ein latenzbasiertes Kriterium allein hätte diese Sättigung nicht erkannt.}
+    \label{fig:results-s2}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.49\textwidth]{Figures/s2_saturation_throughput-1}
+    \hfill
+    \includegraphics[width=0.49\textwidth]{Figures/s2_saturation_error_rate-1}
+    \caption{Direktvergleich beider Varianten über der Zahl paralleler Anfragen: links der Durchsatz, rechts die Fehlerrate, jeweils mit der ermittelten Sättigungsgrenze als gepunkteter Senkrechten. Der höhere HCS-Durchsatz auf der Stufe mit 10 Nutzern ist kein Leistungsvorteil, sondern die Kehrseite derselben Beobachtung: er entsteht fast vollständig aus sofort fehlschlagenden Anfragen, wie die Fehlerrate rechts zeigt.}
+    \label{fig:results-s2-vergleich}
+\end{figure}
+% TODO optional: Figures/s2_saturation_p95-1.png (Direktvergleich der p95-Antwortzeiten) ergaenzen, falls der p95-Abfall der HCS-Variante eine eigene Abbildung rechtfertigt -- inhaltlich bereits im rechten Panel von Abbildung~\ref{fig:results-s2} enthalten.
 
 \section{S3 - Datenwachstum}
 \label{sec:results-s3}
@@ -106,16 +116,17 @@ Dieses Kapitel berichtet die Messwerte der fünf in Abschnitt~\ref{subsec:eval-s
   \item HCS: nach Korrektur eines anwendungsseitigen Zwischenspeicher-Artefakts (Abschnitt~\ref{sec:impl-befunde}) liegen die vier echten (nicht zwischengespeicherten) Lesezeiten zwischen 5,087\,s und 5,258\,s - Schwankung $<$200\,ms über eine 30-fache Bestandsvergrößerung.
   \item Indy: alle Lesezeiten im Millisekundenbereich (0,006\,s - 0,032\,s), kein erkennbarer Anstieg.
   \item Ergebnis als obere Schranke formuliert, nicht als Nullbefund: ein Bestandsgrößeneffekt, falls vorhanden, ist im getesteten Bereich kleiner als die beobachtete Streuung; das Konzept selbst hält fest, dass der Effekt erst bei hinreichend großen Beständen sichtbar wird (Abschnitt~\ref{subsec:eval-szenarien}).
-  \item % TODO Hinweis auf moegliche groessere Folgeserie als Grenze der Aussage
+  \item Folgeserie auf der Indy-Variante: der Bestand wurde in einem eigenen Lauf auf 2700 Füllobjekte und damit auf das Neunfache der ursprünglichen Serie erhöht. Die Lesezeiten am größten Zwischenstand liegen bei 0,0343\,s bis 0,0486\,s für das Zielschema, 0,0229\,s für die Ziel-CredDef und 0,0263\,s für die Kontrolllesung eines nie zuvor gelesenen Füllobjekts -- durchweg im selben Band wie die ursprüngliche Serie. Die obere Schranke gilt damit auf der Indy-Variante bis 2700 Objekte.
+  \item Die entsprechende Erweiterung auf der HCS-Variante konnte nicht abgeschlossen werden: das Schreiben der 2700 Füllobjekte über rund drei Stunden trieb den Importer der Mirror Node in eine wiederkehrende Neustartschleife, sodass die anschließend benötigten Zielobjekte nie sichtbar wurden. Ursache sind die Ressourcengrenzen des Importers in Verbindung mit eng gesetzten Zeitschranken seiner Bereitschaftsprüfungen; ein Knotenausfall oder Eingriff war dafür nicht erforderlich, die anhaltende Schreiblast allein genügte. Die Aussage für die HCS-Variante stützt sich deshalb weiterhin allein auf die Serie bis 300 Objekte. Der Befund selbst wird in Kapitel~\ref{sec:discussion} als eigenständige Beobachtung zur Betriebsfestigkeit aufgegriffen.
+  \item Grenze der Aussage: beide Serien erfassen die Lesezeit eines unveränderten Zielobjekts bei wachsender Gesamtzahl unbeteiligter Objekte. Die in Abschnitt~\ref{subsec:eval-szenarien} zusätzlich angesprochene Wachstumsrichtung -- die Lesezeit eines einzelnen Topics bei wachsender eigener Nachrichtenhistorie, etwa einer Widerrufs-Registry nach vielen Widerrufen -- ist damit nicht abgedeckt und bleibt offen.
 \end{itemize}
 
-% TODO ABBILDUNG s3\_bestand.pgf einfuegen (log-log, beide Varianten, Zielobjekt + Kontrolllesung, HCS-Checkpoint-0 als eigener Marker)
-%\begin{figure}[H]
-%    \centering
-%    \input{Figures/s3_bestand.pgf}
-%    \caption{Lesezeit nach Bestandsgröße, S3, beide Varianten, doppelt-logarithmische Skala. TODO Bildunterschrift praezisieren.}
-%    \label{fig:results-s3}
-%\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{Figures/s3_bestand-1}
+    \caption{Lesezeit nach Bestandsgröße, S3, beide Varianten, doppelt-logarithmische Skala. Die Abszisse gibt die Gesamtzahl der Objekte auf dem Ledger an, also die Füllobjekte des jeweiligen Zwischenstands zuzüglich des Zielobjekts. Durchgezogen das wiederholt gelesene Zielobjekt, gestrichelt die Kontrolllesung eines je Zwischenstand nie zuvor gelesenen Füllobjekts, die einen echten Bestandseffekt von einem Zwischenspeicher-Artefakt trennt. Beide Varianten verlaufen über den gesamten Bereich flach; der Abstand zwischen ihnen beträgt rund zwei Größenordnungen und ist damit um ein Vielfaches größer als jede Veränderung innerhalb einer Variante.}
+    \label{fig:results-s3}
+\end{figure}
 
 \section{S4 - Knotenausfall}
 \label{sec:results-s4}
@@ -129,13 +140,19 @@ Dieses Kapitel berichtet die Messwerte der fünf in Abschnitt~\ref{subsec:eval-s
 
 Der Ausfall eines Nicht-Primary-Knotens hatte in zwei unabhängigen Läufen praktisch keine messbare Auswirkung (100\,\% Erfolg). Der Ausfall des amtierenden Konsens-Primary löste eine reproduzierbare, kurze Störung aus, die sich ohne externen Eingriff durch einen protokollinternen View-Change auflöste -- in zwei unabhängigen Läufen nach ca.\ 55\,s bzw.\ exakt 60\,s. Median Wiederherstellungszeit nach Neustart über alle Läufe konsistent bei 4,5\,s (robuste Streuung 0,027\,s). Eine ältere, unter identischer Konfiguration aufgenommene Serie (5 Läufe) zeigte davon abweichend keine Erholung über die gesamte 170\,s lange Fehlerphase; die Ursache dieser Abweichung ist ungeklärt geblieben (siehe Diskussion).
 
-% TODO ABBILDUNG s4\_outcomes.pgf einfuegen (zwei Panels: Kontinuitaet, Ausfall-/Erholdauer je eigener Skala)
-%\begin{figure}[H]
-%    \centering
-%    \input{Figures/s4_outcomes.pgf}
-%    \caption{Verhalten bei Knotenausfall, S4, beide Varianten. TODO Bildunterschrift praezisieren, Definitionsunterschied Ausfallzeit vs. Wiederherstellungszeit erlaeutern.}
-%    \label{fig:results-s4}
-%\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{Figures/s4_outcomes-1}
+    \caption{Verhalten bei Knotenausfall, S4, beide Varianten, je 5 Wiederholungen. Die beiden Größen sind bewusst getrennt dargestellt, da sie Unterschiedliches messen: links die Ausfalldauer, also die Zeitspanne vom bestätigten Beenden des Knotens bis zur Wiederaufnahme des Betriebs einschließlich der Ausführungszeit der Betriebswerkzeuge; rechts die Erholdauer, also die Zeit vom wiederhergestellten Knoten bis zum erneut stabilen Antwortverhalten, auf logarithmischer Skala. Die nahezu verschwindende Erholdauer der HCS-Variante ist kein Vorteil, sondern die Folge desselben Mechanismus wie in S2: nach der Wiederherstellung liegt bereits wieder ein bedienbarer Zustand vor, während die eigentliche Störung vollständig in die links dargestellte Ausfalldauer fällt.}
+    \label{fig:results-s4}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{Figures/s4_disruption_duration-1}
+    \caption{Dauer bis zur nachhaltigen Erholung, S4, nach Art des ausgefallenen Knotens. Der Ausfall eines Nicht-Primary-Knotens auf der Indy-Variante bleibt ohne messbare Wirkung; der Ausfall des amtierenden Primary löst eine Störung aus, die sich ohne Eingriff über einen protokollinternen Sichtwechsel auflöst. Der schraffierte Balken kennzeichnet die ungeklärte ältere Messserie, die innerhalb des gesamten Beobachtungsfensters von 180\,s keine Erholung zeigte; er ist eine untere Schranke, kein gemessener Endwert. Der Wert der HCS-Variante bezieht sich auf den tatsächlich angesprochenen Knoten (Abschnitt~\ref{sec:impl-befunde}, Befund B5) und ist mit den Indy-Werten nicht unmittelbar vergleichbar, da ein erheblicher Anteil davon auf die Ausführungszeit der Betriebswerkzeuge entfällt.}
+    \label{fig:results-s4-dauer}
+\end{figure}
 
 \section{S5 - Zugriffskontrolle}
 \label{sec:results-s5}
@@ -148,13 +165,37 @@ Der Ausfall eines Nicht-Primary-Knotens hatte in zwei unabhängigen Läufen prak
   \item Anwendungsseitige Prüfstufe nach E6 nicht umgesetzt (Abschnitt~\ref{sec:impl-befunde}, Befund B4); S5 deckt daher auf HCS die netzwerkseitige Stufe vollständig ab, nicht die anwendungsseitige.
 \end{itemize}
 
-% TODO ABBILDUNG/TABELLE s5\_summary.tex einfuegen (Endorser-Indy, Widerruf-HCS, Widerruf-Indy als kompakte Tabelle)
-%\begin{table}[H]
-%    \centering
-%    \input{Figures/s5_summary.tex}
-%    \caption{Zusammenfassung S5: Zugriffskontrolle und Widerruf, beide Varianten. TODO Tabellenkopf/-format final pruefen.}
-%    \label{tab:results-s5}
-%\end{table}
+\begin{table}[htbp]
+\renewcommand{\arraystretch}{1.3}
+\footnotesize
+  \centering
+  \caption{Zusammenfassung S5: Einzelschritte der Endorser- und der Widerrufs-Probe mit signierender Rolle, Ergebnis und gegebenenfalls dem vom Netzwerk zurückgemeldeten Ablehnungsgrund}
+  \label{tab:results-s5}
+  \begin{tabular}{p{0.05\textwidth} p{0.22\textwidth} p{0.13\textwidth} p{0.11\textwidth} p{0.33\textwidth}}
+    \toprule
+    \textbf{Schritt} & \textbf{Operation} & \textbf{Signatur} & \textbf{Ergebnis} & \textbf{Auth-Regel bzw. Ablehnungsgrund} \\
+    \midrule
+    \multicolumn{5}{l}{\textit{Endorser-Probe, Indy (E1--E4)}} \\
+    E1 & NYM, \texttt{role=101} für Kandidat & TRUSTEE & angenommen & -- \\
+    E2 & SCHEMA & ENDORSER & angenommen & -- \\
+    E3 & NYM, \texttt{role=101} für dritte DID & ENDORSER & \textbf{abgelehnt} & vollständiger Regeltext: eine STEWARD- oder eine TRUSTEE-Signatur erforderlich \\
+    E4 & NYM auf sich selbst, Rolle leer & ENDORSER & \textbf{abgelehnt} & ohne Regeltext: nicht genügend TRUSTEE-Signaturen \\
+    \midrule
+    \multicolumn{5}{l}{\textit{Widerrufs-Probe, Indy (R1--R6)}} \\
+    R1 & SCHEMA & TRUSTEE & angenommen & -- \\
+    R2 & \texttt{CRED\_DEF} (widerrufsfähig) & TRUSTEE & angenommen & -- \\
+    R3 & \texttt{REVOC\_REG\_DEF} & TRUSTEE & angenommen & -- \\
+    R4 & \texttt{REVOC\_REG\_ENTRY} (A0) & TRUSTEE & angenommen & -- \\
+    R6 & \texttt{REVOC\_REG\_ENTRY} (A1, Index 1) & TRUSTEE & angenommen & -- \\
+    \midrule
+    \multicolumn{5}{l}{\textit{Widerrufs-Probe, HCS (Akkumulatorkette)}} \\
+    A0 & Registry-Eintrag, Initialakkumulator & Operator & angenommen & -- \\
+    A1 & Registry-Eintrag, Index 1 widerrufen & Operator & angenommen & -- \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+\normalsize
+% TODO Schrittnummerierung der Widerrufs-Probe pruefen: die Folge springt von R4 auf R6, ein Schritt R5 ist in der Auswertung nicht ausgewiesen -- entweder nachtragen oder durchgehend neu nummerieren.
 
 \section{Sicherheitsevaluation (STRIDE)}
 \label{sec:results-stride}
@@ -196,8 +237,18 @@ E & TE4 & entfällt & PoW-spezifisch, bei keiner der beiden Varianten anwendbar 
 
 \section{Ressourcenverbrauch}
 \label{sec:results-ressourcen}
-% TODO NFA3 Daten ergaenzen, sofern vorhanden - im aktuellen Chatverlauf nicht erhoben/besprochen
+
+Für diesen Abschnitt liegen keine Messwerte vor. Der Ressourcenverbrauch der Komponenten innerhalb der Messgrenze (NFA3) und der Speicherbedarf je Konsensknoten (NFA5) waren im Evaluationskonzept als zu erhebende Größen vorgesehen (Abschnitt~\ref{subsec:eval-szenarien}), wurden im Rahmen dieser Arbeit jedoch auf keiner der beiden Varianten erhoben. Der Grund ist eine Priorisierung: die verfügbare Messzeit floss vollständig in die fünf Szenarien S1 bis S5, die unmittelbar auf die Forschungsfrage der funktionalen Substituierbarkeit gerichtet sind. Beide Anforderungen bleiben damit unbelegt und werden in Kapitel~\ref{sec:discussion} ausdrücklich als Grenze der Aussagekraft geführt, nicht als erfüllt behandelt.
+
+Eine indirekte Beobachtung liegt vor, ersetzt eine Messung jedoch nicht: der in Abschnitt~\ref{sec:results-s3} berichtete Abbruch der HCS-Bestandserweiterung ging auf eine Ressourcengrenze des Mirror-Node-Importers zurück, die unter anhaltender Schreiblast erreicht wurde. Dies belegt, dass die HCS-Variante unter den gewählten Betriebsparametern eine ressourcenseitige Grenze besitzt, erlaubt aber keine Quantifizierung und keinen Vergleich mit der Indy-Variante.
+
+% TODO Falls vor Abgabe noch Messzeit verfuegbar ist: CPU- und Speicherverbrauch der Komponenten innerhalb der Messgrenze (NFA3) sowie Speicherbedarf je Konsensknoten (NFA5) auf beiden Varianten erheben und diesen Abschnitt durch die Messwerte ersetzen. Andernfalls bleibt die obige Einschraenkung stehen; die Nennung von NFA3 als gemessene Groesse ist dann auch in Kapitel 4 und 5 auf eine geplante, nicht erhobene Groesse zurueckzunehmen.
 
 \section{Zusammenfassung}
 \label{sec:results-zusammenfassung}
-% TODO Kurzer zusammenfassender Absatz nach Fertigstellung der obigen Abschnitte
+
+Über alle fünf Szenarien hinweg ließen sich die Funktionen der Ledger-Schicht auf beiden Varianten ausführen; kein Szenario scheiterte an einer fehlenden Fähigkeit der jeweiligen Technologie. Die gemessenen Unterschiede sind gleichwohl deutlich und verlaufen durchgängig in dieselbe Richtung. Auf der HCS-Variante liegen Schreib- und Teile der Lesevorgänge bei mehreren Sekunden, wobei sich die Werte eng um ein fest gesetztes Zeitfenster der Klientbibliothek gruppieren, statt mit dem tatsächlichen Aufwand zu schwanken (S1); die Laststeigerung endet nicht in einem Plateau, sondern in einem abrupten Zusammenbruch, dessen Ursache bis in das fehlende Wiederholungsverhalten derselben Bibliothek zurückverfolgt wurde (S2); der Ausfall des tatsächlich angesprochenen Knotens wirkt sich um zwei Größenordnungen länger aus als auf der Indy-Variante, weil die Bibliothek trotz vier vorhandener Knoten strukturell nur einen anspricht (S4). Auf der Indy-Variante liegen die entsprechenden Werte durchweg niedriger, die Sättigung verläuft graduell, und der Knotenausfall löst sich ohne Eingriff auf.
+
+Zwei Ergebnisse sind symmetrisch. Eine wachsende Objektzahl auf dem Ledger wirkte sich im untersuchten Bereich auf keiner der beiden Varianten messbar auf die Lesezeit aus (S3) -- formuliert als obere Schranke, nicht als Nullbefund. Und die netzwerkseitige Zugriffskontrolle wies unautorisierte Schreibversuche auf beiden Varianten zurück, ebenso ließ sich der Widerruf auf beiden Varianten unabhängig nachweisen (S5); der Unterschied liegt nicht in der Wirksamkeit, sondern in der Achse der Kontrolle -- netzwerkweite Rollenhierarchie gegenüber objektgebundener Schlüsselkontrolle -- und in der Beobachtbarkeit der Ablehnung, die auf der Indy-Variante reicher ausfällt.
+
+Ein wiederkehrendes Muster prägt damit das gesamte Kapitel: die auf der HCS-Variante gemessenen Nachteile sind an jeder Stelle, an der sich die Ursache bis auf Quellcodeebene verfolgen ließ, Eigenschaften der verwendeten Klientbibliothek und nicht des zugrundeliegenden Konsensverfahrens. Die Trennung dieser beiden Ebenen ist Gegenstand von Kapitel~\ref{sec:discussion}. Unbelegt bleiben die ressourcenbezogenen Anforderungen (Abschnitt~\ref{sec:results-ressourcen}) sowie die Wirkung einer wachsenden Nachrichtenhistorie innerhalb eines einzelnen Topics (Abschnitt~\ref{sec:results-s3}).ö 
