@@ -1,12 +1,29 @@
+% ================================================================
+% my_thesis_bibliography.bib -- geprueft und korrigiert
+%
+% Alle Links und DOIs wurden einzeln aufgerufen bzw. gegen
+% Crossref/PubMed/dblp/Verlagsseiten verifiziert.
+% Korrekturen sind jeweils mit "% FIX:" kommentiert.
+% Offene Punkte sind mit "% TODO:" markiert.
+%
+% HINWEIS ZU date/year:
+% Die Zotero-Exporte nutzten nur biblatex-"date". Unter BibTeX +
+% natbib/plainnat wird "date" ignoriert -> Eintraege waeren ohne
+% Jahr erschienen. Es wurde daher ueberall zusaetzlich "year"
+% ergaenzt. Unter biblatex/biber hat "date" weiterhin Vorrang,
+% die Datei funktioniert also mit beiden Backends.
+% ================================================================
+
 @inproceedings{akhtar2019,
   title = {From {{Blockchain}} to {{Hashgraph}}: {{Distributed Ledger Technologies}} in the {{Wild}}},
   shorttitle = {From {{Blockchain}} to {{Hashgraph}}},
   booktitle = {Proc. - {{Int}}. {{Conf}}. {{Electr}}., {{Electron}}. {{Comput}}. {{Eng}}., {{UPCON}}},
   author = {Akhtar, Zuhaib},
   date = {2019},
+  year = {2019},
+  pages = {1--6},                                  % FIX: pages ergaenzt
   publisher = {{Institute of Electrical and Electronics Engineers Inc.}},
   doi = {10.1109/UPCON47278.2019.8980029},
-  abstract = {With the introduction of the term blockchain in 2008, it's interest has been increasing in the community since the idea was coined. The reason for this interest is because it provides anonymity, security and integrity without any central third party organisation in control of data and transaction. It has attracted huge interest in research areas due to its advances in various platforms, limitations and challenges. There are various Distributed Ledger Technologies that demonstrates their special features which overcome limitations of other platforms. However, implementations of various distributed ledger technologies differ substantially based on their data structures, consensus protocol and fault tolerant among others. Due to these variations, they have a quite different cost, performance, latency and security. In this paper, working and in-depth comparison of major distributed ledger technologies including their special features, strengths and weaknesses is presented and discussed by identifying various criteria. © 2019 IEEE.},
   eventtitle = {Proceedings - 2019 {{International Conference}} on {{Electrical}}, {{Electronics}} and {{Computer Engineering}}, {{UPCON}} 2019},
   isbn = {978-1-7281-3455-0},
   langid = {english},
@@ -14,9 +31,11 @@
 }
 
 @article{alahmad2022,
-  title = {{{INFLUENCE OF HEDERA HASHGRAPH OVER BLOCKCHAIN}}},
-  author = {Alahmad, Mohammad and Alshaikhli, Imad and Alkandari, Abdulrahman and Alshehab, Abdullah and Islam, Mohamamd Rabiul and Alnasheet, Meshal},
+  title = {{{Influence of Hedera Hashgraph over Blockchain}}},
+  % FIX: "Mohamamd Rabiul Islam" -> "Mohammad Rabiul Islam"
+  author = {Alahmad, Mohammad and Alshaikhli, Imad and Alkandari, Abdulrahman and Alshehab, Abdullah and Islam, Mohammad Rabiul and Alnasheet, Meshal},
   date = {2022},
+  year = {2022},
   journaltitle = {Journal of Engineering Science and Technology},
   shortjournal = {J. Eng. Sci. Technol.},
   volume = {17},
@@ -24,16 +43,18 @@
   pages = {3475--3488},
   publisher = {Taylor's University},
   issn = {1823-4690},
-  abstract = {From the last decade, blockchain network have a magnificent impact on our everyday digital services such as: payments, smart contracts, medicals and many mores. Blockchain provides a decentralized public ledger that can connect different enterprises and individuals with no central server. however, Blockchain suffers from scalability issue since it cannot expand fast enough as the network data rapidly increasing. Leemon Baird invented a promising decentralized public ledger called Hedera Hashgraph algorithm that able to perform and offer various benefits such as the ability of scalability. This paper explains, analyse, and compares Hedera Hashgraph algorithm with blockchain algorithm from different aspects and define the potentiality of HBAR network as a decentralized public ledger technology (DLT) in digital services. The article also focuses on the overall demonstrate active results representing the scalability and performance factors in between HBAR Hedera Hashgraph and Bitcoin blockchain cryptocurrencies networks. Though Hedera Hashgraph haven't tested publicly but this article come out with the picture of performance of HBAR over the blockchain networks based on several serves as this paper explicitly depicted. © School of Engineering, Taylor's University.},
+  % FIX: JESTEC vergibt keine DOIs; stabile Verlags-URL ergaenzt
+  url = {https://jestec.taylors.edu.my/Vol%2017%20Issue%205%20October%202022/17_5_32.pdf},
+  urldate = {2026-09-09},
   langid = {english},
-  keywords = {Blockchain vs Hashgraph},
-  file = {/Users/noto2k/Zotero/storage/EPKEZ5PR/85142460315.html}
+  keywords = {Blockchain vs Hashgraph}
 }
 
 @article{amanat2022,
   title = {Blockchain and Cloud Computing-Based Secure Electronic Healthcare Records Storage and Sharing},
   author = {Amanat, Amna and Rizwan, Muhammad and Maple, Carsten and Zikria, Yousaf Bin and Almadhor, Ahmad S. and Kim, Sung Won},
   date = {2022},
+  year = {2022},
   journaltitle = {Frontiers in Public Health},
   shortjournal = {Front Public Health},
   volume = {10},
@@ -42,19 +63,21 @@
   pages = {938707},
   issn = {2296-2565},
   doi = {10.3389/fpubh.2022.938707},
-  abstract = {Healthcare information is essential for both service providers and patients. Further secure sharing and maintenance of Electronic Healthcare Records (EHR) are imperative. EHR systems in healthcare have traditionally relied on a centralized system (e.g., cloud) to exchange health data across healthcare stakeholders, which may expose private and sensitive patient information. EHR has struggled to meet the demands of several stakeholders and systems in terms of safety, isolation, and other regulatory constraints. Blockchain is a distributed, decentralized ledger technology that can provide secured, validated, and immutable data sharing facilities. Blockchain creates a distributed ledger system using techniques of cryptography (hashes) that are consistent and permit actions to be carried out in a distributed manner without needing a centralized authority. Data exploitation is difficult and evident in a blockchain network due to its immutability. We propose an architecture based on blockchain technology that authenticates the user identity using a Proof of Stake (POS) cryptography consensus mechanism and Secure Hash Algorithm (SHA256) to secure EHR sharing among different electronic healthcare systems. An Elliptic Curve Digital Signature Algorithm (ECDSA) is used to verify EHR sensors to assemble and transmit data to cloud infrastructure. Results indicate that the proposed solution performs exceptionally well when compared with existing solutions, which include Proof-Of-Work (POW), Secure Hash Algorithm (SHA-1), and Message Digest (MD5) in terms of power consumption, authenticity, and security of healthcare records.},
   langid = {english},
   pmcid = {PMC9343689},
-  keywords = {Architecture,Blockchain},
-  file = {/Users/noto2k/Zotero/storage/ACIEHPXV/Amanat et al. - 2022 - Blockchain and cloud computing-based secure electronic healthcare records storage and sharing.pdf}
+  keywords = {Architecture,Blockchain}
 }
 
 @article{baird2016,
-  title = {{{THE SWIRLDS HASHGRAPH CONSENSUS ALGORITHM}}: {{FAIR}}, {{FAST}}, {{BYZANTINE FAULT TOLERANCE}}},
+  title = {The {{Swirlds Hashgraph Consensus Algorithm}}: {{Fair}}, {{Fast}}, {{Byzantine Fault Tolerance}}},
   author = {Baird, Leemon},
-  abstract = {A new system, the Swirlds hashgraph consensus algorithm, is proposed for replicated state machines with guaranteed Byzantine fault tolerance. It achieves fairness, in the sense that it is difficult for an attacker to manipulate which of two transactions will be chosen to be first in the consensus order. It has complete asynchrony, no leaders, no round robin, no proof-ofwork, eventual consensus with probability one, and high speed in the absence of faults. It is based on a gossip protocol, in which the participants don’t just gossip about transactions. They gossip about gossip. They jointly build a hashgraph reflecting all of the gossip events. This allows Byzantine agreement to be achieved through virtual voting. Alice does not send Bob a vote over the Internet. Instead, Bob calculates what vote Alice would have sent, based on his knowledge of what Alice knows. This yields fair Byzantine agreement on a total order for all transactions, with very little communication overhead beyond the transactions themselves.},
-  langid = {english},
-  file = {/Users/noto2k/Zotero/storage/AJ8C4MN8/Baird - THE SWIRLDS HASHGRAPH CONSENSUS ALGORITHM FAIR, FAST, BYZANTINE FAULT TOLERANCE.pdf}
+  % FIX: Eintrag hatte ueberhaupt kein Datum -> Jahr und Reportnummer ergaenzt
+  date = {2016},
+  year = {2016},
+  type = {Swirlds Tech Report},
+  number = {SWIRLDS-TR-2016-01},
+  institution = {Swirlds, Inc.},
+  langid = {english}
 }
 
 @incollection{bittins2021,
@@ -63,52 +86,53 @@
   author = {Bittins, Soeren and Kober, Gerhard and Margheri, Andrea and Masi, Massimiliano and Miladi, Abdallah and Sassone, Vladimiro},
   editor = {Namasudra, Suyel and Deka, Ganesh Chandra},
   date = {2021},
+  year = {2021},
   pages = {1--27},
+  series = {Studies in Big Data},
+  volume = {83},
   publisher = {Springer},
   location = {Singapore},
   doi = {10.1007/978-981-15-9547-9_1},
   url = {https://doi.org/10.1007/978-981-15-9547-9_1},
   urldate = {2026-05-15},
-  abstract = {Electronic healthcare solutions permit interconnecting hospitals and clinics to enable sharing of electronic medical records according to interoperability and legal standards. However, healthcare record data is siloed across hospitals and data sharing processes are unsuccessful in providing accountable audit of the data. Blockchain technology has been successfully applied to support the management of distributed data. Its decentralisation and immutability features can underpin the development of next-generation services for health data sharing. This chapter positions recent blockchain research outcomes within the healthcare legal and technical standard frameworks (e.g. IHE and FHIR). It then presents how blockchain can be applied to healthcare data sharing practices in order to enhance trust with automated provenance tracking and accountable credential verification. The data sharing practices related to international organ transplant processes are used as motivating and application case study.},
   isbn = {978-981-15-9547-9},
   langid = {english},
-  keywords = {Architecture,Blockchain,Data Provenance,SSI},
-  file = {/Users/noto2k/Zotero/storage/TDM7F7TB/Bittins et al. - 2021 - Healthcare Data Management by Using Blockchain Technology.pdf}
+  keywords = {Architecture,Blockchain,Data Provenance,SSI}
 }
 
-
 @inproceedings{chainarong2025,
-  title = {Xdhds: {{Cross-Domain Healthcare Data Sharing Using Self-Soverign Id}} and {{Blockchain}}},
-  shorttitle = {Xdhds},
+  title = {{{XDHDS}}: {{Cross-Domain Healthcare Data Sharing Using Self-Sovereign ID}} and {{Blockchain}}},
+  shorttitle = {{{XDHDS}}},
   booktitle = {2025 17th {{International Conference}} on {{Knowledge}} and {{Smart Technology}} ({{KST}})},
   author = {Chainarong, Danupat and Thirasak, Krittin and Chuaphanngam, Teerawat and Fugkeaw, Somchart},
   date = {2025-02},
+  year = {2025},
   pages = {1--6},
+  location = {Bangkok, Thailand},
   issn = {2473-764X},
   doi = {10.1109/KST65016.2025.11003309},
-  url = {https://ieeexplore.ieee.org/document/11003309/metrics},
+  % FIX: URL zeigte auf die /metrics-Unterseite
+  url = {https://ieeexplore.ieee.org/document/11003309},
   urldate = {2026-06-22},
-  abstract = {The exchange of Electronic Health Records (EHRs) among healthcare institutions is crucial for comprehensive patient care and medical research. However, current centralized systems struggle with data silos, interoperability issues, and trust deficits. This paper proposes Healthcare Decentralized Identity and Access Management (XDHDS), a blockchain-based model that enhances patient control over healthcare data. XDHDS leverages Self-Sovereign Identity (SSI) for digital identity management and integrates Ciphertext-Policy Attribute-Based Encryption (CP-ABE) for fine-grained access control, ensuring secure and private data sharing across regions. Key features include cross-domain authentication, authorization, and distributed proxy reencryption (PRE) for secure cross-regional EHR access. Experimental results demonstrate XDHDS 's scalability and efficiency in handling large datasets and re-encryption performance. Limitations related to resource constraints and the need for further cryptographic analysis are also discussed.},
-  eventtitle = {2025 17th {{International Conference}} on {{Knowledge}} and {{Smart Technology}} ({{KST}})},
-  keywords = {Access Control,Blockchain,Privacy,Scalability,SSI},
-  file = {/Users/noto2k/Zotero/storage/HTCZCBI2/Chainarong et al. - 2025 - Xdhds Cross-Domain Healthcare Data Sharing Using Self-Soverign Id and Blockchain.pdf}
+  keywords = {Access Control,Blockchain,Privacy,Scalability,SSI}
 }
 
 @inproceedings{erler2023,
-  title = {Threat {{Modeling}} to~{{Design}} a~{{Decentralized Health Data Management Application}}},
-  booktitle = {Information {{Technology}} and {{Systems}}},
+  title = {Threat {{Modeling}} to {{Design}} a {{Decentralized Health Data Management Application}}},
+  booktitle = {Information {{Technology}} and {{Systems}} ({{ICITS}} 2023)},
   author = {Erler, Christina and Hu, Shanshan and Danelski, Alexa and Stork, Wilhelm and Sunyaev, Ali and Gersch, Martin},
   editor = {Rocha, Álvaro and Ferrás, Carlos and Ibarra, Waldo},
   date = {2023},
+  year = {2023},
   pages = {443--455},
+  series = {Lecture Notes in Networks and Systems},
+  volume = {692},
   publisher = {Springer International Publishing},
   location = {Cham},
   doi = {10.1007/978-3-031-33261-6_38},
-  abstract = {Decentralized applications are increasingly recognized as efficient tools to overcome security challenges in the management of highly sensitive health information. However, research still lacks the understanding of how to address the complex security challenges in the design of health data management applications (HDMAs). In this study, we structurally analyzed security requirements of health data management systems to improve the efficiency of their design. We leveraged threat modeling to inform the design of HDMAs and proposed the system architecture accordingly to facilitate the security of interorganizational health data exchange. Our results contribute to the exaptation of threat modeling to the innovative design of decentralized applications for health data management and to the exploration of benefits of decentralization for healthcare.},
   isbn = {978-3-031-33261-6},
   langid = {english},
-  keywords = {Architecture,Blockchain,Privacy,Security,SSI},
-  file = {/Users/noto2k/Zotero/storage/D436P5Z2/Erler et al. - 2023 - Threat Modeling to Design a Decentralized Health Data Management Application.pdf}
+  keywords = {Architecture,Blockchain,Privacy,Security,SSI}
 }
 
 @inproceedings{farin2025,
@@ -117,20 +141,20 @@
   booktitle = {2025 {{IEEE}}/{{ACM}} 7th {{International Workshop}} on {{Emerging Trends}} in {{Software Engineering}} for {{Blockchain}} ({{WETSEB}})},
   author = {Farin, Mashiat Amin and Sikder, Sampad and Raad, Ashabul Yamin and Tahmeed Ahmed, Meah and Tahlil, Tahlil},
   date = {2025-05},
+  year = {2025},
   pages = {26--33},
+  location = {Ottawa, ON, Canada},
   doi = {10.1109/WETSEB66605.2025.00010},
   url = {https://ieeexplore.ieee.org/document/11039273},
   urldate = {2026-06-22},
-  abstract = {Electronic health management systems (EHMS) play a crucial role in modern healthcare. They store important medical information such as patients’ medical histories, treatment plans, and diagnostic reports. However, the current EHMS landscape faces numerous challenges. These challenges hinder efficient data management, and collaboration among stakeholders, and compromise patient privacy and data security. Blockchain technology offers a promising solution to address these issues. By leveraging its decentralized and immutable nature, blockchain can create a secure, transparent, and tamper-resistant platform for storing, managing, and sharing electronic health records. This paper proposes an end-to-end solution called Healthchain based on a private permissioned blockchain network. Healthchain uses the Istanbul Byzantine fault tolerance (IBFT) consensus algorithm to reduce computation costs and increase speed. Secure multiparty computation allows medical data monetization without compromising privacy or data authenticity (ensured by blockchain) along with Zero knowledge proof and differential privacy for researchers. HealthChain also uses an efficient method for storing medical reports using IPFS, reducing the burden on single storage. It creates awareness about privacy issues and creates awareness about social engineering attacks based on the project. This paper explains the proposed framework, comparing performance with existing traditional and digital systems, and considers Bangladesh as an example to test its viability.},
-  eventtitle = {2025 {{IEEE}}/{{ACM}} 7th {{International Workshop}} on {{Emerging Trends}} in {{Software Engineering}} for {{Blockchain}} ({{WETSEB}})},
-  keywords = {Access Control,Blockchain,Scalability,Security},
-  file = {/Users/noto2k/Zotero/storage/5F5XATHW/Farin et al. - 2025 - HealthChain A Blockchain-Based Framework for Electronic Health Record Management System.pdf}
+  keywords = {Access Control,Blockchain,Scalability,Security}
 }
 
 @article{giao2026,
   title = {Enhancing Health Data Integrity Using {{Distributed Ledger Technology}}},
   author = {Giao, Joao and Luis-Ferreira, Fernando and Sarraipa, Joao and Jardim-Gonçalves, Ricardo},
   date = {2026},
+  year = {2026},
   journaltitle = {Journal of Cloud Computing},
   shortjournal = {J. Cloud Comput.},
   volume = {15},
@@ -138,10 +162,8 @@
   publisher = {{Springer Science and Business Media Deutschland GmbH}},
   issn = {2192-113X},
   doi = {10.1186/s13677-026-00842-4},
-  abstract = {Nowadays, with the increased integration of cloud-computing, data integrity continues to be a problem in the current eHealth sector. This security principle is considered fundamental to ensure the accuracy and reliability of data by ensuring protection from unauthorized and illicit tampering. The present work aims to demonstrate the ability for the Distributed Ledger Technology (DLT) to provide trust and confidence in the healthcare infrastructure for patients, healthcare professionals and policy makers. The DLT has the potential to become one of the most reliable solutions for the many challenges facing the healthcare industry for its potential to enable more secure, transparent, and equitable data management. Although much documentation exists about applications in this domain, it is mostly presented in high-level conceptualization, without detailing the actual development or implementation. This document proposes a metadata-based approach to protect healthcare data integrity in compliance with GDPR, ensuring trustworthy data access for end-users, while demonstrating that the solution can be deployed on low-resource hardware with minimal adaptation effort and time constraints. © The Author(s) 2026.},
   langid = {english},
-  keywords = {Architecture,Integrity},
-  file = {/Users/noto2k/Zotero/storage/EP4TFZF5/Giao et al. - 2026 - Enhancing health data integrity using Distributed Ledger Technology.pdf;/Users/noto2k/Zotero/storage/9RQML86R/105033450735.html}
+  keywords = {Architecture,Integrity}
 }
 
 @inproceedings{guptaverma2026,
@@ -149,15 +171,13 @@
   booktitle = {2026 6th {{International Conference}} on {{Multimedia}}, {{Signal Processing}} and {{Communication Technologies}} ({{IMPACT}})},
   author = {Gupta, Gaytri and Verma, Rahul Kumar},
   date = {2026-02},
+  year = {2026},
   pages = {1--5},
   issn = {2690-8239},
   doi = {10.1109/IMPACT68503.2026.11468302},
   url = {https://ieeexplore.ieee.org/document/11468302},
   urldate = {2026-06-30},
-  abstract = {Secure and private sharing of electronic health records (EHRs) among multiple parties remains a significant challenge in digital healthcare. Although Blockchain technology can ensure data integrity through security and transparency, protecting patient privacy and enabling secure collaborative analysis continue to be difficult problems. To address these challenges, differential privacy (DP) and Zero-Knowledge Proofs (ZKPs) are integrated into a Blockchain-based solution in the innovative design of this multi-institutional EHR-sharing system architecture. ZKPs enable the verification of user identities and access requests without revealing sensitive information, while DP ensures that analytical results are statistically valid and that underlying data are protected against re-identification attacks. A permissioned Blockchain system is developed to support verifiable and privacy-preserving federated analytics over distributed data. Experimental results demonstrate that the proposed framework successfully achieves privacy protection, secure access, and interoperable data-sharing objectives.},
-  eventtitle = {2026 6th {{International Conference}} on {{Multimedia}}, {{Signal Processing}} and {{Communication Technologies}} ({{IMPACT}})},
-  keywords = {Blockchain,Communication systems,Communications technology,Differential Privacy (DP),Electronic Health Records (EHRs),Federated Learning,Healthcare Data Sharing,HTTP,Internet,Internet of Medical Things,Internet of Things,Interoperability,Protocols,Smart contracts,Zero knowledge proof,Zero-Knowledge Proofs (ZKP)},
-  file = {/Users/noto2k/Zotero/storage/PRSHFL3F/Gupta and Verma - 2026 - A Zero-Knowledge Proof and Differential Privacy-Enhanced Blockchain Framework for Secure Multi-Insti.pdf}
+  keywords = {Blockchain,Differential Privacy,Electronic Health Records,Interoperability,Zero-Knowledge Proofs}
 }
 
 @inproceedings{hashim2021,
@@ -165,21 +185,20 @@
   booktitle = {2021 {{Global Congress}} on {{Electrical Engineering}} ({{GC-ElecEng}})},
   author = {Hashim, Faiza and Shuaib, Khaled and Sallabi, Farag},
   date = {2021-12},
+  year = {2021},
   pages = {136--143},
   doi = {10.1109/GC-ElecEng52322.2021.9788285},
   url = {https://ieeexplore.ieee.org/document/9788285},
   urldate = {2026-06-02},
-  abstract = {In any blockchain network, a consensus algorithm is considered a major factor in determining the performance of the network. This study aims to investigate consensus algorithms in healthcare blockchains for electronic health record (EHR) sharing by analyzing the scalability performance of these algorithms. Several consensus algorithms have been proposed in the literature and have been used for various types of blockchain networks. Herein, we analyze the performance of proof of work, practical Byzantine fault tolerance, and proof of authority (PoA) algorithms in the healthcare domain and propose an improved real-time PoA consensus algorithm for EHR sharing for faster consensus and block generation. Results of performed simulations show that the proposed algorithm outperforms previous consensus algorithms in terms of consensus time, number of blocks generated, network throughput, and scalability.},
-  eventtitle = {2021 {{Global Congress}} on {{Electrical Engineering}} ({{GC-ElecEng}})},
-  keywords = {Consensus algorithm,Evaluation,Performance,Scalability},
-  file = {/Users/noto2k/Zotero/storage/VN6G8P3D/Hashim et al. - 2021 - Performance Evaluation of Blockchain Consensus Algorithms for Electronic Health Record Sharing.pdf}
+  keywords = {Consensus algorithm,Evaluation,Performance,Scalability}
 }
 
 @article{joshimahajan2025,
-  title = {Secure and Interoperable {{EHR}} Management via Hyperledger Fabric: {{The Mrblock}} Framework},
-  shorttitle = {Secure and Interoperable {{EHR}} Management via Hyperledger Fabric},
+  title = {Secure and Interoperable {{EHR}} Management via {{Hyperledger Fabric}}: {{The MrBlock}} Framework},
+  shorttitle = {Secure and Interoperable {{EHR}} Management via {{Hyperledger Fabric}}},
   author = {Joshi, Pranalini and Mahajan, Pratibha},
   date = {2025-03-27},
+  year = {2025},
   journaltitle = {Peer-to-Peer Networking and Applications},
   shortjournal = {Peer-to-Peer Netw. Appl.},
   volume = {18},
@@ -189,10 +208,8 @@
   doi = {10.1007/s12083-025-01954-5},
   url = {https://doi.org/10.1007/s12083-025-01954-5},
   urldate = {2026-06-30},
-  abstract = {Electronic Health Records (EHRs) require secure and efficient sharing mechanisms to protect patient privacy while ensuring interoperability across healthcare institutions. Traditional systems face challenges related to security, privacy, and access control, leading to risks of data breaches and inefficiencies. Existing blockchain-based EHR solutions, particularly those using PBFT consensus, suffer from high transaction latency and scalability limitations. This paper presents MrBlock, a blockchain-based framework built on Hyperledger Fabric that enhances EHR security, privacy, and interoperability. MrBlock integrates role-based and attribute-based access control with smart contracts for automated and secure access management while leveraging the Raft consensus mechanism for improved performance. Performance evaluations demonstrate that MrBlock achieves up to 2.7\,×\,lower average latency (1.89~s vs. 5.07~s) and higher throughput (8.9 TPS vs. 5.5 TPS) compared to PBFT-based approaches, making it a more efficient solution for secure EHR sharing. By leveraging blockchain’s decentralized architecture, MrBlock mitigates privacy risks and strengthens trust in healthcare data exchange.},
   langid = {english},
-  keywords = {Attribute-based access control,Blockchain,Chaincode,Distributed network,Electronic health record,Hyperledger fabric network,Ledger,Role based},
-  file = {/Users/noto2k/Zotero/storage/ZWN3MAHT/Joshi and Mahajan - 2025 - Secure and interoperable EHR management via hyperledger fabric The Mrblock framework.pdf}
+  keywords = {Attribute-based access control,Blockchain,Chaincode,Electronic health record,Hyperledger fabric}
 }
 
 @inproceedings{mamoru2026,
@@ -200,22 +217,22 @@
   booktitle = {2026 {{IEEE International Research Conference}} on {{Smart Computing}} and {{Systems Engineering}} ({{SCSE}})},
   author = {Mamoru, Sachin and Sawandi, Harini and Ganegoda, Upeksha},
   date = {2026-03},
+  year = {2026},
   volume = {9},
   pages = {1--8},
+  location = {Kelaniya, Sri Lanka},
   issn = {2997-7363},
   doi = {10.1109/SCSE70081.2026.11499774},
   url = {https://ieeexplore.ieee.org/document/11499774},
   urldate = {2026-06-22},
-  abstract = {Past global outbreaks of infectious diseases highlighted the essential requirement for an effective health data management system capable of swiftly adapting to and alleviating public health emergencies. The rapid digitization of healthcare systems has increased reliance on Electronic Health Record (EHR) platforms to support clinical decision-making and data sharing. Despite these advances, major health organizations lack a unified EHR system. In most existing systems, patients have limited visibility and control over how their medical data are accessed and shared after initial consent is granted. Modern regulatory frameworks, such as the GDPR and HIPAA, require explicit patient consent before data is collected or processed. Centralized EHR systems often lack patient control, interoperability, and trust. Moreover, access control, a critical security requirement in healthcare information systems, has not been sufficiently addressed. As a result, consent withdrawal is often treated as an administrative or policy-level action rather than a technically enforceable access decision. This limitation contradicts contemporary data protection regulations. Therefore, this paper proposes a patient-centric framework that combines a permissioned blockchain and off-chain storage with a Revocable Access Control Mechanism (RACM) derived from identified gaps in existing blockchain-based access control systems. The framework is evaluated using a publicly available open-access healthcare dataset. Experimental results demonstrate near-linear scalability for record registration, negligible latency for real-time consent and revocation operations, and a 76.713\% reduction in on-chain storage compared to raw EHR storage. These findings indicate that blockchain-based patient-centric consent enforcement is feasible and suitable for healthcare data governance.},
-  eventtitle = {2026 {{IEEE International Research Conference}} on {{Smart Computing}} and {{Systems Engineering}} ({{SCSE}})},
-  keywords = {Access Control,Architecture,Blockchain},
-  file = {/Users/noto2k/Zotero/storage/2RU8YUIR/Mamoru et al. - 2026 - A Blockchain-Based Patient-Centric Access Control Framework for Electronic Health Record Management.pdf}
+  keywords = {Access Control,Architecture,Blockchain}
 }
 
 @article{mazlan2020,
-  title = {Scalability {{Challenges}} in {{Healthcare Blockchain System}}—{{A Systematic Review}}},
+  title = {Scalability {{Challenges}} in {{Healthcare Blockchain System}}---{{A Systematic Review}}},
   author = {Mazlan, Ahmad Akmaluddin and Mohd Daud, Salwani and Mohd Sam, Suriani and Abas, Hafiza and Abdul Rasid, Siti Zaleha and Yusof, Muhammad Fathi},
   date = {2020},
+  year = {2020},
   journaltitle = {IEEE Access},
   volume = {8},
   pages = {23663--23673},
@@ -223,9 +240,7 @@
   doi = {10.1109/ACCESS.2020.2969230},
   url = {https://ieeexplore.ieee.org/document/8968381},
   urldate = {2026-06-02},
-  abstract = {Blockchain technology is a private, secure, trustworthy, and transparent information exchange performed in a decentralised manner. In this case, the coordination and validation efforts are simplified as the records are designed to update regularly and there is no difference in the two databases. This review focuses on how the blockchain addresses scalability challenges and provides solutions in the healthcare field through the implementation of blockchain technology. Accordingly, 16 solutions fell under two main areas, namely storage optimization and redesign of blockchain. However, limitations persist, including block size, high volume of data, transactions, number of nodes, and protocol challenges. This review consists of six stages, namely identification of research question, procedures of research, screening of relevant articles, keywording based on the abstract, data extraction, and mapping process. Through Atlas.ti software, the selected keywords were used to analyse through the relevant articles. As a result, 48 codes and 403 quotations were compiled. Manual coding was performed to categorise the quotations. The codes were then mapped onto the network as a mapping process. Notably, 16 solutions fell under two main areas, namely storage optimization and redesign of blockchain. Basically, there are 3 solutions compiled for storage optimization and 13 solutions for the redesign of the blockchain, namely blockchain modelling, read mechanism, write mechanism, and bi-directional network.},
-  keywords = {Blockchain,Scalability,Systematic Review},
-  file = {/Users/noto2k/Zotero/storage/2NMYESZU/Mazlan et al. - 2020 - Scalability Challenges in Healthcare Blockchain System—A Systematic Review.pdf}
+  keywords = {Blockchain,Scalability,Systematic Review}
 }
 
 @article{minango2025,
@@ -233,6 +248,7 @@
   shorttitle = {Distributed {{Ledger Technology}} in {{Healthcare}}},
   author = {Minango, Juan and Carvajal Mora, Henry and Zambrano, Marcelo and Orozco Garzón, Nathaly and Pérez, Francisco},
   date = {2025-02},
+  year = {2025},
   journaltitle = {Technologies},
   volume = {13},
   number = {2},
@@ -242,10 +258,8 @@
   doi = {10.3390/technologies13020058},
   url = {https://www.mdpi.com/2227-7080/13/2/58},
   urldate = {2026-06-21},
-  abstract = {This paper evaluates the technical feasibility of Distributed Ledger Technology (DLT) within the healthcare ecosystem, with a focus on the use of Corda DLT to enhance governance and performance in a decentralized ecosystem, ensuring data integrity, security, and trustworthiness. Key attributes examined include the guarantee of data integrity, ensuring that transmitted data remain unaltered; authenticity through the implementation of digital signatures and certificates; confidentiality achieved via secure peer-to-peer communication accessible only to authorized parties; and traceability and auditing mechanisms that enable tracking of information changes and accountability. To validate these features, a Corda Distributed Application (CorDapp) was developed to manage the core logic of the healthcare ecosystem. The CorDapp was deployed across nodes and executed within the Corda network. Its performance was assessed using metrics such as throughput, latency, CPU usage, and memory consumption in both local and cloud network environments. Results demonstrate the feasibility of using Corda DLT technology in healthcare, effectively addressing critical requirements such as integrity, authenticity, confidentiality, traceability, and auditing while maintaining satisfactory performance across diverse deployment scenarios.},
   langid = {english},
-  keywords = {Architecture,Blockchain,Performance},
-  file = {/Users/noto2k/Zotero/storage/TXLPG9AN/Minango et al. - 2025 - Distributed Ledger Technology in Healthcare Enhancing Governance and Performance in a Decentralized.pdf}
+  keywords = {Architecture,Blockchain,Performance}
 }
 
 @misc{torongo2023,
@@ -269,34 +283,35 @@
 
 @article{tawfik2025,
   title = {{{ACHealthChain}} Blockchain Framework for Access Control and Privacy Preservation in Healthcare},
-  author = {Tawfik, Ahmed and Al-Ahwal, Ayman and Eldien, Adly and Zayed, Hala},
+  % FIX: dritter Autor heisst "Tag Eldien, Adly S.", nicht "Eldien, Adly"
+  author = {Tawfik, Ahmed M. and Al-Ahwal, Ayman and Tag Eldien, Adly S. and Zayed, Hala H.},
   date = {2025-05-14},
+  year = {2025},
   journaltitle = {Scientific Reports},
-  shortjournal = {Scientific Reports},
+  shortjournal = {Sci Rep},
   volume = {15},
+  number = {1},                                    % FIX: ergaenzt
+  pages = {16696},                                 % FIX: Artikelnummer ergaenzt
   doi = {10.1038/s41598-025-00757-1},
-  abstract = {Ensuring privacy and confidentiality in healthcare data management remains a critical challenge. Traditional centralized access control mechanisms are susceptible to security breaches, including unauthorized access, data leakage, and single points of failure, as well as privacy violations such as patient record exposure and improper data sharing. To address these issues, this paper proposes ACHealthChain, a blockchain-based framework leveraging Hyperledger Fabric for decentralized and transparent access control. The framework integrates the InterPlanetary File System (IPFS) for decentralized storage and ensures privacy through Hyperledger Fabric channels. ACHealthChain features PolicyChain for fine-grained access control and revocation, structuring patient health data into separate subchains for EHRs and diagnoses with permissioned access. Additionally, LogChain enhances auditing and accountability. A series of experiments evaluate ACHealthChain’s performance and scalability, considering metrics such as throughput, latency, and resource utilization. Results demonstrate that ACHealthChain improves throughput by 19.7\% and reduces latency by 87\%, outperforming existing frameworks built on the same platform. The scalability analysis further confirms the framework’s capability to handle increasing workloads within an expanding blockchain network. ACHealthChain presents a promising solution for secure and efficient healthcare data sharing with potential real-world applications.},
-  keywords = {Architecture,Blockchain,Performance,Scalability},
-  file = {/Users/noto2k/Zotero/storage/HXG8S2QP/Tawfik et al. - 2025 - ACHealthChain blockchain framework for access control and privacy preservation in healthcare.pdf}
+  keywords = {Architecture,Blockchain,Performance,Scalability}
 }
 
 @article{manoj2022,
   title = {A {{Blockchain Based Decentralized Identifiers}} for {{Entity Authentication}} in {{Electronic Health Records}}},
   author = {T, Manoj and Makkithaya, Krishnamoorthi and V G, Narendra},
-  editor = {Pham, D T},
+  % FIX: "editor = {Pham, D T}" und "issn = {null}" entfernt
+  %      ("null" waere woertlich als ISSN gesetzt worden)
   date = {2022-12-31},
+  year = {2022},
   journaltitle = {Cogent Engineering},
   volume = {9},
   number = {1},
   pages = {2035134},
   publisher = {Cogent OA},
-  issn = {null},
   doi = {10.1080/23311916.2022.2035134},
   url = {https://doi.org/10.1080/23311916.2022.2035134},
   urldate = {2026-07-02},
-  abstract = {Over the past two decades, the fast pace of digitization in the healthcare ecosystem led to a phenomenal rise in the creation, storage and sharing of Electronic Health Records (EHRs) across the globe. However, the mechanism of authentication used for proving the identity of entities in EHRs is based on the identifiers issued by centralized identity providers (IDPs). It may lead to a single point of failure, loss of privacy and lack of interoperability. A new wave of decentralized identifiers (DIDs) and verifiable credentials(VCs) data modelled by blockchain has made it possible to achieve entity authentication in a decentralized manner. In this study, a blockchain-based framework with decentralized identifiers for patient authentication and consent management for EHR access using verifiable credentials is proposed. It describes the process of DID generation and authentication credential setup along with workflows for issuing and verifying credentials in the EHR ecosystem. The framework is implemented using Hyperledger Indy blockchain and Aries library. The study evaluates the performance of proposed workflows in terms of scalability, efficiency, resource utilization and conducts security analysis. Specifically, the outcome of this study can be used to realize the decentralized identity management and authentication in EHR systems.},
-  keywords = {Blockchain,Decentralizied Identifiers,Electronic Health Records,Entity Authentication,Hyperledger Aries,Hyperledger Indy,Verifiable Credentials},
-  file = {/Users/noto2k/Zotero/storage/FY4DUHE6/T et al. - 2022 - A Blockchain Based Decentralized Identifiers for Entity Authentication in Electronic Health Records.pdf}
+  keywords = {Blockchain,Decentralized Identifiers,Electronic Health Records,Hyperledger Indy,Verifiable Credentials}
 }
 
 @article{verma2024,
@@ -304,24 +319,26 @@
   shorttitle = {Secure {{Hashgraph}} for {{Healthcare}}},
   author = {Verma, Poonam and Tripathi, Vikas and Pant, Bhaskar},
   date = {2024-02},
+  year = {2024},
   journaltitle = {IEEE Transactions on Consumer Electronics},
   volume = {70},
   number = {1},
   pages = {1205--1213},
   issn = {1558-4127},
   doi = {10.1109/TCE.2024.3370737},
-  url = {https://ieeexplore.ieee.org/document/10445704/},
+  url = {https://ieeexplore.ieee.org/document/10445704},
   urldate = {2026-06-15},
-  abstract = {With the rise of healthcare digitization, it has become a critical priority to safeguard patient privacy and ensure data security. Conventional methods of data access control mechanisms have proven to be insufficient in the dynamic management of patient data access with a fine-grained access control mechanism. This research paper investigates the potential of Hashgraph as a possible solution to strengthen patient privacy within healthcare environments. This paper reviews existing literature on the access control mechanism adopted for maintaining patient privacy, thereby emphasizing the potential benefits of deploying Hashgraph into healthcare systems and proposes to term it as MedHash. By exploiting the distinctive features of Hashgraph in MedHash, such as gossip protocol and virtual voting, every node will autonomously engage in the consensus mechanism thereby solving the risk of power concentration within a few nodes of the network. Since the mining is absent in MedHash, hence the energy consumption in comparison to the proof-of-work blockchains has been greatly reduced. Furthermore, MedHash is resilient against the Sybil and double-spending attacks. MedHash, when implemented in the healthcare scenario, leads to reinforced privacy measures and thereby fortifies data security by empowering patients with greater control over sensitive information.},
-  keywords = {Hashgraph,Hedera,Privacy,Security},
-  file = {/Users/noto2k/Zotero/storage/423ITIL7/Verma et al. - 2024 - Secure Hashgraph for Healthcare Strengthening Privacy and Data Security in Patient Records.pdf;/Users/noto2k/Zotero/storage/5CMLA6SN/85187006080.html}
+  keywords = {Hashgraph,Hedera,Privacy,Security}
 }
 
 @article{ferreira2024,
   title = {Enhancing {{EHR Interoperability}} and {{Security}} through {{Distributed Ledger Technology}}: {{A Review}}},
   shorttitle = {Enhancing {{EHR Interoperability}} and {{Security}} through {{Distributed Ledger Technology}}},
+  % Hinweis: MDPI fuehrt den Erstautor als "Carlos Ferreira, João";
+  % der buergerliche Name ist João Carlos Ferreira.
   author = {Carlos Ferreira, João and Elvas, Luís B. and Correia, Ricardo and Mascarenhas, Miguel},
-  date = {2024-01},
+  date = {2024-10-02},
+  year = {2024},
   journaltitle = {Healthcare},
   volume = {12},
   number = {19},
@@ -331,10 +348,8 @@
   doi = {10.3390/healthcare12191967},
   url = {https://www.mdpi.com/2227-9032/12/19/1967},
   urldate = {2026-05-15},
-  abstract = {The management and exchange of electronic health records (EHRs) remain critical challenges in healthcare, with fragmented systems, varied standards, and security concerns hindering seamless interoperability. These challenges compromise patient care and operational efficiency. This paper proposes a novel solution to address these issues by leveraging distributed ledger technology (DLT), including blockchain, to enhance data security, integrity, and transparency in healthcare systems. The decentralized and immutable nature of DLT enables more efficient and secure information exchange across platforms, improving decision-making and coordination of care. This paper outlines a strategic implementation approach, detailing timelines, resource requirements, and stakeholder involvement while addressing crucial privacy and security concerns like encryption and access control. In addition, it explores standards and protocols necessary for achieving interoperability, offering case studies that demonstrate the framework’s effectiveness. This work contributes by introducing a DLT-based solution to the persistent issue of EHR interoperability, providing a novel pathway to secure and efficient health data exchanges. It also identifies the standards and protocols essential for integrating DLT with existing health information systems, thereby facilitating a smoother transition toward enhanced interoperability.},
   langid = {english},
-  keywords = {Review,Security},
-  file = {/Users/noto2k/Zotero/storage/STFBSB8M/Carlos Ferreira et al. - 2024 - Enhancing EHR Interoperability and Security through Distributed Ledger Technology A Review.pdf}
+  keywords = {Review,Security}
 }
 
 @online{ferdous2020,
@@ -342,22 +357,22 @@
   shorttitle = {Blockchain {{Consensus Algorithms}}},
   author = {Ferdous, Md Sadek and Chowdhury, Mohammad Jabed Morshed and Hoque, Mohammad A. and Colman, Alan},
   date = {2020-02-07},
+  year = {2020},
   eprint = {2001.07091},
   eprinttype = {arXiv},
   eprintclass = {cs.DC},
   doi = {10.48550/arXiv.2001.07091},
   url = {http://arxiv.org/abs/2001.07091},
   urldate = {2026-07-16},
-  abstract = {In recent years, blockchain technology has received unparalleled attention from academia, industry, and governments all around the world. It is considered a technological breakthrough anticipated to disrupt several application domains. This has resulted in a plethora of blockchain systems for various purposes. However, many of these blockchain systems suffer from serious shortcomings related to their performance and security, which need to be addressed before any wide-scale adoption can be achieved. A crucial component of any blockchain system is its underlying consensus algorithm, which in many ways, determines its performance and security. Therefore, to address the limitations of different blockchain systems, several existing as well novel consensus algorithms have been introduced. A systematic analysis of these algorithms will help to understand how and why any particular blockchain performs the way it functions. However, the existing studies of consensus algorithms are not comprehensive. Those studies have incomplete discussions on the properties of the algorithms and fail to analyse several major blockchain consensus algorithms in terms of their scopes. This article fills this gap by analysing a wide range of consensus algorithms using a comprehensive taxonomy of properties and by examining the implications of different issues still prevalent in consensus algorithms in detail. The result of the analysis is presented in tabular formats, which provides a visual illustration of these algorithms in a meaningful way. We have also analysed more than hundred top crypto-currencies belonging to different categories of consensus algorithms to understand their properties and to implicate different trends in these crypto-currencies. Finally, we have presented a decision tree of algorithms to be used as a tool to test the suitability of consensus algorithms under different criteria.},
   pubstate = {prepublished},
-  keywords = {Computer Science - Distributed Parallel and Cluster Computing},
-  file = {/Users/noto2k/Zotero/storage/ULF4A94S/Ferdous et al. - 2020 - Blockchain Consensus Algorithms A Survey.pdf;/Users/noto2k/Zotero/storage/CBZ72CT3/2001.html}
+  keywords = {Computer Science - Distributed Parallel and Cluster Computing}
 }
 
 @article{mazzocca2025,
   title = {A {{Survey}} on {{Decentralized Identifiers}} and {{Verifiable Credentials}}},
   author = {Mazzocca, Carlo and Acar, Abbas and Uluagac, Selcuk and Montanari, Rebecca and Bellavista, Paolo and Conti, Mauro},
   date = {2025-12},
+  year = {2025},
   journaltitle = {IEEE Communications Surveys \& Tutorials},
   shortjournal = {IEEE Commun. Surv. Tutor.},
   volume = {27},
@@ -366,20 +381,18 @@
   eprinttype = {arXiv},
   eprintclass = {cs.CR},
   pages = {3641--3671},
-  issn = {1553-877X, 2373-745X},
+  issn = {1553-877X},
   doi = {10.1109/COMST.2025.3543197},
   url = {http://arxiv.org/abs/2402.02455},
   urldate = {2026-07-16},
-  abstract = {Digital identity has always been considered the keystone for implementing secure and trustworthy communications among parties. The ever-evolving digital landscape has gone through many technological transformations that have also affected the way entities are digitally identified. During this digital evolution, identity management has shifted from centralized to decentralized approaches. The last era of this journey is represented by the emerging Self-Sovereign Identity (SSI), which gives users full control over their data. SSI leverages decentralized identifiers (DIDs) and verifiable credentials (VCs), which have been recently standardized by the World Wide Web Community (W3C). These technologies have the potential to build more secure and decentralized digital identity systems, remarkably contributing to strengthening the security of communications that typically involve many distributed participants. It is worth noting that the scope of DIDs and VCs extends beyond individuals, encompassing a broad range of entities including cloud, edge, and Internet of Things (IoT) resources. However, due to their novelty, existing literature lacks a comprehensive survey on how DIDs and VCs have been employed in different application domains, which go beyond SSI systems. This paper provides readers with a comprehensive overview of such technologies from different perspectives. Specifically, we first provide the background on DIDs and VCs. Then, we analyze available implementations and offer an in-depth review of how these technologies have been employed across different use-case scenarios. Furthermore, we examine recent regulations and initiatives that have been emerging worldwide. Finally, we present some challenges that hinder their adoption in real-world scenarios and future research directions.},
-  keywords = {Computer Science - Computers and Society,Computer Science - Cryptography and Security},
-  file = {/Users/noto2k/Zotero/storage/GPLQAIW7/Mazzocca et al. - 2025 - A Survey on Decentralized Identifiers and Verifiable Credentials.pdf;/Users/noto2k/Zotero/storage/RP2WRTQZ/2402.html}
+  keywords = {Computer Science - Cryptography and Security}
 }
 
 @misc{sovrin2018,
   author       = {{Sovrin Foundation}},
   title        = {Sovrin: A Protocol and Token for Self-Sovereign Identity and Decentralized Trust},
   year         = {2018},
-  howpublished = {Whitepaper},
+  howpublished = {Whitepaper, Version 1.0},
   url          = {https://sovrin.org/library/sovrin-protocol-and-token-white-paper/},
   urldate      = {2026-07-16}
 }
@@ -387,7 +400,8 @@
 @article{erler2024,
   title = {Decision {{Model}} to {{Design Trust-Focused}} and {{Blockchain-Based Health Data Management Applications}}},
   author = {Erler, Christina and Bauer, Ann-Marit and Gauger, Friedrich and Stork, Wilhelm},
-  date = {2024-06},
+  date = {2024-04-09},
+  year = {2024},
   journaltitle = {Blockchains},
   volume = {2},
   number = {2},
@@ -397,16 +411,15 @@
   doi = {10.3390/blockchains2020005},
   url = {https://www.mdpi.com/2813-5288/2/2/5},
   urldate = {2026-07-18},
-  abstract = {Many Blockchain-based approaches have been published in the field of health data management applications (HDMAs). However, no comprehensive guideline exists to guide the multiple and interdependent design decisions to develop such systems. This paper aims to support the HDMA system design processes by introducing a novel decision model. The model considers all relevant requirements, from regulatory context to user needs and trust considerations. To generate the decision model, we define a taxonomy that organizes previously published approaches by their technical design features and combines it with the trust assumptions of the participating actors according to the STRIDE method. The model aims to support a cohesive overall system design by addressing Blockchain type, off-chain storage, identity and access management, security decisions, and the specific use case of data donation. A group of experts evaluated the decision tree and its utility is demonstrated in three representative use cases. Special attention is paid to the use case of data donation via a data trustee, which is examined in detail.},
   langid = {english},
-  keywords = {access management,blockchain,data management,data trustee,decision model,design decision,distributed ledger technology,health data management,identity management,medical data storage},
-  file = {/Users/noto2k/Zotero/storage/32JDDWXF/Erler et al. - 2024 - Decision Model to Design Trust-Focused and Blockchain-Based Health Data Management Applications.pdf}
+  keywords = {access management,blockchain,data trustee,decision model,distributed ledger technology,health data management,identity management}
 }
 
 @article{nickerson2013,
   title = {A Method for Taxonomy Development and Its Application in Information Systems},
-  author = {Nickerson, Robert C and Varshney, Upkar and Muntermann, Jan},
+  author = {Nickerson, Robert C. and Varshney, Upkar and Muntermann, Jan},
   date = {2013-05-01},
+  year = {2013},
   journaltitle = {European Journal of Information Systems},
   shortjournal = {Eur. J. Inf. Syst.},
   volume = {22},
@@ -417,16 +430,17 @@
   doi = {10.1057/ejis.2012.26},
   url = {https://doi.org/10.1057/ejis.2012.26},
   urldate = {2026-07-19},
-  abstract = {A fundamental problem in many disciplines is the classification of objects in a domain of interest into a taxonomy. Developing a taxonomy, however, is a complex process that has not been adequately addressed in the information systems (IS) literature. The purpose of this paper is to present a method for taxonomy development that can be used in IS. First, this paper demonstrates through a comprehensive literature survey that taxonomy development in IS has largely been ad hoc. Then the paper defines the problem of taxonomy development. Next, the paper presents a method for taxonomy development that is based on taxonomy development literature in other disciplines and shows that the method has certain desirable qualities. Finally, the paper demonstrates the efficacy of the method by developing a taxonomy in a domain in IS.},
-  keywords = {classification,research methodologies,taxonomy,taxonomy development,typology},
-  file = {/Users/noto2k/Zotero/storage/MIWSA5GC/Nickerson et al. - 2013 - A method for taxonomy development and its application in information systems.pdf}
+  keywords = {classification,research methodologies,taxonomy,taxonomy development,typology}
 }
 
 @article{cadiz2025,
   title = {Improving {{Vehicular Network Authentication}} with {{Teegraph}}: {{A Hashgraph-Based Efficiency Approach}}},
   shorttitle = {Improving {{Vehicular Network Authentication}} with {{Teegraph}}},
-  author = {Cádiz, Rubén Juárez and Nicolas-Sans, Ruben and Tamámes, José Fernández},
-  date = {2025-01},
+  % Hinweis: MDPI/PubMed fuehren den Erstautor als "Rubén Juárez Cádiz";
+  % Nachname ist vermutlich "Juárez Cádiz". Zitierschluessel unveraendert.
+  author = {Juárez Cádiz, Rubén and Nicolas-Sans, Ruben and Fernández Tamámes, José},
+  date = {2025-08-07},
+  year = {2025},
   journaltitle = {Sensors},
   volume = {25},
   number = {15},
@@ -436,10 +450,8 @@
   doi = {10.3390/s25154856},
   url = {https://www.mdpi.com/1424-8220/25/15/4856},
   urldate = {2026-07-19},
-  abstract = {Vehicular ad hoc networks (VANETs) are a critical aspect of intelligent transportation systems, improving safety and comfort for drivers. These networks enhance the driving experience by offering timely information vital for safety and comfort. Yet, VANETs come with their own set of challenges concerning security, privacy, and design reliability. Traditionally, vehicle authentication occurs every time a vehicle enters the domain of the roadside unit (RSU). In our study, we suggest that authentication should take place only when a vehicle has not covered a set distance, increasing system efficiency. The rise of the Internet of Things (IoT) has seen an upsurge in the use of IoT devices across various fields, including smart cities, healthcare, and vehicular IoT. These devices, while gathering environmental data and networking, often face reliability issues without a trusted intermediary. Our study delves deep into implementing Teegraph in VANETs to enhance authentication. Given the integral role of VANETs in Intelligent Transportation Systems and their inherent challenges, we turn to Hashgraph—an alternative to blockchain. Hashgraph offers a decentralized, secure, and trustworthy database. We introduce an efficient authentication system, which triggers only when a vehicle has not traversed a set distance, optimizing system efficiency. Moreover, we shed light on the indispensable role Hashgraph can occupy in the rapidly expanding IoT landscape. Lastly, we present Teegraph, a novel Hashgraph-based technology, as a superior alternative to blockchain, ensuring a streamlined, scalable authentication solution. Our approach leverages the logical key hierarchy (LKH) and packet update keys to ensure data privacy and integrity in vehicular networks.},
   langid = {english},
-  keywords = {ad hoc,authentication,IoT,MANET,MinBFT,security,Teegraph,VANET,vehicular networks},
-  file = {/Users/noto2k/Zotero/storage/YM9FH2DD/Cádiz et al. - 2025 - Improving Vehicular Network Authentication with Teegraph A Hashgraph-Based Efficiency Approach.pdf}
+  keywords = {authentication,IoT,MinBFT,security,Teegraph,VANET}
 }
 
 @online{satybaldy2026,
@@ -447,34 +459,41 @@
   shorttitle = {Decentralized {{Identity}} in {{Practice}}},
   author = {Satybaldy, Abylay and Tylinski, Kamil and Xu, Jiahua},
   date = {2026-01-28},
+  year = {2026},
   eprint = {2601.20716},
   eprinttype = {arXiv},
   eprintclass = {cs.CR},
   doi = {10.48550/arXiv.2601.20716},
   url = {http://arxiv.org/abs/2601.20716},
   urldate = {2026-07-19},
-  abstract = {Decentralized Identifiers (DIDs) are increasingly deployed on distributed ledgers, yet systematic cross-platform evidence on their operational behavior remains limited. We present an empirical benchmarking study of three prominent ledger-based DID methods - Ethereum, Hedera, and XRP Ledger - using reference Software Development Kits (SDKs) under a unified experimental setup. We measure latency, transaction cost, and on-chain metadata exposure, normalizing latency by each platform's block or consensus interval and cost by its native value transfer fee. Privacy leakage is quantified using a Metadata-Leakage Score (MLS), an entropy-based measure expressed in bits per operation. Our results reveal distinct architectural trade-offs. Ethereum enables near-instant, off-chain DID creation, but incurs the highest latency and cost for on-chain lifecycle operations. XRPL delivers deterministic and stable latency with fixed, low fees, yet exhibits higher metadata leakage due to more verbose transaction payloads. Hedera achieves the lowest on-chain latency and low fees with minimal metadata leakage, while occasional variance arises from SDK-side processing and confirmation pipelines. Overall, the findings show that ledger architecture and SDK workflows play a major role in shaping DID latency, cost, and metadata exposure, complementing the effects of the underlying consensus mechanism. These results provide evidence-based insights to support informed selection and configuration of DID systems under performance and privacy constraints.},
   pubstate = {prepublished},
-  keywords = {Computer Science - Cryptography and Security,Computer Science - Emerging Technologies},
-  file = {/Users/noto2k/Zotero/storage/2UIP6CZB/Satybaldy et al. - 2026 - Decentralized Identity in Practice Benchmarking Latency, Cost, and Privacy.pdf;/Users/noto2k/Zotero/storage/PNP3HXFC/2601.html}
+  keywords = {Computer Science - Cryptography and Security}
 }
 
+% FIX: https://hedera.com/hh-whitepaper.pdf liefert 404.
+% Ersatz ist die vom Hedera-Consensus-Service-Whitepaper genannte
+% Landing-Page. 
+% (v2.1) noch als PDF haengt, sonst archivierte Kopie zitieren.
 @online{bairdharmon2019,
   author       = {Baird, Leemon and Harmon, Mance and Madsen, Paul},
   title        = {Hedera: A Public Hashgraph Network \& Governing Council},
   year         = {2019},
-  url          = {https://hedera.com/hh-whitepaper.pdf},
+  url          = {https://hedera.com/whitepaper},
   organization = {Hedera Hashgraph, LLC},
-  note         = {Whitepaper}
+  note         = {Whitepaper},
+  urldate      = {2026-09-09}
 }
 
 @online{bairdgross2019,
-  author       = {Baird, Leemon and Gross, Brandon and Thibeau, Anthony},
+  % FIX: laut Titelblatt des PDFs "Bryan Gross" und "Donald Thibeau"
+  %      (nicht "Brandon Gross" / "Anthony Thibeau")
+  author       = {Baird, Leemon and Gross, Bryan and Thibeau, Donald},
   title        = {Hedera Consensus Service},
   year         = {2019},
   url          = {https://hedera.com/hh-consensus-service-whitepaper.pdf},
   organization = {Hedera Hashgraph, LLC},
-  note         = {Whitepaper}
+  note         = {Whitepaper},
+  urldate      = {2026-09-09}
 }
 
 @online{hasheddidmethod,
@@ -487,11 +506,12 @@
 }
 
 @online{hip762,
-  author       = {{Hedera}},
+  author       = {Nair, Sumabala},
   title        = {{HIP-762}: {AnonCreds} Verifiable Data Registry},
   year         = {2023},
   url          = {https://hips.hedera.com/hip/hip-762},
   organization = {Hedera Improvement Proposals},
+  note         = {Status: Review},
   urldate      = {2026-07-29}
 }
 
@@ -499,18 +519,21 @@
   author       = {{Hashgraph Online}},
   title        = {{HCS-1}: File Management},
   year         = {2024},
-  url          = {https://hashgraphonline.com/docs/standards/hcs-1/},
+  % FIX: hashgraphonline.com ist auf hol.org umgezogen (kanonische URL)
+  url          = {https://hol.org/docs/standards/hcs-1/},
   organization = {Hashgraph Online},
-  urldate      = {2026-07-29}
+  urldate      = {2026-09-09}
 }
 
 @online{hieroanoncreds,
-  author       = {{Hiero}},
-  title        = {Hiero {AnonCreds} Method},
-  year         = {2024},
+  % FIX: namentliche Autoren statt "{Hiero}"; Versions-/Statusangabe ergaenzt
+  author       = {Shenshin, Alexander and Toktar, Renata},
+  title        = {The Hiero {AnonCreds} Method v0.1},
+  year         = {2025},
   url          = {https://dsrcorporation.github.io/hedera-anoncreds-method/},
-  organization = {Hiero},
-  urldate      = {2026-07-29}
+  organization = {DSR Corporation / Hiero},
+  note         = {Editor's Draft},
+  urldate      = {2026-09-09}
 }
 
 @online{acapyhedera,
@@ -519,7 +542,9 @@
   year         = {2024},
   url          = {https://plugins.aca-py.org/main/hedera/},
   organization = {OpenWallet Foundation},
-  urldate      = {2026-07-29}
+  % Hinweis: /main/ ist ein "moving target" -- Inhalt aendert sich mit
+  % dem Branch. Fuer die Implementierung ggf. Commit-Stand angeben.
+  urldate      = {2026-09-09}
 }
 
 @online{anoncredsspec,
@@ -528,65 +553,68 @@
   year         = {2024},
   url          = {https://hyperledger.github.io/anoncreds-spec/},
   organization = {Hyperledger Foundation},
-  urldate      = {2026-07-30}
+  urldate      = {2026-09-09}
 }
 
 @online{indynode,
   author       = {{Hyperledger Indy Project}},
   title        = {Indy Node: Requests and Transactions},
   year         = {2024},
-  url          = {https://github.com/hyperledger/indy-node/blob/main/docs/source/requests.md},
-  urldate      = {2026-07-31}
+  % FIX: Repo ist in die Organisation "hyperledger-indy" umgezogen
+  url          = {https://github.com/hyperledger-indy/indy-node/blob/main/docs/source/requests.md},
+  urldate      = {2026-09-09}
 }
 
+% FIX (alle docs.hedera.com-Eintraege): die Doku wurde umstrukturiert.
+% Die alten /hedera/...-Pfade leiten zwar noch weiter, die kanonischen
+% Pfade lauten inzwischen wie unten angegeben.
 @online{hederasubmitmessage,
   author       = {{Hedera Hashgraph}},
   title        = {Consensus Service: Submit a Message},
   year         = {2026},
   url          = {https://docs.hedera.com/native/consensus/submit-message},
-  urldate      = {2026-07-31}
+  urldate      = {2026-09-09}
 }
 
 @online{hederanetworks,
   author       = {{Hedera Hashgraph}},
   title        = {Networks: Mainnet, Testnet and Local Node},
   year         = {2026},
-  url          = {https://docs.hedera.com/hedera/networks},
-  urldate      = {2026-08-01}
+  url          = {https://docs.hedera.com/networks},
+  urldate      = {2026-09-09}
 }
 
 @online{hederacreatetopic,
   author       = {{Hedera Hashgraph}},
   title        = {Consensus Service: Create a Topic},
   year         = {2026},
-  url          = {https://docs.hedera.com/hedera/sdks-and-apis/sdks/consensus-service/create-a-topic},
-  urldate      = {2026-08-02}
+  url          = {https://docs.hedera.com/native/consensus/create-topic},
+  urldate      = {2026-09-09}
 }
 
 @online{hederamirrornodes,
   author       = {{Hedera Hashgraph}},
   title        = {Mirror Nodes},
   year         = {2026},
-  url          = {https://docs.hedera.com/hedera/core-concepts/mirror-nodes},
-  urldate      = {2026-08-02}
+  url          = {https://docs.hedera.com/learn/core-concepts/mirror-nodes},
+  urldate      = {2026-09-09}
 }
 
 @online{hederamainnetnodes,
   author       = {{Hedera Hashgraph}},
-  title        = {Mainnet: Consensus and Mirror Nodes},
+  title        = {Mainnet Consensus Nodes},
   year         = {2026},
-  url          = {https://docs.hedera.com/hedera/networks/mainnet/mainnet-nodes},
-  urldate      = {2026-08-02}
+  url          = {https://docs.hedera.com/operators/consensus-node},
+  urldate      = {2026-09-09}
 }
 
 @online{hederakeys,
   author       = {{Hedera Hashgraph}},
   title        = {Keys and Signatures},
   year         = {2026},
-  url          = {https://docs.hedera.com/hedera/core-concepts/keys-and-signatures},
-  urldate      = {2026-08-02}
+  url          = {https://docs.hedera.com/learn/core-concepts/keys},
+  urldate      = {2026-09-09}
 }
-
 
 @online{w3cvcdm,
   author       = {{W3C}},
@@ -594,7 +622,7 @@
   year         = {2025},
   url          = {https://www.w3.org/TR/vc-data-model-2.0/},
   organization = {World Wide Web Consortium},
-  note         = {W3C Recommendation},
+  note         = {W3C Recommendation, 15 May 2025},
   urldate      = {2026-07-31}
 }
 
@@ -604,7 +632,7 @@
   year         = {2025},
   url          = {https://www.w3.org/TR/vc-bitstring-status-list/},
   organization = {World Wide Web Consortium},
-  note         = {W3C Recommendation},
+  note         = {W3C Recommendation, 15 May 2025},
   urldate      = {2026-07-31}
 }
 
@@ -615,14 +643,18 @@
   url          = {https://w3c-ccg.github.io/did-key-spec/},
   organization = {W3C Credentials Community Group},
   note         = {Draft Community Group Report},
-  urldate      = {2026-07-31}
+  urldate      = {2026-09-09}
 }
 
 @article{ibrahim2022,
   title = {Digital Health for Quality Healthcare: A Systematic Mapping of Review Studies},
-  author = {Ibrahim, Mohd Shafiq and Mohamed Yusoff, Hanizah and Abu Bakar, Yuhanis Idris and Thwe Aung, Myat Moe and Abas, Mohd Ismail and Ramli, Ramliza Ahmad},
+  % FIX: fuenf von sechs Vornamen waren falsch. Korrekt laut PubMed/Sage:
+  %      Mohd Salami Ibrahim, Harmy Mohamed Yusoff, Yasrul Izad Abu Bakar,
+  %      Myat Moe Thwe Aung, Mohd Ihsanuddin Abas, Ras Azira Ramli
+  author = {Ibrahim, Mohd Salami and Mohamed Yusoff, Harmy and Abu Bakar, Yasrul Izad and Thwe Aung, Myat Moe and Abas, Mohd Ihsanuddin and Ramli, Ras Azira},
   journal = {Digital Health},
   volume = {8},
+  pages = {20552076221085810},                     % FIX: Artikelnummer ergaenzt
   year = {2022},
   doi = {10.1177/20552076221085810}
 }
@@ -632,6 +664,7 @@
   author = {Keasberry, Justin and Scott, Ian A. and Sullivan, Clair and Staib, Andrew and Ashby, Richard},
   journal = {Australian Health Review},
   volume = {41},
+  number = {6},                                    % FIX: ergaenzt
   pages = {646--664},
   year = {2017},
   doi = {10.1071/AH16233}
@@ -642,15 +675,16 @@
   author = {Stachwitz, Peter and Debatin, Jörg F.},
   journal = {Bundesgesundheitsblatt - Gesundheitsforschung - Gesundheitsschutz},
   volume = {66},
+  number = {2},                                    % FIX: ergaenzt
   pages = {105--113},
   year = {2023},
   doi = {10.1007/s00103-022-03642-8}
 }
 
-% TODO Autorenliste aus Zotero vervollstaendigen (Proposal nennt "Bratan, T., et al.")
 @techreport{bratan2022,
   title = {E-{{Health}} in {{Deutschland}}: {{Entwicklungsperspektiven}} und internationaler {{Vergleich}}},
-  author = {Bratan, Tanja and others},
+  author = {Tanja Bratan, Diana Schneider, Nils Heyen, Liliya Pullmann,  
+Michael Friedewald, Dirk Kuhlmann, Nicole Brkic, Bärbel Hüsing},
   institution = {Expertenkommission Forschung und Innovation},
   type = {Studien zum deutschen Innovationssystem},
   number = {12-2022},
@@ -659,7 +693,8 @@
 
 @article{adel2022,
   title = {Semantic Architecture for Interoperability in Distributed Healthcare Systems},
-  author = {Adel, Enas and El-Sappagh, Shaker and Barakat, Sherif and Kwak, Kyung-Sup and Elmogy, Mohammed},
+  % FIX: Erstautorin heisst Ebtsam Adel, nicht Enas Adel
+  author = {Adel, Ebtsam and El-Sappagh, Shaker and Barakat, Sherif and Kwak, Kyung-Sup and Elmogy, Mohammed},
   journal = {IEEE Access},
   volume = {10},
   pages = {126161--126179},
@@ -678,13 +713,22 @@
   doi = {10.1186/s12911-023-02115-5}
 }
 
-@incollection{mehrotra2012,
+@inproceedings{mehrotra2012,
+  % FIX: Der Eintrag war fast durchgaengig falsch.
+  %   - Jahr 2013 (nicht 2012)
+  %   - zweite Autorin: Shalini Bhartiya (nicht "Sushant Bharitya")
+  %   - Reihe: LNICST (nicht "Lecture Notes in Computer Science")
+  %   - "pages = {115}" war in Wahrheit die Bandnummer
+  %   - echte Seitenzahlen: 543--559
+  % Zitierschluessel bewusst unveraendert, damit \cite{} im Text passt.
   title = {Threats and Challenges to Security of Electronic Health Records},
-  author = {Mehrotra, Deepti and Bharitya, Sushant},
-  booktitle = {Lecture Notes in Computer Science},
+  author = {Mehrotra, Deepti and Bhartiya, Shalini},
+  booktitle = {Quality, Reliability, Security and Robustness in Heterogeneous Networks (QShine 2013)},
+  series = {Lecture Notes of the Institute for Computer Sciences, Social Informatics and Telecommunications Engineering},
+  volume = {115},
   publisher = {Springer},
-  pages = {115},
-  year = {2012},
+  pages = {543--559},
+  year = {2013},
   doi = {10.1007/978-3-642-37949-9_48}
 }
 
@@ -693,6 +737,7 @@
   author = {{Bundesministerium für Gesundheit}},
   year = {2026},
   howpublished = {\url{https://www.bundesgesundheitsministerium.de/themen/digitalisierung/elektronische-patientenakte/epa-fuer-alle}},
+  % Hinweis: laufend aktualisierte Seite (aktueller Stand: 4. Maerz 2026)
   note = {Abgerufen am 10. Mai 2026}
 }
 
@@ -701,7 +746,7 @@
   author = {{gematik GmbH}},
   year = {2026},
   howpublished = {\url{https://www.gematik.de/newsroom/news-detail/ein-jahr-epa-fuer-alle-mehr-als-100-millionen-hinterlegte-dokumente-verbessern-behandlung-und-versorgung-in-deutschland}},
-  note = {Abgerufen am 10. Mai 2026}
+  note = {Veröffentlicht am 15. April 2026, abgerufen am 10. Mai 2026}
 }
 
 @misc{apothekeadhoc2025,
@@ -709,7 +754,7 @@
   author = {{APOTHEKE ADHOC}},
   year = {2025},
   howpublished = {\url{https://www.apotheke-adhoc.de/nachrichten/detail/e-health/epa-stoerung-zum-verpflichtenden-start/}},
-  note = {Abgerufen am 10. Mai 2026}
+  note = {Veröffentlicht am 1. Oktober 2025, abgerufen am 10. Mai 2026}
 }
 
 @article{sonkamble2021,
@@ -724,7 +769,7 @@
 
 @article{reegu2023,
   title = {Blockchain-Based Framework for Interoperable Electronic Health Records for an Improved Healthcare System},
-  author = {Reegu, Faheem Ahmad and Abas, Hafiza and Gulzar, Yonis and Xin, Qin and Alwan, Ali A. and Jabbari, Abdoh and Sonkamble, Rahul G. and Dziyauddin, Rudzidatul A.},
+  author = {Reegu, Faheem Ahmad and Abas, Hafiza and Gulzar, Yonis and Xin, Qin and Alwan, Ali A. and Jabbari, Abdoh and Sonkamble, Rahul Ganpatrao and Dziyauddin, Rudzidatul Akmam},
   journal = {Sustainability},
   volume = {15},
   number = {8},
@@ -735,6 +780,9 @@
 
 @article{singh2021,
   title = {A Novel Patient-Centric Architectural Framework for Blockchain-Enabled Healthcare Applications},
+  % Hinweis: vollstaendig lautet die Autorenliste Singh, Pradhan, Luhach,
+  % Agnihotri, Jhanjhi, Verma, Ghosh, Roy. "and others" ist zulaessig,
+  % je nach Zitierstil aber unschoen.
   author = {Singh, Ashutosh Pratap and others},
   journal = {IEEE Transactions on Industrial Informatics},
   volume = {17},
@@ -746,7 +794,7 @@
 
 @article{kasyapa2024,
   title = {Blockchain Integration in Healthcare: A Comprehensive Investigation of Use Cases, Performance Issues, and Mitigation Strategies},
-  author = {Kasyapa, M. S. B. and Vanmathi, C.},
+  author = {Kasyapa, Meenavolu S. B. and Vanmathi, C.},
   journal = {Frontiers in Digital Health},
   volume = {6},
   pages = {1359858},
@@ -756,7 +804,10 @@
 
 @inproceedings{bada2021,
   title = {Towards a Green Blockchain: A Review of Consensus Mechanisms and Their Energy Consumption},
-  author = {Bada, Adegboyega O. and Damianou, Andreas and Angelopoulos, Constantinos Marios and Katos, Vasilios},
+  % FIX: zweite Autorin heisst Amalia Damianou (nicht "Andreas").
+  % Der Vorname des Erstautors wird in den Quellen als "Abigael O. Bada"
+  % gefuehrt -- bitte gegen das PDF gegenpruefen.
+  author = {Bada, Abigael O. and Damianou, Amalia and Angelopoulos, Constantinos Marios and Katos, Vasilios},
   booktitle = {2021 17th International Conference on Distributed Computing in Sensor Systems (DCOSS)},
   publisher = {IEEE},
   pages = {503--511},
@@ -766,9 +817,6 @@
 
 % ================================================================
 % Neue Eintraege fuer Kapitel 5 (Implementierung)
-% Anzuhaengen an Bibliography/my_thesis_bibliography.bib
-% Felder nach BibTeX-Standard (year, nicht date) wegen natbib/plainnat
-% urldate ggf. auf das tatsaechliche Abrufdatum setzen
 % ================================================================
 
 @online{hierosolo,
@@ -777,7 +825,7 @@
   year         = {2025},
   url          = {https://github.com/hiero-ledger/solo},
   organization = {Hiero -- Linux Foundation Decentralized Trust},
-  urldate      = {2026-08-25}
+  urldate      = {2026-09-09}
 }
 
 @online{hierodidsdk,
@@ -786,7 +834,7 @@
   year         = {2025},
   url          = {https://github.com/hiero-ledger/hiero-did-sdk-python},
   organization = {Hiero -- Linux Foundation Decentralized Trust},
-  urldate      = {2026-08-25}
+  urldate      = {2026-09-09}
 }
 
 @online{hierosdkpython,
@@ -795,7 +843,7 @@
   year         = {2025},
   url          = {https://github.com/hiero-ledger/hiero-sdk-python},
   organization = {Hiero -- Linux Foundation Decentralized Trust},
-  urldate      = {2026-08-25}
+  urldate      = {2026-09-09}
 }
 
 @online{acapy,
@@ -804,15 +852,16 @@
   year         = {2025},
   url          = {https://aca-py.org/},
   organization = {OpenWallet Foundation},
-  urldate      = {2026-08-25}
+  urldate      = {2026-09-09}
 }
 
 @online{indyvdr,
   author       = {{Hyperledger Indy Project}},
   title        = {\texttt{indy-vdr}: A Verifiable Data Registry Client for {Hyperledger Indy}},
   year         = {2025},
-  url          = {https://github.com/hyperledger/indy-vdr},
-  urldate      = {2026-08-25}
+  % FIX: Repo ist in die Organisation "hyperledger-indy" umgezogen
+  url          = {https://github.com/hyperledger-indy/indy-vdr},
+  urldate      = {2026-09-09}
 }
 
 @online{locust,
@@ -820,5 +869,5 @@
   title        = {{Locust}: An Open Source Load Testing Tool},
   year         = {2025},
   url          = {https://locust.io/},
-  urldate      = {2026-08-25}
+  urldate      = {2026-09-09}
 }

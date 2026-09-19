@@ -210,7 +210,7 @@
 %% | Title page options |
 %% ----------------------
 % Logos
-\newcommand{\theinstitutelogo}{\iflanguage{ngerman}{KIT-Departments/IPRLogo_de}{KIT-Departments/IPRLogo_en}}
+%\newcommand{\theinstitutelogo}{\iflanguage{ngerman}{KIT-Departments/IPRLogo_de}{KIT-Departments/IPRLogo_en}}
 \newcommand{\institutelogo}[1]{\renewcommand{\theinstitutelogo}{#1}}
 \newcommand{\printinstitutelogo}{\includegraphics[width=5cm,height=1.8cm,keepaspectratio]{Logos/\theinstitutelogo}}
 \newcommand{\noinstitutelogo}{\renewcommand{\printinstitutelogo}{}}
