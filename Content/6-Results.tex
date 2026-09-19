@@ -190,12 +190,12 @@ Abschließend ist der Umfang dieser Aussage zu begrenzen. Die anwendungsseitige 
     E3 & NYM, \texttt{role=101} für dritte DID & ENDORSER & \textbf{abgelehnt} & vollständiger Regeltext: eine STEWARD- oder eine TRUSTEE-Signatur erforderlich \\
     E4 & NYM auf sich selbst, Rolle leer & ENDORSER & \textbf{abgelehnt} & ohne Regeltext: nicht genügend TRUSTEE-Signaturen \\
     \midrule
-    \multicolumn{5}{l}{\textit{Widerrufs-Probe, Indy (R1--R6)}} \\
+    \multicolumn{5}{l}{\textit{Widerrufs-Probe, Indy (R1--R5)}} \\
     R1 & SCHEMA & TRUSTEE & angenommen & -- \\
     R2 & \texttt{CRED\_DEF} (widerrufsfähig) & TRUSTEE & angenommen & -- \\
     R3 & \texttt{REVOC\_REG\_DEF} & TRUSTEE & angenommen & -- \\
     R4 & \texttt{REVOC\_REG\_ENTRY} (A0) & TRUSTEE & angenommen & -- \\
-    R6 & \texttt{REVOC\_REG\_ENTRY} (A1, Index 1) & TRUSTEE & angenommen & -- \\
+    R5 & \texttt{REVOC\_REG\_ENTRY} (A1, Index 1) & TRUSTEE & angenommen & -- \\
     \midrule
     \multicolumn{5}{l}{\textit{Widerrufs-Probe, HCS (Akkumulatorkette)}} \\
     A0 & Registry-Eintrag, Initialakkumulator & Operator & angenommen & -- \\
@@ -204,7 +204,6 @@ Abschließend ist der Umfang dieser Aussage zu begrenzen. Die anwendungsseitige 
   \end{tabular}
 \end{table}
 \normalsize
-% TODO Schrittnummerierung der Widerrufs-Probe pruefen: die Folge springt von R4 auf R6, ein Schritt R5 ist in der Auswertung nicht ausgewiesen -- entweder nachtragen oder durchgehend neu nummerieren.
 % TODO S4-Framing pruefen: Dieser Abschnitt berichtet die korrigierte Fassung (0 % Erfolg nach bestaetigtem Prozessende; die frueheren ~37 % waren ein Artefakt der Docker-Nachfrist) und laesst offen, ob Beschlussunfaehigkeit oder fehlende Client-Ausweichlogik vorliegt. Die Befunddatei im Messrepositorium formuliert an dieser Stelle noch "echte Protokoll-Fehlertoleranz" und "kein clientseitiges Failover-Defizit". Beide Fassungen angleichen, bevor Kapitel 7 darauf aufbaut.
 
 \section{Sicherheitsevaluation (STRIDE)}

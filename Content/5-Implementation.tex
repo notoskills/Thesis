@@ -496,15 +496,17 @@ Der Messaufbau wird auf einem einzelnen Arbeitsplatzrechner betrieben. Die Tabel
     \toprule
     \textbf{Merkmal} & \textbf{Wert} \\
     \midrule
+    Prozessor & AMD Ryzen 7 PRO 8840HS, 3,3\,GHz Grundtakt, 8 Kerne / 16 Threads \\
     Prozessorarchitektur & x86-64 \\
-    Arbeitsspeicher des Wirtssystems & 27,7 GB nutzbar \\
-    Der Containerlaufzeit zugewiesen & 14 Prozessorkerne, 19,53 GiB Arbeitsspeicher \\
-    Betriebssystem und Laufzeitumgebung & Windows mit Linux-Subsystem, containerisierte Ausführung \\
+    Arbeitsspeicher des Wirtssystems & 32\,GB (physisch), 27,7\,GB nutzbar \\
+    Der Containerlaufzeit zugewiesen (WSL2) & 14 Prozessorkerne, 21,5\,GiB Arbeitsspeicher \\
+    Betriebssystem & Windows 11 Enterprise, Version 10.0.26100, Build 26100 \\
+    Containerlaufzeit & Docker 29.7.2 (API 1.55), Client 29.6.2-rd \\
+    Linux-Subsystem & WSL 2.7.14.0, Kernel 6.18.33.2-2 \\
     \bottomrule
   \end{tabular}
 \end{table}
 \normalsize
-% TODO Vier Werte am Messrechner ablesen und in die Tabelle eintragen: (1) genaue Prozessorbezeichnung und Grundtaktfrequenz, (2) Betriebssystemversion einschliesslich Build, (3) Version der Containerlaufzeit, (4) Version des Linux-Subsystems. Alle vier sind Angaben zum Messrechner und stehen in keiner Datei des Repositoriums; ohne sie bleibt die Ausfuehrungsumgebung nicht vollstaendig reproduzierbar beschrieben.
 
 Aus dieser Umgebung ergibt sich die wichtigste betriebliche Regel des Aufbaus: Es wird immer nur eine der beiden Varianten betrieben, niemals beide gleichzeitig. Die Regel ist nicht vorsorglich gesetzt, sondern gemessen begründet. Der gleichzeitige Betrieb beider Varianten erschöpft den verfügbaren Arbeitsspeicher; der Abbau einer Variante gab 17,4 GB frei und hob den verfügbaren Speicher von 1,1 GB auf 17,4 GB, wobei die Systemlast um mehr als eine Größenordnung fiel und das anschließende Hochfahren der zweiten Variante innerhalb von 20 Sekunden statt in wiederholten Neustartversuchen abgeschlossen war. Unter Speicherdruck gemessene Werte wären keine Eigenschaften der Ledger-Technologien, sondern Eigenschaften der Konkurrenz beider Varianten um dieselben Ressourcen. Die Regel wird nicht durch Disziplin, sondern durch das Umschaltwerkzeug und durch eine Vorbedingungsprüfung in den Messskripten durchgesetzt, die bei Verletzung abbrechen.
 

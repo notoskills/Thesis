@@ -498,7 +498,7 @@ Die Messgrößen werden in fünf Szenarien erhoben, die die drei Evaluationsdime
     \toprule
     \textbf{Szenario} & \textbf{Beschreibung} & \textbf{Anforderung} \\
     \midrule
-    S1 - Basismessung & Sequenzielle Ausführung je einer Operation pro Ledger-Funktion (DID-Registrierung, Schema, Credential Definition, Leseoperationen) unter definierter Grundlast & NFA1, NFA2 \\
+    S1 - Basismessung & Sequenzielle Ausführung je einer Schreib- und einer Leseoperation für die Registrierung von DID, für Schema und Credential Definition sowie für das Widerrufsregister, jeweils unter definierter Grundlast. Der Vertrauensanker bleibt ausgenommen, da er auf der HCS-Variante nach der Eingrenzung in Abschnitt~\ref{subsec:e6-vertrauenshierarchie} keine ausführbare Operation besitzt und ein einseitig erhobener Wert eine Vergleichbarkeit vortäuschen würde; die manipulationsresistente Historie ist eine Eigenschaft und keine diskrete Operation & NFA1, NFA2 \\
     S2 - Laststeigerung & Schrittweise Erhöhung der Nebenläufigkeit bis zum Erreichen der Sättigung, mit anschließender Bestimmung der begrenzenden Komponente & NFA1, NFA2, NFA4 \\
     S3 - Datenwachstum & Schrittweiser Aufbau eines wachsenden Bestands an Identitätsobjekten mit Erfassung des Speicherbedarfs sowie der Leselatenz je Objekttyp an definierten Zwischenständen & NFA5, NFA2 \\
     S4 - Knotenausfall & Gezielter Ausfall einzelner Konsensknoten unter laufender Grundlast, mit Beobachtung von Verfügbarkeit, Latenz und Wiederaufnahme & NFA6 \\
