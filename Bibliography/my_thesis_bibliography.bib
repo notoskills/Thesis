@@ -14,6 +14,7 @@
 % die Datei funktioniert also mit beiden Backends.
 % ================================================================
 
+% [akhtar2019] FIX: pages ergaenzt
 @inproceedings{akhtar2019,
   title = {From {{Blockchain}} to {{Hashgraph}}: {{Distributed Ledger Technologies}} in the {{Wild}}},
   shorttitle = {From {{Blockchain}} to {{Hashgraph}}},
@@ -21,7 +22,7 @@
   author = {Akhtar, Zuhaib},
   date = {2019},
   year = {2019},
-  pages = {1--6},                                  % FIX: pages ergaenzt
+  pages = {1--6},
   publisher = {{Institute of Electrical and Electronics Engineers Inc.}},
   doi = {10.1109/UPCON47278.2019.8980029},
   eventtitle = {Proceedings - 2019 {{International Conference}} on {{Electrical}}, {{Electronics}} and {{Computer Engineering}}, {{UPCON}} 2019},
@@ -30,20 +31,20 @@
   keywords = {Blockchain vs Hashgraph}
 }
 
+% FIX: "Mohamamd Rabiul Islam" -> "Mohammad Rabiul Islam"
+% FIX: JESTEC vergibt keine DOIs; stabile Verlags-URL ergaenzt
 @article{alahmad2022,
   title = {{{Influence of Hedera Hashgraph over Blockchain}}},
-  % FIX: "Mohamamd Rabiul Islam" -> "Mohammad Rabiul Islam"
   author = {Alahmad, Mohammad and Alshaikhli, Imad and Alkandari, Abdulrahman and Alshehab, Abdullah and Islam, Mohammad Rabiul and Alnasheet, Meshal},
   date = {2022},
   year = {2022},
-  journaltitle = {Journal of Engineering Science and Technology},
+  journal = {Journal of Engineering Science and Technology},
   shortjournal = {J. Eng. Sci. Technol.},
   volume = {17},
   number = {5},
   pages = {3475--3488},
   publisher = {Taylor's University},
   issn = {1823-4690},
-  % FIX: JESTEC vergibt keine DOIs; stabile Verlags-URL ergaenzt
   url = {https://jestec.taylors.edu.my/Vol%2017%20Issue%205%20October%202022/17_5_32.pdf},
   urldate = {2026-09-09},
   langid = {english},
@@ -55,7 +56,7 @@
   author = {Amanat, Amna and Rizwan, Muhammad and Maple, Carsten and Zikria, Yousaf Bin and Almadhor, Ahmad S. and Kim, Sung Won},
   date = {2022},
   year = {2022},
-  journaltitle = {Frontiers in Public Health},
+  journal = {Frontiers in Public Health},
   shortjournal = {Front Public Health},
   volume = {10},
   eprint = {35928494},
@@ -68,11 +69,10 @@
   keywords = {Architecture,Blockchain}
 }
 
-@article{baird2016,
+% FIX: Eintrag hatte ueberhaupt kein Datum -> Jahr und Reportnummer ergaenzt
+@techreport{baird2016,
   title = {The {{Swirlds Hashgraph Consensus Algorithm}}: {{Fair}}, {{Fast}}, {{Byzantine Fault Tolerance}}},
   author = {Baird, Leemon},
-  % FIX: Eintrag hatte ueberhaupt kein Datum -> Jahr und Reportnummer ergaenzt
-  date = {2016},
   year = {2016},
   type = {Swirlds Tech Report},
   number = {SWIRLDS-TR-2016-01},
@@ -100,6 +100,7 @@
   keywords = {Architecture,Blockchain,Data Provenance,SSI}
 }
 
+% FIX: URL zeigte auf die /metrics-Unterseite
 @inproceedings{chainarong2025,
   title = {{{XDHDS}}: {{Cross-Domain Healthcare Data Sharing Using Self-Sovereign ID}} and {{Blockchain}}},
   shorttitle = {{{XDHDS}}},
@@ -111,7 +112,6 @@
   location = {Bangkok, Thailand},
   issn = {2473-764X},
   doi = {10.1109/KST65016.2025.11003309},
-  % FIX: URL zeigte auf die /metrics-Unterseite
   url = {https://ieeexplore.ieee.org/document/11003309},
   urldate = {2026-06-22},
   keywords = {Access Control,Blockchain,Privacy,Scalability,SSI}
@@ -155,7 +155,7 @@
   author = {Giao, Joao and Luis-Ferreira, Fernando and Sarraipa, Joao and Jardim-Gonçalves, Ricardo},
   date = {2026},
   year = {2026},
-  journaltitle = {Journal of Cloud Computing},
+  journal = {Journal of Cloud Computing},
   shortjournal = {J. Cloud Comput.},
   volume = {15},
   number = {1},
@@ -199,7 +199,7 @@
   author = {Joshi, Pranalini and Mahajan, Pratibha},
   date = {2025-03-27},
   year = {2025},
-  journaltitle = {Peer-to-Peer Networking and Applications},
+  journal = {Peer-to-Peer Networking and Applications},
   shortjournal = {Peer-to-Peer Netw. Appl.},
   volume = {18},
   number = {3},
@@ -233,7 +233,7 @@
   author = {Mazlan, Ahmad Akmaluddin and Mohd Daud, Salwani and Mohd Sam, Suriani and Abas, Hafiza and Abdul Rasid, Siti Zaleha and Yusof, Muhammad Fathi},
   date = {2020},
   year = {2020},
-  journaltitle = {IEEE Access},
+  journal = {IEEE Access},
   volume = {8},
   pages = {23663--23673},
   issn = {2169-3536},
@@ -249,7 +249,7 @@
   author = {Minango, Juan and Carvajal Mora, Henry and Zambrano, Marcelo and Orozco Garzón, Nathaly and Pérez, Francisco},
   date = {2025-02},
   year = {2025},
-  journaltitle = {Technologies},
+  journal = {Technologies},
   volume = {13},
   number = {2},
   pages = {58},
@@ -281,29 +281,31 @@
   doi       = {10.1109/ICNSC58704.2023.10319026}
 }
 
+% FIX: dritter Autor heisst "Tag Eldien, Adly S.", nicht "Eldien, Adly"
+% [tawfik2025] FIX: ergaenzt
+% [tawfik2025] FIX: Artikelnummer ergaenzt
 @article{tawfik2025,
   title = {{{ACHealthChain}} Blockchain Framework for Access Control and Privacy Preservation in Healthcare},
-  % FIX: dritter Autor heisst "Tag Eldien, Adly S.", nicht "Eldien, Adly"
   author = {Tawfik, Ahmed M. and Al-Ahwal, Ayman and Tag Eldien, Adly S. and Zayed, Hala H.},
   date = {2025-05-14},
   year = {2025},
-  journaltitle = {Scientific Reports},
+  journal = {Scientific Reports},
   shortjournal = {Sci Rep},
   volume = {15},
-  number = {1},                                    % FIX: ergaenzt
-  pages = {16696},                                 % FIX: Artikelnummer ergaenzt
+  number = {1},
+  pages = {16696},
   doi = {10.1038/s41598-025-00757-1},
   keywords = {Architecture,Blockchain,Performance,Scalability}
 }
 
+% FIX: "editor = {Pham, D T}" und "issn = {null}" entfernt
+%      ("null" waere woertlich als ISSN gesetzt worden)
 @article{manoj2022,
   title = {A {{Blockchain Based Decentralized Identifiers}} for {{Entity Authentication}} in {{Electronic Health Records}}},
   author = {T, Manoj and Makkithaya, Krishnamoorthi and V G, Narendra},
-  % FIX: "editor = {Pham, D T}" und "issn = {null}" entfernt
-  %      ("null" waere woertlich als ISSN gesetzt worden)
   date = {2022-12-31},
   year = {2022},
-  journaltitle = {Cogent Engineering},
+  journal = {Cogent Engineering},
   volume = {9},
   number = {1},
   pages = {2035134},
@@ -320,7 +322,7 @@
   author = {Verma, Poonam and Tripathi, Vikas and Pant, Bhaskar},
   date = {2024-02},
   year = {2024},
-  journaltitle = {IEEE Transactions on Consumer Electronics},
+  journal = {IEEE Transactions on Consumer Electronics},
   volume = {70},
   number = {1},
   pages = {1205--1213},
@@ -331,15 +333,15 @@
   keywords = {Hashgraph,Hedera,Privacy,Security}
 }
 
+% Hinweis: MDPI fuehrt den Erstautor als "Carlos Ferreira, João";
+% der buergerliche Name ist João Carlos Ferreira.
 @article{ferreira2024,
   title = {Enhancing {{EHR Interoperability}} and {{Security}} through {{Distributed Ledger Technology}}: {{A Review}}},
   shorttitle = {Enhancing {{EHR Interoperability}} and {{Security}} through {{Distributed Ledger Technology}}},
-  % Hinweis: MDPI fuehrt den Erstautor als "Carlos Ferreira, João";
-  % der buergerliche Name ist João Carlos Ferreira.
   author = {Carlos Ferreira, João and Elvas, Luís B. and Correia, Ricardo and Mascarenhas, Miguel},
   date = {2024-10-02},
   year = {2024},
-  journaltitle = {Healthcare},
+  journal = {Healthcare},
   volume = {12},
   number = {19},
   pages = {1967},
@@ -352,7 +354,7 @@
   keywords = {Review,Security}
 }
 
-@online{ferdous2020,
+@misc{ferdous2020,
   title = {Blockchain {{Consensus Algorithms}}: {{A Survey}}},
   shorttitle = {Blockchain {{Consensus Algorithms}}},
   author = {Ferdous, Md Sadek and Chowdhury, Mohammad Jabed Morshed and Hoque, Mohammad A. and Colman, Alan},
@@ -373,7 +375,7 @@
   author = {Mazzocca, Carlo and Acar, Abbas and Uluagac, Selcuk and Montanari, Rebecca and Bellavista, Paolo and Conti, Mauro},
   date = {2025-12},
   year = {2025},
-  journaltitle = {IEEE Communications Surveys \& Tutorials},
+  journal = {IEEE Communications Surveys \& Tutorials},
   shortjournal = {IEEE Commun. Surv. Tutor.},
   volume = {27},
   number = {6},
@@ -402,7 +404,7 @@
   author = {Erler, Christina and Bauer, Ann-Marit and Gauger, Friedrich and Stork, Wilhelm},
   date = {2024-04-09},
   year = {2024},
-  journaltitle = {Blockchains},
+  journal = {Blockchains},
   volume = {2},
   number = {2},
   pages = {79--106},
@@ -420,7 +422,7 @@
   author = {Nickerson, Robert C. and Varshney, Upkar and Muntermann, Jan},
   date = {2013-05-01},
   year = {2013},
-  journaltitle = {European Journal of Information Systems},
+  journal = {European Journal of Information Systems},
   shortjournal = {Eur. J. Inf. Syst.},
   volume = {22},
   number = {3},
@@ -433,15 +435,15 @@
   keywords = {classification,research methodologies,taxonomy,taxonomy development,typology}
 }
 
+% Hinweis: MDPI/PubMed fuehren den Erstautor als "Rubén Juárez Cádiz";
+% Nachname ist vermutlich "Juárez Cádiz". Zitierschluessel unveraendert.
 @article{cadiz2025,
   title = {Improving {{Vehicular Network Authentication}} with {{Teegraph}}: {{A Hashgraph-Based Efficiency Approach}}},
   shorttitle = {Improving {{Vehicular Network Authentication}} with {{Teegraph}}},
-  % Hinweis: MDPI/PubMed fuehren den Erstautor als "Rubén Juárez Cádiz";
-  % Nachname ist vermutlich "Juárez Cádiz". Zitierschluessel unveraendert.
   author = {Juárez Cádiz, Rubén and Nicolas-Sans, Ruben and Fernández Tamámes, José},
   date = {2025-08-07},
   year = {2025},
-  journaltitle = {Sensors},
+  journal = {Sensors},
   volume = {25},
   number = {15},
   pages = {4856},
@@ -454,7 +456,7 @@
   keywords = {authentication,IoT,MinBFT,security,Teegraph,VANET}
 }
 
-@online{satybaldy2026,
+@misc{satybaldy2026,
   title = {Decentralized {{Identity}} in {{Practice}}: {{Benchmarking Latency}}, {{Cost}}, and {{Privacy}}},
   shorttitle = {Decentralized {{Identity}} in {{Practice}}},
   author = {Satybaldy, Abylay and Tylinski, Kamil and Xu, Jiahua},
@@ -474,7 +476,7 @@
 % Ersatz ist die vom Hedera-Consensus-Service-Whitepaper genannte
 % Landing-Page. 
 % (v2.1) noch als PDF haengt, sonst archivierte Kopie zitieren.
-@online{bairdharmon2019,
+@misc{bairdharmon2019,
   author       = {Baird, Leemon and Harmon, Mance and Madsen, Paul},
   title        = {Hedera: A Public Hashgraph Network \& Governing Council},
   year         = {2019},
@@ -484,9 +486,9 @@
   urldate      = {2026-09-09}
 }
 
-@online{bairdgross2019,
-  % FIX: laut Titelblatt des PDFs "Bryan Gross" und "Donald Thibeau"
-  %      (nicht "Brandon Gross" / "Anthony Thibeau")
+% FIX: laut Titelblatt des PDFs "Bryan Gross" und "Donald Thibeau"
+%      (nicht "Brandon Gross" / "Anthony Thibeau")
+@misc{bairdgross2019,
   author       = {Baird, Leemon and Gross, Bryan and Thibeau, Donald},
   title        = {Hedera Consensus Service},
   year         = {2019},
@@ -496,7 +498,7 @@
   urldate      = {2026-09-09}
 }
 
-@online{hasheddidmethod,
+@misc{hasheddidmethod,
   author       = {{Hashgraph Association}},
   title        = {Hedera Hashgraph {DID} Method Specification},
   year         = {2024},
@@ -505,7 +507,7 @@
   urldate      = {2026-07-29}
 }
 
-@online{hip762,
+@misc{hip762,
   author       = {Nair, Sumabala},
   title        = {{HIP-762}: {AnonCreds} Verifiable Data Registry},
   year         = {2023},
@@ -515,18 +517,18 @@
   urldate      = {2026-07-29}
 }
 
-@online{hcs1standard,
+% FIX: hashgraphonline.com ist auf hol.org umgezogen (kanonische URL)
+@misc{hcs1standard,
   author       = {{Hashgraph Online}},
   title        = {{HCS-1}: File Management},
   year         = {2024},
-  % FIX: hashgraphonline.com ist auf hol.org umgezogen (kanonische URL)
   url          = {https://hol.org/docs/standards/hcs-1/},
   organization = {Hashgraph Online},
   urldate      = {2026-09-09}
 }
 
-@online{hieroanoncreds,
-  % FIX: namentliche Autoren statt "{Hiero}"; Versions-/Statusangabe ergaenzt
+% FIX: namentliche Autoren statt "{Hiero}"; Versions-/Statusangabe ergaenzt
+@misc{hieroanoncreds,
   author       = {Shenshin, Alexander and Toktar, Renata},
   title        = {The Hiero {AnonCreds} Method v0.1},
   year         = {2025},
@@ -536,18 +538,18 @@
   urldate      = {2026-09-09}
 }
 
-@online{acapyhedera,
+% Hinweis: /main/ ist ein "moving target" -- Inhalt aendert sich mit
+% dem Branch. Fuer die Implementierung ggf. Commit-Stand angeben.
+@misc{acapyhedera,
   author       = {{OpenWallet Foundation}},
   title        = {Hedera Plugin -- {ACA-Py} Plugins},
   year         = {2024},
   url          = {https://plugins.aca-py.org/main/hedera/},
   organization = {OpenWallet Foundation},
-  % Hinweis: /main/ ist ein "moving target" -- Inhalt aendert sich mit
-  % dem Branch. Fuer die Implementierung ggf. Commit-Stand angeben.
   urldate      = {2026-09-09}
 }
 
-@online{anoncredsspec,
+@misc{anoncredsspec,
   author       = {{Hyperledger AnonCreds Working Group}},
   title        = {{AnonCreds} Specification v1.0},
   year         = {2024},
@@ -556,11 +558,11 @@
   urldate      = {2026-09-09}
 }
 
-@online{indynode,
+% FIX: Repo ist in die Organisation "hyperledger-indy" umgezogen
+@misc{indynode,
   author       = {{Hyperledger Indy Project}},
   title        = {Indy Node: Requests and Transactions},
   year         = {2024},
-  % FIX: Repo ist in die Organisation "hyperledger-indy" umgezogen
   url          = {https://github.com/hyperledger-indy/indy-node/blob/main/docs/source/requests.md},
   urldate      = {2026-09-09}
 }
@@ -568,7 +570,7 @@
 % FIX (alle docs.hedera.com-Eintraege): die Doku wurde umstrukturiert.
 % Die alten /hedera/...-Pfade leiten zwar noch weiter, die kanonischen
 % Pfade lauten inzwischen wie unten angegeben.
-@online{hederasubmitmessage,
+@misc{hederasubmitmessage,
   author       = {{Hedera Hashgraph}},
   title        = {Consensus Service: Submit a Message},
   year         = {2026},
@@ -576,7 +578,7 @@
   urldate      = {2026-09-09}
 }
 
-@online{hederanetworks,
+@misc{hederanetworks,
   author       = {{Hedera Hashgraph}},
   title        = {Networks: Mainnet, Testnet and Local Node},
   year         = {2026},
@@ -584,7 +586,7 @@
   urldate      = {2026-09-09}
 }
 
-@online{hederacreatetopic,
+@misc{hederacreatetopic,
   author       = {{Hedera Hashgraph}},
   title        = {Consensus Service: Create a Topic},
   year         = {2026},
@@ -592,7 +594,7 @@
   urldate      = {2026-09-09}
 }
 
-@online{hederamirrornodes,
+@misc{hederamirrornodes,
   author       = {{Hedera Hashgraph}},
   title        = {Mirror Nodes},
   year         = {2026},
@@ -600,7 +602,7 @@
   urldate      = {2026-09-09}
 }
 
-@online{hederamainnetnodes,
+@misc{hederamainnetnodes,
   author       = {{Hedera Hashgraph}},
   title        = {Mainnet Consensus Nodes},
   year         = {2026},
@@ -608,7 +610,7 @@
   urldate      = {2026-09-09}
 }
 
-@online{hederakeys,
+@misc{hederakeys,
   author       = {{Hedera Hashgraph}},
   title        = {Keys and Signatures},
   year         = {2026},
@@ -616,7 +618,7 @@
   urldate      = {2026-09-09}
 }
 
-@online{w3cvcdm,
+@misc{w3cvcdm,
   author       = {{W3C}},
   title        = {Verifiable Credentials Data Model v2.0},
   year         = {2025},
@@ -626,7 +628,7 @@
   urldate      = {2026-07-31}
 }
 
-@online{bitstringstatuslist,
+@misc{bitstringstatuslist,
   author       = {{W3C}},
   title        = {Bitstring Status List v1.0},
   year         = {2025},
@@ -636,7 +638,7 @@
   urldate      = {2026-07-31}
 }
 
-@online{didkeyspec,
+@misc{didkeyspec,
   author       = {{W3C Credentials Community Group}},
   title        = {The did:key Method v0.9},
   year         = {2023},
@@ -646,36 +648,39 @@
   urldate      = {2026-09-09}
 }
 
+% FIX: fuenf von sechs Vornamen waren falsch. Korrekt laut PubMed/Sage:
+%      Mohd Salami Ibrahim, Harmy Mohamed Yusoff, Yasrul Izad Abu Bakar,
+%      Myat Moe Thwe Aung, Mohd Ihsanuddin Abas, Ras Azira Ramli
+% [ibrahim2022] FIX: Artikelnummer ergaenzt
 @article{ibrahim2022,
   title = {Digital Health for Quality Healthcare: A Systematic Mapping of Review Studies},
-  % FIX: fuenf von sechs Vornamen waren falsch. Korrekt laut PubMed/Sage:
-  %      Mohd Salami Ibrahim, Harmy Mohamed Yusoff, Yasrul Izad Abu Bakar,
-  %      Myat Moe Thwe Aung, Mohd Ihsanuddin Abas, Ras Azira Ramli
   author = {Ibrahim, Mohd Salami and Mohamed Yusoff, Harmy and Abu Bakar, Yasrul Izad and Thwe Aung, Myat Moe and Abas, Mohd Ihsanuddin and Ramli, Ras Azira},
   journal = {Digital Health},
   volume = {8},
-  pages = {20552076221085810},                     % FIX: Artikelnummer ergaenzt
+  pages = {20552076221085810},
   year = {2022},
   doi = {10.1177/20552076221085810}
 }
 
+% [keasberry2017] FIX: ergaenzt
 @article{keasberry2017,
   title = {Going Digital: A Narrative Overview of the Clinical and Organisational Impacts of {{eHealth}} Technologies in Hospital Practice},
   author = {Keasberry, Justin and Scott, Ian A. and Sullivan, Clair and Staib, Andrew and Ashby, Richard},
   journal = {Australian Health Review},
   volume = {41},
-  number = {6},                                    % FIX: ergaenzt
+  number = {6},
   pages = {646--664},
   year = {2017},
   doi = {10.1071/AH16233}
 }
 
+% [stachwitz2023] FIX: ergaenzt
 @article{stachwitz2023,
   title = {Digitalisierung im {{Gesundheitswesen}}: heute und in {{Zukunft}}},
   author = {Stachwitz, Peter and Debatin, Jörg F.},
   journal = {Bundesgesundheitsblatt - Gesundheitsforschung - Gesundheitsschutz},
   volume = {66},
-  number = {2},                                    % FIX: ergaenzt
+  number = {2},
   pages = {105--113},
   year = {2023},
   doi = {10.1007/s00103-022-03642-8}
@@ -691,9 +696,9 @@ Michael Friedewald, Dirk Kuhlmann, Nicole Brkic, Bärbel Hüsing},
   year = {2022}
 }
 
+% FIX: Erstautorin heisst Ebtsam Adel, nicht Enas Adel
 @article{adel2022,
   title = {Semantic Architecture for Interoperability in Distributed Healthcare Systems},
-  % FIX: Erstautorin heisst Ebtsam Adel, nicht Enas Adel
   author = {Adel, Ebtsam and El-Sappagh, Shaker and Barakat, Sherif and Kwak, Kyung-Sup and Elmogy, Mohammed},
   journal = {IEEE Access},
   volume = {10},
@@ -713,14 +718,14 @@ Michael Friedewald, Dirk Kuhlmann, Nicole Brkic, Bärbel Hüsing},
   doi = {10.1186/s12911-023-02115-5}
 }
 
+% FIX: Der Eintrag war fast durchgaengig falsch.
+%   - Jahr 2013 (nicht 2012)
+%   - zweite Autorin: Shalini Bhartiya (nicht "Sushant Bharitya")
+%   - Reihe: LNICST (nicht "Lecture Notes in Computer Science")
+%   - "pages = {115}" war in Wahrheit die Bandnummer
+%   - echte Seitenzahlen: 543--559
+% Zitierschluessel bewusst unveraendert, damit \cite{} im Text passt.
 @inproceedings{mehrotra2012,
-  % FIX: Der Eintrag war fast durchgaengig falsch.
-  %   - Jahr 2013 (nicht 2012)
-  %   - zweite Autorin: Shalini Bhartiya (nicht "Sushant Bharitya")
-  %   - Reihe: LNICST (nicht "Lecture Notes in Computer Science")
-  %   - "pages = {115}" war in Wahrheit die Bandnummer
-  %   - echte Seitenzahlen: 543--559
-  % Zitierschluessel bewusst unveraendert, damit \cite{} im Text passt.
   title = {Threats and Challenges to Security of Electronic Health Records},
   author = {Mehrotra, Deepti and Bhartiya, Shalini},
   booktitle = {Quality, Reliability, Security and Robustness in Heterogeneous Networks (QShine 2013)},
@@ -732,12 +737,12 @@ Michael Friedewald, Dirk Kuhlmann, Nicole Brkic, Bärbel Hüsing},
   doi = {10.1007/978-3-642-37949-9_48}
 }
 
+% Hinweis: laufend aktualisierte Seite (aktueller Stand: 4. Maerz 2026)
 @misc{bmg2026,
   title = {Die elektronische {{Patientenakte}} ({{ePA}}) für alle},
   author = {{Bundesministerium für Gesundheit}},
   year = {2026},
   howpublished = {\url{https://www.bundesgesundheitsministerium.de/themen/digitalisierung/elektronische-patientenakte/epa-fuer-alle}},
-  % Hinweis: laufend aktualisierte Seite (aktueller Stand: 4. Maerz 2026)
   note = {Abgerufen am 10. Mai 2026}
 }
 
@@ -778,11 +783,11 @@ Michael Friedewald, Dirk Kuhlmann, Nicole Brkic, Bärbel Hüsing},
   doi = {10.3390/su15086337}
 }
 
+% Hinweis: vollstaendig lautet die Autorenliste Singh, Pradhan, Luhach,
+% Agnihotri, Jhanjhi, Verma, Ghosh, Roy. "and others" ist zulaessig,
+% je nach Zitierstil aber unschoen.
 @article{singh2021,
   title = {A Novel Patient-Centric Architectural Framework for Blockchain-Enabled Healthcare Applications},
-  % Hinweis: vollstaendig lautet die Autorenliste Singh, Pradhan, Luhach,
-  % Agnihotri, Jhanjhi, Verma, Ghosh, Roy. "and others" ist zulaessig,
-  % je nach Zitierstil aber unschoen.
   author = {Singh, Ashutosh Pratap and others},
   journal = {IEEE Transactions on Industrial Informatics},
   volume = {17},
@@ -802,11 +807,11 @@ Michael Friedewald, Dirk Kuhlmann, Nicole Brkic, Bärbel Hüsing},
   doi = {10.3389/fdgth.2024.1359858}
 }
 
+% FIX: zweite Autorin heisst Amalia Damianou (nicht "Andreas").
+% Der Vorname des Erstautors wird in den Quellen als "Abigael O. Bada"
+% gefuehrt -- bitte gegen das PDF gegenpruefen.
 @inproceedings{bada2021,
   title = {Towards a Green Blockchain: A Review of Consensus Mechanisms and Their Energy Consumption},
-  % FIX: zweite Autorin heisst Amalia Damianou (nicht "Andreas").
-  % Der Vorname des Erstautors wird in den Quellen als "Abigael O. Bada"
-  % gefuehrt -- bitte gegen das PDF gegenpruefen.
   author = {Bada, Abigael O. and Damianou, Amalia and Angelopoulos, Constantinos Marios and Katos, Vasilios},
   booktitle = {2021 17th International Conference on Distributed Computing in Sensor Systems (DCOSS)},
   publisher = {IEEE},
@@ -819,7 +824,7 @@ Michael Friedewald, Dirk Kuhlmann, Nicole Brkic, Bärbel Hüsing},
 % Neue Eintraege fuer Kapitel 5 (Implementierung)
 % ================================================================
 
-@online{hierosolo,
+@misc{hierosolo,
   author       = {{Hiero}},
   title        = {Solo: Local {Hiero} Network Deployment},
   year         = {2025},
@@ -828,7 +833,7 @@ Michael Friedewald, Dirk Kuhlmann, Nicole Brkic, Bärbel Hüsing},
   urldate      = {2026-09-09}
 }
 
-@online{hierodidsdk,
+@misc{hierodidsdk,
   author       = {{Hiero}},
   title        = {\texttt{hiero-did-sdk-python}: Python {SDK} for the {did:hedera} Method},
   year         = {2025},
@@ -837,7 +842,7 @@ Michael Friedewald, Dirk Kuhlmann, Nicole Brkic, Bärbel Hüsing},
   urldate      = {2026-09-09}
 }
 
-@online{hierosdkpython,
+@misc{hierosdkpython,
   author       = {{Hiero}},
   title        = {\texttt{hiero-sdk-python}: Python {SDK} for the {Hiero} Network},
   year         = {2025},
@@ -846,7 +851,7 @@ Michael Friedewald, Dirk Kuhlmann, Nicole Brkic, Bärbel Hüsing},
   urldate      = {2026-09-09}
 }
 
-@online{acapy,
+@misc{acapy,
   author       = {{OpenWallet Foundation}},
   title        = {{ACA-Py}: {Aries} Cloud Agent {Python}},
   year         = {2025},
@@ -855,16 +860,16 @@ Michael Friedewald, Dirk Kuhlmann, Nicole Brkic, Bärbel Hüsing},
   urldate      = {2026-09-09}
 }
 
-@online{indyvdr,
+% FIX: Repo ist in die Organisation "hyperledger-indy" umgezogen
+@misc{indyvdr,
   author       = {{Hyperledger Indy Project}},
   title        = {\texttt{indy-vdr}: A Verifiable Data Registry Client for {Hyperledger Indy}},
   year         = {2025},
-  % FIX: Repo ist in die Organisation "hyperledger-indy" umgezogen
   url          = {https://github.com/hyperledger-indy/indy-vdr},
   urldate      = {2026-09-09}
 }
 
-@online{locust,
+@misc{locust,
   author       = {{Locust}},
   title        = {{Locust}: An Open Source Load Testing Tool},
   year         = {2025},
