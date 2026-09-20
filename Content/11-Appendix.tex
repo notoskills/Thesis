@@ -45,7 +45,7 @@ Dieser Anhang enthält diejenigen Angaben zum Messaufbau, die für eine Nachbild
     Eingehender Transport & \texttt{http 0.0.0.0 3000} & identisch \\
     Ausgehender Transport & \texttt{http} & identisch \\
     Endpunkt & \texttt{http://localhost:3000} & identisch \\
-    Verwaltungsschnittstelle & \texttt{0.0.0.0 3001}, ungesicherter Modus & identisch \\
+    Admin-API & \texttt{0.0.0.0 3001}, ungesicherter Modus & identisch \\
     Wallet-Typ & \texttt{askar-anoncreds} & identisch \\
     Selbsteinrichtung & aktiviert & identisch \\
     Protokollierungsstufe & \texttt{info} & identisch \\
@@ -79,8 +79,58 @@ Dieser Anhang enthält diejenigen Angaben zum Messaufbau, die für eine Nachbild
     Grundlast & Getakteter Nachrichtenstrom auf einem eigenen Topic, Taktintervall 3,0\,s, über die gesamte Messdauer aufrechterhalten \\
     S2 & Startstufe 5 parallele Nutzer, Schrittweite 5, höchstens 20 Stufen. Je Stufe 60\,s Anlauf (nicht gemessen) und 120\,s Messfenster. Abbruchkriterien: Durchsatzzuwachs unter 5\,\%, Antwortzeit im 95.~Perzentil über dem Dreifachen der Ausgangsantwortzeit, Fehlerrate über 5\,\% \\
     S3 & Zwischenstände bei 10, 30, 100 und 300 Füllobjekten; auf der Indy-Variante zusätzlich bis 2700. Je Zwischenstand drei Lesungen des Zielobjekts und eine Kontrolllesung \\
-    S4 & Ausfall nach 120\,s Vorlauf, Ausfallfenster 180\,s, Beobachtung der Erholung über 300\,s bzw. 600\,s. Zielknoten: Knoten~2 auf der Indy-Variante, Knoten~1 auf der HCS-Variante -- dort allerdings ohne Wirkung der Angabe, da die Klientbibliothek unabhängig davon stets denselben Knoten anspricht (Abschnitt~\ref{sec:impl-befunde}, Befund B5). Fünf Wiederholungen je Variante \\
+    S4 & Ausfall nach 120\,s Vorlauf, Ausfallfenster 180\,s, Beobachtung der Erholung über 300\,s bzw. 600\,s. Zielknoten: Knoten~2 auf der Indy-Variante, Knoten~1 auf der HCS-Variante -- dort allerdings ohne Wirkung der Angabe, da die Client-Bibliothek unabhängig davon stets denselben Knoten anspricht (Abschnitt~\ref{sec:impl-befunde}, Befund B5). Fünf Wiederholungen je Variante \\
     S5 & Einzelnachweise ohne Serie, ausgeführt über direkte Ledger-Aufrufe unterhalb des Agenten \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+\normalsize
+
+\section{Entwurf und Evaluationskonzept}
+\label{sec:app-entwurf}
+
+Die folgenden beiden Tabellen fassen zusammen, was Kapitel~\ref{cha:konzept} im Fließtext entwickelt: die sieben Entwurfsentscheidungen mit ihren Konsequenzen sowie die Herleitung der Messgrößen aus der Literatur.
+
+\begin{table}[htbp]
+\renewcommand{\arraystretch}{1.3}
+\footnotesize
+  \centering
+  \caption{Entwurfsentscheidungen der HCS-basierten Ledger-Schicht im Überblick}
+  \label{tab:entwurfsentscheidungen}
+  \begin{tabular}{p{0.19\textwidth} p{0.44\textwidth} p{0.24\textwidth}}
+    \toprule
+    \textbf{Entscheidung} & \textbf{Gewählte Option} & \textbf{Adressierte Anforderungen} \\
+    \midrule
+    E1 - Netzwerkbetriebsmodell und Vertrauensgrenze & Selbst betriebenes, mehrknotiges Hashgraph-Netzwerk mit eigener Mirror Node unter Kontrolle der beteiligten Institutionen & NFA6; Vergleichbarkeit der Messung (NFA1, NFA2, NFA4) \\
+    E2 - Speicherform der Identitätsobjekte & Vollständige Kodierung der Identitätsobjekte auf dem Ledger & FA3, FA4, FA5; NFA5 \\
+    E3 - Wahl der DID-Methode & \texttt{did:hedera} mit einem eigenen Topic je öffentlicher DID & FA2; NFA2 \\
+    E4 - Abbildung der AnonCreds-Objekte & Hiero AnonCreds Method; unveränderter akkumulatorbasierter Widerrufsmechanismus & FA3, FA4, FA6; NFA1, NFA5 \\
+    E5 - Leseweg und Materialisierung des Zustands & Auflösung je Lesezugriff über die Mirror Node; lokal fortgeschriebener Zustand nach dem Appnet-Muster als begründet verworfene Alternative & FA5; NFA2, NFA5 \\
+        E6 - Vertrauenshierarchie, Schreibberechtigung und Topic-Struktur & Ein einzelnes Vertrauens-Topic; Wurzel netzwerkseitig über einen Threshold Key als \texttt{submitKey}, \texttt{adminKey} unter derselben Schwellenregel; delegierte Endorser-Stufe über Delegationsnachrichten mit anwendungsseitiger Prüfung als Entwurf, dessen Umsetzung im Kapitel~\ref{cha:implementierung} als Optimierungspotenzial statt als realisierte Komponente geführt wird & FA1, FA5; NFA7 \\
+    E7 - Anbindung an die Agentenschicht & Bestehendes Hedera-Plugin des Aries-Agentenframeworks über die Verifiable-Data-Registry-Schnittstelle von AnonCreds & FA6; NFA2, NFA3, NFA5 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+\normalsize
+
+
+\begin{table}[htbp]
+\renewcommand{\arraystretch}{1.3}
+\footnotesize
+  \centering
+  \caption{Messgrößen, Messpunkte und ihre Herleitung aus der Literatur}
+  \label{tab:messgroessen}
+  \begin{tabular}{p{0.14\textwidth} p{0.33\textwidth} p{0.19\textwidth} p{0.16\textwidth}}
+    \toprule
+    \textbf{Anforderung} & \textbf{Messgröße} & \textbf{Messpunkt} & \textbf{Herleitung} \\
+    \midrule
+    NFA1 - Durchsatz & Erfolgreich abgeschlossene Operationen je Sekunde sowie Ablehnungsquote, getrennt nach Operationstyp & VDR-Schnittstelle & \cite{sehimibendaoud2023, tawfik2025, joshimahajan2025, hashim2021} \\
+    NFA2 - Latenz & Dauer von der Einreichung bis zur Finalität (Schreiben) bzw. von der Anfrage bis zur Antwort (Lesen), berichtet als Median und 95. Perzentil & VDR-Schnittstelle & \cite{manoj2022, torongo2023, mamoru2026, satybaldy2026} \\
+    NFA3 - Ressourcenverbrauch & CPU- und Speicherauslastung je Komponente über die Messdauer & Alle Komponenten innerhalb der Messgrenze & \cite{minango2025, amanat2022} \\
+    NFA4 - Lastskalierung & Verlauf von Durchsatz und Latenz über steigende Nebenläufigkeit; Sättigungspunkt und auslastungsbegrenzende Komponente & VDR-Schnittstelle, Komponentenmetriken & \cite{mazlan2020, sehimibendaoud2023, joshimahajan2025, hashim2021} \\
+    NFA5 - Datenwachstum & Speicherbedarf je Konsensknoten und je Mirror Node sowie Lesedauer je Objekttyp, jeweils in Abhängigkeit von der Anzahl verwalteter Identitätsobjekte bzw. der Länge der zugehörigen Topic-Historie & Konsensknoten, Mirror Node, VDR-Schnittstelle & \cite{mazlan2020, giao2026, mamoru2026, farin2025} \\
+    NFA6 - Konsens-Fehlertoleranz & Verfügbarkeit und Latenz bei Ausfall von $f$ Knoten sowie Dauer bis zur Wiederaufnahme des Normalbetriebs & Konsensnetzwerk & \cite{hashim2021, verma2024, farin2025} \\
+    NFA7 - Zugriffskontrolle & Ergebnis nicht autorisierter Schreibversuche gegen die Objekt-Topics, netzwerkseitig geprüft auf beiden Varianten (die anwendungsseitige Stufe nach E6 wird nicht umgesetzt, siehe Abschnitt~\ref{subsec:e6-vertrauenshierarchie}); für den Widerruf zusätzlich Verifikationsergebnis vor und nach dem Widerruf sowie Zeit bis zur Wirksamkeit, sofern die Symmetriebedingung nach Abschnitt~\ref{subsec:eval-validitaet} erfüllt ist & VDR-Schnittstelle & \cite{mamoru2026, torongo2023, tawfik2025} \\
     \bottomrule
   \end{tabular}
 \end{table}
