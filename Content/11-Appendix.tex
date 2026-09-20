@@ -79,7 +79,7 @@ Dieser Anhang enthält diejenigen Angaben zum Messaufbau, die für eine Nachbild
     Grundlast & Getakteter Nachrichtenstrom auf einem eigenen Topic, Taktintervall 3,0\,s, über die gesamte Messdauer aufrechterhalten \\
     S2 & Startstufe 5 parallele Nutzer, Schrittweite 5, höchstens 20 Stufen. Je Stufe 60\,s Anlauf (nicht gemessen) und 120\,s Messfenster. Abbruchkriterien: Durchsatzzuwachs unter 5\,\%, Antwortzeit im 95.~Perzentil über dem Dreifachen der Ausgangsantwortzeit, Fehlerrate über 5\,\% \\
     S3 & Zwischenstände bei 10, 30, 100 und 300 Füllobjekten; auf der Indy-Variante zusätzlich bis 2700. Je Zwischenstand drei Lesungen des Zielobjekts und eine Kontrolllesung \\
-    S4 & Ausfall nach 120\,s Vorlauf, Ausfallfenster 180\,s, Beobachtung der Erholung über 300\,s bzw. 600\,s. Zielknoten: Knoten~2 auf der Indy-Variante, Knoten~1 auf der HCS-Variante -- dort allerdings ohne Wirkung der Angabe, da die Client-Bibliothek unabhängig davon stets denselben Knoten anspricht (Abschnitt~\ref{sec:impl-befunde}, Befund B5). Fünf Wiederholungen je Variante \\
+    S4 & Eigene Last mit 5 parallelen Nutzern und Anfrageintervall 5,0\,s (nicht die Grundlast). Ausfall nach 120\,s Vorlauf, Ausfallfenster 180\,s, Beobachtung der Erholung über 300\,s bzw. 600\,s. Zielknoten: Knoten~2 auf der Indy-Variante, Knoten~1 auf der HCS-Variante -- dort allerdings ohne Wirkung der Angabe, da die Client-Bibliothek unabhängig davon stets denselben Knoten anspricht (Abschnitt~\ref{sec:impl-befunde}, Befund B3). Fünf Wiederholungen je Variante \\
     S5 & Einzelnachweise ohne Serie, ausgeführt über direkte Ledger-Aufrufe unterhalb des Agenten \\
     \bottomrule
   \end{tabular}
