@@ -107,9 +107,7 @@ In bisherigen Abschnitten wurden Blockchain und Hashgraph als Konsensverfahren s
 \subsection{Identitätsdaten auf dem Domain Ledger von Hyperledger Indy}
 \label{subsec:grundlagen-speicher-indy}
 
-Indy-Plenum führt mehrere getrennte Ledger. Der Pool Ledger verwaltet die Validatorknoten des Netzwerks, der Config Ledger die Netzwerkkonfiguration, der Audit Ledger die übergreifende Transaktionsreihenfolge. Die Identitätsbezogene Daten werden ausschließlich auf dem Domain Ledger gespeichert: öffentliche DIDs mit ihren Verifikationsschlüsseln, Schemas, Credential Definitions und Widerrufsinformationen \cite{torongo2023}.
-
-Jeder dieser Objekttypen hat seinen eigenen Transaktionstyp. Eine NYM-Transaktion speichert eine DID zusammen mit dem zugehörigen Verifikationsschlüssel und der Rolle des Teilnehmers; das Feld \texttt{dest} enthält dabei die registrierte DID, \texttt{verkey} den Verifikationsschlüssel und \texttt{role} die zugewiesene Rolle \cite{indynode}:
+Indy-Plenum führt mehrere getrennte Ledger; identitätsbezogene Daten liegen ausschließlich auf dem Domain Ledger: öffentliche DIDs mit ihren Verifikationsschlüsseln, Schemas, Credential Definitions und Widerrufsinformationen~\cite{torongo2023}. Jeder Objekttyp hat einen eigenen Transaktionstyp. Eine NYM-Transaktion speichert eine DID mit Verifikationsschlüssel und Rolle des Teilnehmers, eine SCHEMA-Transaktion die Attributenmenge künftiger Credentials, und eine CRED\_DEF-Transaktion verweist über die Sequenznummer auf ein Schema und ergänzt die öffentlichen Signaturschlüssel des Ausstellers sowie die Widerrufsparameter~\cite{indynode}. Der in Abschnitt~\ref{subsec:grundlagen-anoncreds} vorgestellte AnonCreds-Objektsatz wird damit vollständig auf native Transaktionstypen abgebildet; Listing~\ref{lst:nym} zeigt dies exemplarisch für eine NYM-Transaktion.
 
 \begin{lstlisting}[basicstyle=\ttfamily\footnotesize, frame=single, caption={Inhalt einer NYM-Transaktion (vereinfacht)}, label={lst:nym}]
 {
@@ -120,41 +118,16 @@ Jeder dieser Objekttypen hat seinen eigenen Transaktionstyp. Eine NYM-Transaktio
 }
 \end{lstlisting}
 
-Analog dazu enthält eine SCHEMA-Transaktion die Attributenmenge, auf die sich spätere Credentials beziehen:
+Wesentlich für das Verständnis der späteren Arbeit ist, dass der Ledger diese Objekte nicht nur speichert, sondern adressierbar macht: Indy-Plenum hält zu jedem Ledger neben dem Transaktionslog einen daraus abgeleiteten Zustandsspeicher, gegen den die Validatorknoten Leseanfragen beantworten~\cite{indynode}. Ein Client fragt daher nicht nach einem Block oder einer Transaktionsnummer, sondern sendet eine protokolleigene Leseoperation (\texttt{GET\_NYM}, \texttt{GET\_SCHEMA}, \texttt{GET\_CRED\_DEF}) mit dem Objektidentifikator und erhält das aktuelle Objekt zurück. Die Semantik der Identitätsobjekte liegt damit im Ledger selbst.
 
-\begin{lstlisting}[basicstyle=\ttfamily\footnotesize, frame=single, caption={Inhalt einer SCHEMA-Transaktion (vereinfacht)}, label={lst:schema}]
-{
-  "type": "101",                        // SCHEMA
-  "data": {
-    "name":       "Impfnachweis",
-    "version":    "1.0",
-    "attr_names": ["name", "geburtsdatum", "impfstoff"]
-  }
-}
-\end{lstlisting}
-
-Schließlich verweist eine CRED\_DEF-Transaktion über die Sequenznummer auf ein solches Schema und ergänzt die öffentlichen Signaturschlüssel des Ausstellers sowie die Widerrufsparameter \cite{indynode}. Damit wird der im Abschnitt~\ref{subsec:grundlagen-anoncreds} vorgestellte AnonCreds-Objektsatz vollständig auf native Transaktionstypen des Domain Ledgers abgebildet.
-
-Wichtig für das Verständnis der späteren Arbeit ist, dass der Ledger diese Objekte nicht nur speichert, sondern auch adressierbar macht. Indy-Plenum hält zu jedem Ledger neben dem Transaktionslog einen daraus abgeleiteten Zustandsspeicher, gegen den die Validatorknoten Leseanfragen beantworten \cite{indynode}. Der Client, der ein Schema benötigt, sendet daher keine Anfrage nach einem Block oder einer Transaktionsnummer, sondern eine dem Protokoll entsprechende Leseoperation (\texttt{GET\_NYM}, \texttt{GET\_SCHEMA}, \texttt{GET\_CRED\_DEF}) mit der Angabe des Objektidentifikators und bekommt das aktuelle Objekt zurück. Der Ledger stellt die Semantik der Identitätsobjekte also selbst bereit.
 
 \subsection{Identitätsdaten in einem Topic des Hedera Consensus Service}
 \label{subsec:grundlagen-speicher-hcs}
-Der Hedera Consensus Service kennt keine Objekttypen. Die einzige Schreibeinheit ist eine Nachricht, die an einen zuvor angelegten Topic gesendet wird; ihr Inhalt ist für das Netzwerk eine uninterpretierte Bytefolge. Das Netzwerk ordnet die Nachricht mittels Hashgraph-Konsens ein und quittiert sie mit drei Angaben: dem Konsens-Zeitstempel, einer Sequenznummer innerhalb des Topics sowie einem Running Hash, der alle bisherigen Nachrichten des Topics einbezieht \cite{bairdgross2019, hederasubmitmessage}. Der Running Hash erfüllt funktional die Rolle, die in der Blockchain die Verkettung der Blöcke über Hashreferenzen einnimmt: Er verknüpft jede Nachricht mit der gesamten vorangegangenen Historie ihres Topics.
+Der Hedera Consensus Service kennt keine Objekttypen. Die einzige Schreibeinheit ist eine Nachricht an ein zuvor angelegtes Topic; ihr Inhalt ist für das Netzwerk eine uninterpretierte Bytefolge. Das Netzwerk ordnet sie mittels Hashgraph-Konsens ein und quittiert sie mit Konsens-Zeitstempel, Sequenznummer innerhalb des Topics und einem Running Hash, der alle bisherigen Nachrichten einbezieht~\cite{bairdgross2019, hederasubmitmessage}. Der Running Hash übernimmt damit funktional die Rolle, die in der Blockchain die Verkettung der Blöcke einnimmt.
 
-\begin{lstlisting}[basicstyle=\ttfamily\footnotesize, frame=single, caption={Von einer Mirror Node ausgelieferter Topic-Eintrag (vereinfacht)}, label={lst:hcsmsg}]
-{
-  "topicId":            "0.0.4589123",
-  "sequenceNumber":     47,
-  "consensusTimestamp": "1721304512.123456789",
-  "runningHash":        "0x9f2c...",
-  "message":            "<Base64-kodierter Inhalt>"
-}
-\end{lstlisting}
+Die Größe einer Nachricht ist auf 1024 Byte begrenzt; größere Nutzlasten zerlegen die Hedera-SDKs in bis zu 20 Fragmente, die die Mirror Nodes wieder zusammensetzen~\cite{hederasubmitmessage}. Für größere Objekte existiert mit HCS-1 ein eigener Standard, der ein Topic als Container einer unveränderlichen Datei auffasst: Deren Inhalt wird komprimiert, kodiert, auf mehrere Nachrichten verteilt und beim Lesen über die Konsensreihenfolge wieder zusammengesetzt, sodass die Topic-ID das Objekt als Ganzes adressiert~\cite{hcs1standard}.
 
-Die Größe einer einzelnen Nachricht ist auf 1024 Byte begrenzt; größere Nutzlasten werden von den Hedera-SDKs standardmäßig in bis zu 20 Fragmente zerlegt und von den Mirror Nodes wieder zusammengestellt \cite{hederasubmitmessage}. Für die Speicherung größerer Objekte in mehreren Nachrichten existiert mit HCS-1 ein eigener Standard: Er fasst ein eigenes Topic als Container einer einzelnen unveränderlichen Datei auf, deren Inhalt komprimiert, kodiert, auf mehrere Nachrichten dieses Topics aufgeteilt und beim Lesen über die Konsensreihenfolge wieder zusammengesetzt wird, sodass die Topic-ID das Objekt als Ganzes adressiert \cite{hcs1standard}.
-
-HCS sieht keine Leseoperation im Sinne vom Abschnitt~\ref{subsec:grundlagen-speicher-indy} vor. Es gibt keine Anfrage, mit der sich der aktuelle Zustand eines Identitätsobjekts vom Netzwerk abgerufen werden kann, denn das Netzwerk führt keinen solchen Zustand. Stattdessen abonniert eine Anwendung den Nachrichtenstrom eines Topics über eine Mirror Node und leitet den Zustand selbst aus der Abfolge der Nachrichten ab \cite{bairdgross2019}. Daher wird die Semantik, die bei Indy im Protokoll liegt, bei HCS vollständig in die Anwendungsebene verlagert.
-
+Eine Leseoperation im Sinne von Abschnitt~\ref{subsec:grundlagen-speicher-indy} sieht HCS nicht vor, denn das Netzwerk führt keinen Objektzustand, den es zurückgeben könnte. Stattdessen abonniert eine Anwendung den Nachrichtenstrom eines Topics über eine Mirror Node und leitet den Zustand selbst aus der Abfolge der Nachrichten ab~\cite{bairdgross2019}. Die Semantik, die bei Indy im Protokoll liegt, verlagert sich bei HCS vollständig in die Anwendungsebene.
 
 \paragraph{Topics als Adressierung von Identitätsobjekten}
 Aus den bisher beschriebenen Eigenschaften ergibt sich das Muster, mit dem Identitätsobjekte auf HCS überhaupt adressierbar werden. Da HCS keine Objekttypen kennt, kann ein Objekt nicht über einen inhaltlichen Identifikator wie eine Schema-ID angefragt werden; adressierbar ist ausschließlich ein Topic. Anwendungen bilden die Zuordnung deshalb umgekehrt und machen die Topic-ID zum Bestandteil des Objektidentifikators (Abschnitt~\ref{subsec:grundlagen-hcs-topics}). Für eine öffentliche DID bedeutet das konkret: Der DID wird bei ihrer Erzeugung ein Topic zugeordnet, dessen ID in den Identifikator aufgenommen wird; alle Änderungen am zugehörigen DID-Dokument werden anschließend als Nachrichten dieses Topics veröffentlicht, und die Auflösung der DID besteht darin, den Nachrichtenstrom des im Identifikator genannten Topics über eine Mirror Node in Konsensreihenfolge zu verarbeiten. Ein Topic übernimmt damit die Rolle, die bei Indy der Zustandseintrag zu einer DID einnimmt - mit dem Unterschied, dass der Zustand nicht abgefragt, sondern aus der Historie berechnet wird. Welche DID-Methode dieses Muster konkret umsetzt, wird im Kapitel~\ref{cha:konzept} entschieden.

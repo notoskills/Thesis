@@ -190,8 +190,8 @@ Auf der Grundlage der Evaluationsansätze der betrachteten Architekturen (Abschn
 
 \begin{table}[htbp]
 \centering
-\footnotesize
-\renewcommand{\arraystretch}{1.3}
+\scriptsize
+\renewcommand{\arraystretch}{1.15}
 \caption{Synthese der Vergleichskriterien entlang der Dimensionen
 Performanz, Skalierbarkeit und Sicherheit}
 \begin{tabular}{p{2.2cm}p{3.6cm}p{4.6cm}p{2.8cm}}
@@ -238,6 +238,7 @@ Die Komponentenebene des Systems besteht aus einer mobilen App der Patienten und
 Die Netzwerkinfrastruktur ist auf Basis des DIDComm-Protokolls als dezentrales Peer-to-Peer-Kommunikationsnetz konzipiert und basiert auf Open-Source-Implementierungen Hyperledger Aries und Indy \cite{erler2023}. Jeder Teilnehmer wird durch einen Aries-Agenten vertreten (siehe Abschnitt~\ref{sec:grundlagen-blockchain}): Die mobilen Apps integrieren Aries Mobile Agents, die Netzwerk-Konnektoren der Einrichtungen verwenden Aries Cloud Agents; zusammen bilden sie die Edge-Agenten des Netzwerks. Da mobile Endgeräte nicht dauerhaft verfügbar sind, funktionieren Aries Mediator Agents als eine Art Briefkasten, das eine asynchrone verschlüsselte Zustellung von Nachrichten an mobile Agenten ermöglicht \cite{erler2023}. Für jede private Verbindung zwischen den beiden Agenten wird ein paarweises Peer-DID erzeugt, das nur den zwei beteiligten Parteien bekannt ist, wodurch die Korrelierbarkeit von Beziehungen minimiert wird \cite{erler2023}.
 
 \subsection{Rolle der Ledger-Schicht}
-Das DIDComm-Netzwerk wird durch eine SSI-Blockchain als zusätzlichen Vertrauensanker ergänzt \cite{erler2023}. Erler et al. weisen der Ledger-Schicht dabei folgende Aufgaben zu: die Registrierung öffentlicher DIDs von medizinischen Einrichtungen und Angehörigen als dezentrale Public-Key-Infrastruktur, damit Patienten und Einrichtungen neue Agent-zu-Agent-Verbindungen auf Basis verifizierter digitaler Identitäten aufbauen können; die Speicherung von Datenmodellen (Schemas) und Credential-Definitionen für das Ausstellen und Prüfen digital signierter Verifiable Credentials, z.B. durch staatliche Stellen oder medizinische Einrichtungen; sowie eine Widerrufs-Register (Revocation Registry) zum Entzug der Gültigkeit ausgestellter Nachweise \cite{erler2023}. Diese Schicht wird in der Referenzarchitektur durch eine public permissioned Indy-Blockchain \cite{erler2023} implementiert; die Indy-spezifischen Mechanismen, mit denen diese Aufgaben umgesetzt werden, wurden im Abschnitt~\ref{sec:grundlagen-blockchain} eingeführt.
+\label{subsec:sota_ledgerschicht}
+Das DIDComm-Netzwerk wird durch eine public permissioned Indy-Blockchain als zusätzlichen Vertrauensanker ergänzt~\cite{erler2023}. Sie führt ausschließlich pseudonyme Identitätsobjekte -- öffentliche DIDs, Schemas, Credential Definitions und Widerrufsinformationen --, während die medizinischen Dokumente off-chain verbleiben.
 
-Für diese Arbeit hat diese Beschreibung der Ledger-Schicht-Aufgaben eine zentrale Bedeutung: sie definiert die funktionalen Anforderungen, die eine alternative Implementierung der Ledger-Schicht erfüllen muss, während die DIDComm-basierte Agentenschicht unverändert bleibt. Die systematische Ableitung dieser Funktionen sowie ihre Indy-spezifische Umsetzung sind Gegenstand vom Abschnitt~\ref{sec:konzipierung-referenzarchitektur}.
+Diese Zuweisung ist für die vorliegende Arbeit der entscheidende Anknüpfungspunkt, denn sie bestimmt, welche Funktionen eine alternative Implementierung der Ledger-Schicht erbringen muss, während die Agentenschicht unverändert bleibt. Die systematische Ableitung dieser Funktionen und ihrer Indy-spezifischen Umsetzung erfolgt in Abschnitt~\ref{subsec:ledger-funktionen} und wird hier nicht vorweggenommen.
