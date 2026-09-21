@@ -28,7 +28,7 @@
 %% ---------------------------------
 %% | Information about the thesis  |
 %% ---------------------------------
-\include{My_document_info}
+\input{My_document_info}
 
 %% ------------------------
 %% |    Including files   |
@@ -84,6 +84,7 @@
 %% |   Table of Contents  |
 %% ------------------------
 \inculdetableofcontents
+\input{Content/0-Abbreviations}
 
 \makenomenclature
 
@@ -115,11 +116,11 @@
 %% -----------------------------
 %% |   List of Figures/Tables  |
 %% -----------------------------
-\includeglossary
-\includeacronyms
+%\includeglossary   % keine Einträge definiert
+%\includeacronyms   % ersetzt durch Content/0-Abbreviations
 \inculdelistoffigures
 \inculdelistoftables
-\inculdelistoflistings
+% \inculdelistoflistings
 %\inculdelistofalgoritms  % keine Algorithmen im Dokument
 
 %% --------------------
