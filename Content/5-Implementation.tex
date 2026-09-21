@@ -95,7 +95,7 @@ Zwei weitere Eingriffe waren nötig. Die Schlüsselerzeugung für alle Knoten mu
 \subsection{Anpassung des DID-SDK}
 \label{subsec:impl-hcs-patch}
 
-Die zur Auflösung und Registrierung von \texttt{did:hedera}-Bezeichnern verwendete Bibliothek~\cite{hierodidsdk} prüft die Netzwerkkennung gegen eine feste Liste, die nur die öffentlichen Hedera-Netzwerke enthält. Da E1 ein selbst betriebenes Netzwerk vorschreibt, ist sie unverändert nicht verwendbar. Die Anpassung fügt die Kennung an drei Stellen in zwei Dateien hinzu und umfasst netto drei Zeilen; sie betrifft ausschließlich die Validierung, während Bezeichnerformat, Topic-Operationen und Nachrichtenformat unverändert bleiben. Sie liegt damit nicht auf dem gemessenen Pfad.
+Die zur Auflösung und Registrierung von \texttt{did:hedera}-Bezeichnern verwendete Bibliothek~\cite{hierodidsdk} prüft die Netzwerkkennung gegen eine feste Liste, die nur die öffentlichen Hedera-Netzwerke enthält. Da E1 ein selbst betriebenes Netzwerk vorschreibt, ist sie unverändert nicht verwendbar. Die Anpassung fügt die Kennung an drei Stellen in zwei Dateien hinzu und umfasst netto drei Zeilen; sie betrifft ausschließlich die Validierung, während DID-Format, Topic-Operationen und Nachrichtenformat unverändert bleiben. Sie liegt damit nicht auf dem gemessenen Pfad.
 
 \section{Umsetzung der Indy-basierten Referenzvariante}
 \label{sec:impl-indy}
